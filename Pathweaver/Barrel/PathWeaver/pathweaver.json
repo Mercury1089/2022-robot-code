@@ -1,0 +1,9 @@
+{
+  "lengthUnit": "Meter",
+  "exportUnit": "Always Meters",
+  "maxVelocity": 3.658,
+  "maxAcceleration": 0.6,
+  "wheelBase": 0.6223,
+  "gameName": "Barrel Racing Path",
+  "outputDir": "../../../src/main/deploy/trajectories/PathWeaver"
+}
