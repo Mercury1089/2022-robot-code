@@ -31,7 +31,6 @@ import frc.robot.commands.hopper.*;
 import frc.robot.commands.intake.*;
 import frc.robot.commands.limelightCamera.*;
 import frc.robot.commands.shooter.*;
-import frc.robot.commands.spinner.*;
 
 import frc.robot.sensors.Limelight;
 import frc.robot.sensors.Limelight.LimelightLEDState;
@@ -48,7 +47,6 @@ import frc.robot.subsystems.IntakeArticulator;
 import frc.robot.subsystems.LimelightCamera;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Shooter.ShooterMode;
-import frc.robot.subsystems.Spinner;
 
 import frc.robot.util.MercMotionProfile;
 import frc.robot.util.MercMotionProfile.ProfileDirection;
@@ -78,7 +76,6 @@ public class RobotContainer {
     private IntakeArticulator intakeArticulator;
     private Feeder feeder;
     private Hopper hopper;
-    private Spinner spinner;
     private Elevator elevator;
     private LimelightCamera limelightCamera;
 
@@ -108,7 +105,6 @@ public class RobotContainer {
         intake = new Intake();
         limelightCamera = new LimelightCamera();
         limelightCamera.getLimelight().setLEDState(LimelightLEDState.OFF);
-        spinner = new Spinner();
         elevator = new Elevator();
         elevator.setDefaultCommand(new ManualElevator(elevator));
 
@@ -466,9 +462,6 @@ public class RobotContainer {
     }
     public Hopper getHopper() {
         return hopper;
-    }
-    public Spinner getSpinner() {
-        return spinner;
     }
     public Elevator getElevator() {
         return elevator;

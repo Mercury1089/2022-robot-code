@@ -27,7 +27,6 @@ import frc.robot.commands.hopper.*;
 import frc.robot.commands.intake.*;
 import frc.robot.commands.limelightCamera.*;
 import frc.robot.commands.shooter.*;
-import frc.robot.commands.spinner.*;
 
 import frc.robot.sensors.Limelight;
 import frc.robot.subsystems.*;
@@ -47,12 +46,11 @@ public class AutonSelector extends InstantCommand {
   Limelight limelight;
   LimelightCamera limelightCamera;
   Shooter shooter;
-  Spinner spinner;
 
   public AutonSelector(ShuffleDash shuffleDash, CommandGroupBase autonCommand, DriveTrain driveTrain, 
     Elevator elevator, Feeder feeder, Hopper hopper, 
     Intake intake, IntakeArticulator intakeArticulator, Limelight limeLight, 
-    LimelightCamera limelightCamera, Shooter shooter, Spinner spinner) {
+    LimelightCamera limelightCamera, Shooter shooter) {
 
     super();
     
@@ -68,7 +66,6 @@ public class AutonSelector extends InstantCommand {
     this.limelight = limelight;
     this.limelightCamera = limelightCamera;
     this.shooter = shooter;
-    this.spinner = spinner;
     
     setName("AutonSelector"); 
   }
