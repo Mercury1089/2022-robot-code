@@ -1,7 +1,7 @@
 package frc.robot.sensors;
 
 import edu.wpi.first.networktables.*;
-import edu.wpi.first.wpilibj.LinearFilter;
+import edu.wpi.first.math.filter.LinearFilter;
 import frc.robot.util.MercMath;
 
 /**

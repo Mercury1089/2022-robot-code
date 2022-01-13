@@ -203,7 +203,7 @@ public class ShuffleDash {
     }
 
     public String getPositionControlColor() {
-        positionColor = DriverStation.getInstance().getGameSpecificMessage();
+        positionColor = DriverStation.getGameSpecificMessage();
         if(positionColor.length() > 0)
             switch(positionColor.charAt(0)) {
                 case 'R':

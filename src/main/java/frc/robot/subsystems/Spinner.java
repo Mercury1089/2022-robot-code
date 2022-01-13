@@ -65,7 +65,7 @@ public class Spinner extends SubsystemBase implements IMercShuffleBoardPublisher
 
   
   public ControlPanelColor getFmsColor() {
-    String fmsColor = DriverStation.getInstance().getGameSpecificMessage();
+    String fmsColor = DriverStation.getGameSpecificMessage();
         if(fmsColor.length() > 0)
             switch(fmsColor.charAt(0)) {
                 case 'R':

@@ -6,8 +6,8 @@ import frc.robot.subsystems.DriveTrain;
 
 import java.nio.ByteBuffer;
 
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 /**
  * Class that contains various math functions.
