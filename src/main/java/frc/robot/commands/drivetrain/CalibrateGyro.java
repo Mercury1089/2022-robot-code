@@ -1,6 +1,5 @@
 package frc.robot.commands.drivetrain;
 
-import com.ctre.phoenix.sensors.PigeonIMU;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 
@@ -16,7 +15,7 @@ public class CalibrateGyro extends CommandBase {
     
     public void initialize() {
         //  System.out.println("Calibrating gyro...");
-        this.driveTrain.getPigeon().enterCalibrationMode(PigeonIMU.CalibrationMode.BootTareGyroAccel);
+        this.driveTrain.calibrateGyro();
     }
 
     @Override

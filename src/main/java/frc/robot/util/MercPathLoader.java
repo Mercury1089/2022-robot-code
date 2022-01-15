@@ -25,7 +25,6 @@ import com.ctre.phoenix.motion.TrajectoryPoint;
  */
 public class MercPathLoader {
     private static final String BASE_PATH_LOCATION = "/home/lvuser/deploy/trajectories/PathWeaver/output/";
-    private static int minTime = 0;
     /**
      * @param pathName name + wpilib.json
      */
@@ -55,9 +54,7 @@ public class MercPathLoader {
                 //Time
                 time = MercMath.secondsToMilliseconds(state.timeSeconds);
                 point.timeDur = time - prevTime;
-                prevTime = time;    
-                if(minTime == 0)
-                    minTime = point.timeDur;
+                prevTime = time;
 
                 //Velocity
                 velocity = state.velocityMetersPerSecond;
@@ -127,22 +124,15 @@ public class MercPathLoader {
                                    " point.auxiliaryPos: " + point.auxiliaryPos +
                                    " point.position: " + point.position
                 );*/
-                
-                minTime = Math.min(point.timeDur, minTime);
             }
 
             trajectoryPoints.get(trajectoryPoints.size() - 1).isLastPoint = lastTrajectory;
-            DriverStation.reportError(pathName + "\nMin Time: " + minTime , false);
         }
         return trajectoryPoints;
     }
 
     public static List<TrajectoryPoint> loadPath(String pathName) {
         return loadPath(pathName, 0, true);
-    }
-
-    public static int getMinTime() {
-        return minTime;
     }
 
     public static String getBasePathLocation() {

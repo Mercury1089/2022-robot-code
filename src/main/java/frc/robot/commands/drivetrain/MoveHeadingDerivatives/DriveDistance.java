@@ -11,8 +11,6 @@ import frc.robot.subsystems.DriveTrain;
 
 public class DriveDistance extends MoveHeading{
 
-    private int angleThresholdDeg;
-
     /**
      * Construct Drive Distance w / Motion Magic
      *
@@ -22,7 +20,6 @@ public class DriveDistance extends MoveHeading{
         super(distance, 0, driveTrain);
         setName("DriveDistance");
         moveThresholdTicks = 500;
-        angleThresholdDeg = 2;
         onTargetMinCount = 10;
     }
 
@@ -46,7 +43,7 @@ public class DriveDistance extends MoveHeading{
             return false;
         }
 
-        double distError = right.getClosedLoopError();
+        double distError = driveTrain.getDistanceError();
 
         boolean isFinished = false;
 

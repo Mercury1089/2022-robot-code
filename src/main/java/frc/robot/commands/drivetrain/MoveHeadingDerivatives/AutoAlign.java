@@ -2,7 +2,6 @@
 package frc.robot.commands.drivetrain.MoveHeadingDerivatives;
 
 import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.DriveTrain.DriveTrainSide;
 import frc.robot.util.MercMath;
 
 public class AutoAlign extends MoveHeading {
@@ -28,7 +27,7 @@ public class AutoAlign extends MoveHeading {
         System.out.println("AutoAlign initialized with angle: " + targetHeading);
         targetHeading = -1.0 * MercMath.degreesToPigeonUnits(targetHeading);
         super.initialize();
-        this.driveTrain.configPIDSlots(DriveTrainSide.RIGHT, DriveTrain.DRIVE_PID_SLOT, DriveTrain.DRIVE_SMOOTH_TURN_SLOT);
+        this.driveTrain.configPIDSlots(DriveTrain.DRIVE_PID_SLOT, DriveTrain.DRIVE_SMOOTH_TURN_SLOT);
 
    }
 
@@ -40,7 +39,7 @@ public class AutoAlign extends MoveHeading {
     // Make this return true when this Command no longer needs to run execute()
     @Override
     public boolean isFinished() {
-        angleError = right.getClosedLoopError(DriveTrain.DRIVE_SMOOTH_TURN_SLOT);
+        angleError = driveTrain.getAngleError();
         angleError = MercMath.pigeonUnitsToDegrees(angleError);
 
         boolean isFinished = false;

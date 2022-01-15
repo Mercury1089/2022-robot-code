@@ -49,7 +49,7 @@ public class RotateToTarget extends DegreeRotate {
     // Called repeatedly when this Command is scheduled to run
     @Override
     public void execute() {
-        double angleError = right.getClosedLoopError(DriveTrain.DRIVE_SMOOTH_MOTION_SLOT);
+        double angleError = driveTrain.getAngleError();
         angleError = MercMath.pigeonUnitsToDegrees(angleError);
 
         isOnTarget = (Math.abs(angleError) < DriveTrain.ANGLE_THRESHOLD_DEG);

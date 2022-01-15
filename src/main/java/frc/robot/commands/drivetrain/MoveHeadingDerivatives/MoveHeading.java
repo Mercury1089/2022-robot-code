@@ -7,14 +7,8 @@
 
 package frc.robot.commands.drivetrain.MoveHeadingDerivatives;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
-import com.ctre.phoenix.motorcontrol.FollowerType;
-import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.DriveTrain.DriveTrainSide;
 import frc.robot.util.MercMath;
 
 public class MoveHeading extends CommandBase {
@@ -22,14 +16,13 @@ public class MoveHeading extends CommandBase {
     protected int moveThresholdTicks;   // ticks
     protected int onTargetMinCount; // 100 millis
     protected int checkThreshold = 50;
-    protected BaseMotorController left, right;
 
     protected double distance, targetHeading;
     protected int onTargetCount, initialCheckCount, resetCounter;
 
     protected boolean reset;
 
-    private DriveTrain driveTrain;
+    protected DriveTrain driveTrain;
 
     /**
      * Move with heading assist from pigeon
@@ -41,9 +34,6 @@ public class MoveHeading extends CommandBase {
         super.addRequirements(driveTrain);
         setName("MoveHeading");
         this.driveTrain = driveTrain;
-
-        left = this.driveTrain.getLeftLeader();
-        right = this.driveTrain.getRightLeader();
 
         moveThresholdTicks = 500;
         onTargetMinCount = 4;
@@ -57,23 +47,10 @@ public class MoveHeading extends CommandBase {
         this.driveTrain.stop();
         this.driveTrain.resetEncoders();
 
-        if (!this.driveTrain.isInMotionMagicMode())
-            this.driveTrain.initializeMotionMagicFeedback();
-
         onTargetCount = 0;
         initialCheckCount = 0;
 
-        /* Motion Magic Configurations */
-        right.configMotionAcceleration(1000);
-        right.configMotionCruiseVelocity((int) MercMath.revsPerMinuteToTicksPerTenth(DriveTrain.MAX_RPM));
-
-        int closedLoopTimeMs = 1;
-        right.configClosedLoopPeriod(0, closedLoopTimeMs);
-        right.configClosedLoopPeriod(1, closedLoopTimeMs);
-
-        right.configAuxPIDPolarity(false);
-
-        this.driveTrain.configPIDSlots(DriveTrainSide.RIGHT, DriveTrain.DRIVE_PID_SLOT, DriveTrain.DRIVE_SMOOTH_MOTION_SLOT);
+        this.driveTrain.configPIDSlots(DriveTrain.DRIVE_PID_SLOT, DriveTrain.DRIVE_SMOOTH_MOTION_SLOT);
 
         this.driveTrain.resetPigeonYaw();
 
@@ -97,8 +74,7 @@ public class MoveHeading extends CommandBase {
                     driveTrain.getLeftEncPositionInTicks() == 0.0 && 
                     driveTrain.getRightEncPositionInTicks() == 0.0;
         } else {
-            right.set(ControlMode.MotionMagic, distance, DemandType.AuxPID, targetHeading);
-            left.follow(right, FollowerType.AuxOutput1);
+            driveTrain.motionMagicDrive(distance, targetHeading);
         }
     }
 
@@ -110,7 +86,7 @@ public class MoveHeading extends CommandBase {
             return false;
         }
 
-        double distError = right.getClosedLoopError(), angleError = right.getClosedLoopError(DriveTrain.DRIVE_SMOOTH_MOTION_SLOT);
+        double distError = driveTrain.getDistanceError(), angleError = driveTrain.getAngleError();
 
         angleError = MercMath.pigeonUnitsToDegrees(angleError);
 

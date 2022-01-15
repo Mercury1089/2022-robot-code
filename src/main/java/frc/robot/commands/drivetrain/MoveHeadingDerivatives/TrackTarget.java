@@ -7,13 +7,9 @@
 
 package frc.robot.commands.drivetrain.MoveHeadingDerivatives;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
-import com.ctre.phoenix.motorcontrol.FollowerType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.LimelightCamera;
-import frc.robot.subsystems.DriveTrain.DriveTrainSide;
 import frc.robot.util.MercMath;
 
 public class TrackTarget extends MoveHeading {
@@ -34,7 +30,7 @@ public class TrackTarget extends MoveHeading {
     @Override
     public void initialize() {
         super.initialize();
-        this.driveTrain.configPIDSlots(DriveTrainSide.RIGHT, DriveTrain.DRIVE_PID_SLOT, DriveTrain.DRIVE_SMOOTH_MOTION_SLOT);
+        this.driveTrain.configPIDSlots(DriveTrain.DRIVE_PID_SLOT, DriveTrain.DRIVE_SMOOTH_MOTION_SLOT);
         this.driveTrain.configClosedLoopPeakOutput(DriveTrain.DRIVE_PID_SLOT, .3);
         this.driveTrain.configClosedLoopPeakOutput(DriveTrain.DRIVE_SMOOTH_MOTION_SLOT, .25);
     }
@@ -45,8 +41,7 @@ public class TrackTarget extends MoveHeading {
         double adjustedDistance = MercMath.feetToEncoderTicks(this.limelightCamera.getLimelight().getRawVertDistance() - allowableDistError);
         //adjustedDistance *= Robot.driveTrain.getDirection().dir;
         double adjustedHeading = MercMath.degreesToPigeonUnits(this.limelightCamera.getLimelight().getTargetCenterXAngle());
-        right.set(ControlMode.Position, adjustedDistance, DemandType.AuxPID, adjustedHeading);
-        left.follow(right, FollowerType.AuxOutput1);
+        driveTrain.motionMagicDrive(adjustedDistance, adjustedHeading);
     }
 
     // Make this return true when this Command no longer needs to run execute()

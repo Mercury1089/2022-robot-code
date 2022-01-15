@@ -29,23 +29,18 @@ public class DriveWithJoysticks extends CommandBase{
     // Called just before this Command runs the first time
     @Override
     public void initialize() {
-        this.driveTrain.configVoltage(DriveTrain.NOMINAL_OUT, DriveTrain.PEAK_OUT);
-        tDrive = this.driveTrain.getDriveAssist();
-        this.driveTrain.setNeutralMode(NeutralMode.Brake);
     }
 
     // Called repeatedly when this Command is scheduled to run
     @Override
     public void execute() {
-        if (tDrive != null) {
-            switch (driveType) {
-                case TANK:
-                    tDrive.tankDrive(Robot.robotContainer.getJoystickY(DS_USB.LEFT_STICK), Robot.robotContainer.getJoystickY(DS_USB.RIGHT_STICK));
-                    break;
-                case ARCADE:
-                    tDrive.arcadeDrive(-Robot.robotContainer.getJoystickY(DS_USB.LEFT_STICK), Robot.robotContainer.getJoystickX(DS_USB.RIGHT_STICK), true);
-                    break;
-            }
+        switch (driveType) {
+            case TANK:
+                driveTrain.tankDrive(() -> -Robot.robotContainer.getJoystickY(DS_USB.LEFT_STICK), () -> -Robot.robotContainer.getJoystickY(DS_USB.RIGHT_STICK));
+                break;
+            case ARCADE:
+                driveTrain.arcadeDrive(() -> -Robot.robotContainer.getJoystickY(DS_USB.LEFT_STICK), () -> Robot.robotContainer.getJoystickX(DS_USB.RIGHT_STICK), true);
+                break;
         }
     }
 
@@ -58,7 +53,6 @@ public class DriveWithJoysticks extends CommandBase{
     // Called once after isFinished returns true
     @Override
     public void end(boolean interrupted) {
-        this.driveTrain.setNeutralMode(NeutralMode.Brake);
         this.driveTrain.stop();
     }
 
