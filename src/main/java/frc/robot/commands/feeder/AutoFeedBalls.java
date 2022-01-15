@@ -57,7 +57,7 @@ public class AutoFeedBalls extends CommandBase {
       started = true;
     } else {
       hopper.stopHopper();
-      feeder.setSpeed(0.0);
+      feeder.stopFeeder();
     }
     if (started) {
       intake.runIntakeRoller(0.7);
@@ -72,7 +72,7 @@ public class AutoFeedBalls extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    feeder.setSpeed(0.0);
+    feeder.stopFeeder();
     hopper.stopHopper();
     intake.stopAgitator();
     intake.stopIntakeRoller();

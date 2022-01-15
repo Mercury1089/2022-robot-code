@@ -38,14 +38,14 @@ public class RunFeeder extends CommandBase {
       feeder.runFeeder();
     }
     else {
-      feeder.setSpeed(0.0);
+      feeder.stopFeeder();
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    feeder.setSpeed(0.0);
+    feeder.stopFeeder();
   }
 
   // Returns true when the command should end.

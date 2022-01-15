@@ -31,16 +31,16 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
     setName("Feeder");
   }
 
-  public double getRunSpeed() {
-    return RUN_SPEED;
+  private void setSpeed(double speed) {
+    feedWheel.set(ControlMode.PercentOutput, speed);
   }
 
   public void runFeeder() {
     this.setSpeed(RUN_SPEED);
   }
 
-  public void setSpeed(double speed) {
-    feedWheel.set(ControlMode.PercentOutput, speed);
+  public void stopFeeder() {
+    this.setSpeed(0.0);
   }
 
   @Override
