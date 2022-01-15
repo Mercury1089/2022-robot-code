@@ -7,26 +7,25 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotMap.CAN;
-import frc.robot.util.MercMotorController.*;
-import frc.robot.util.interfaces.IMercMotorController;
 import frc.robot.util.interfaces.IMercShuffleBoardPublisher;
 
 public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher {
   
-  private IMercMotorController feedWheel;
+  private TalonSRX feedWheel;
   private static final double RUN_SPEED = 1.0;
 
   /**
    * Creates a new Feeder.
    */
   public Feeder() {
-    feedWheel = new MercTalonSRX(CAN.FEEDER);
+    feedWheel = new TalonSRX(CAN.FEEDER);
     feedWheel.setInverted(false);
     feedWheel.setNeutralMode(NeutralMode.Brake);
     setName("Feeder");
@@ -37,16 +36,11 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
   }
 
   public void runFeeder() {
-    feedWheel.setSpeed(RUN_SPEED);
+    this.setSpeed(RUN_SPEED);
   }
 
   public void setSpeed(double speed) {
-    feedWheel.setSpeed(speed);
-  }
-
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
+    feedWheel.set(ControlMode.PercentOutput, speed);
   }
 
   @Override
