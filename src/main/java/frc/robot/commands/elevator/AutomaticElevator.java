@@ -10,11 +10,9 @@ package frc.robot.commands.elevator;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotMap.GAMEPAD_BUTTONS;
+
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Elevator.ElevatorPosition;
-import frc.robot.util.interfaces.IMercMotorController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 public class AutomaticElevator extends CommandBase {
 

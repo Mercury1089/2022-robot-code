@@ -15,8 +15,7 @@ import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.DriveTrain.DriveTrainSide;
-import frc.robot.util.*;
-import frc.robot.util.interfaces.IMercMotorController;
+import frc.robot.util.MercMath;
 
 public class MoveHeading extends CommandBase {
     protected final int CLOSED_LOOP_TIME_MS = 1;

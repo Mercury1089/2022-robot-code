@@ -9,12 +9,8 @@ package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Shooter;
-import frc.robot.util.interfaces.IMercMotorController;
-import frc.robot.subsystems.DriveTrain;
 
 public class RunShooterRPM extends CommandBase {
-
-  protected IMercMotorController shooterLeft, shooterRight;
 
   private Shooter shooter;
 

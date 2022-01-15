@@ -10,13 +10,10 @@ package frc.robot.commands.shooter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.sensors.Limelight;
 import frc.robot.sensors.Limelight.LimelightLEDState;
-import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.DriveTrain.ShootingStyle;
-import frc.robot.util.interfaces.IMercMotorController;
+import frc.robot.subsystems.Shooter;
 
 public class RunShooterRPMPID extends CommandBase {
-
-  protected IMercMotorController shooterLeft, shooterRight;
 
   private Shooter shooter;
   private Limelight limelight;
