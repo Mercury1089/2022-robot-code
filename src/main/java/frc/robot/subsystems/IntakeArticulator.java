@@ -7,19 +7,18 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotMap.CAN;
-
-import frc.robot.util.MercMotorController.*;
-import frc.robot.util.interfaces.IMercMotorController;
 import frc.robot.util.interfaces.IMercShuffleBoardPublisher;
-import frc.robot.util.interfaces.IMercMotorController.LimitSwitchDirection;
 
 public class IntakeArticulator extends SubsystemBase implements IMercShuffleBoardPublisher{
 
-  private final IMercMotorController intakeArticulator;
+  private final TalonSRX intakeArticulator;
   private IntakePosition intakePosition;
   private final double OUT_SPEED = 0.5, IN_SPEED = -0.6;
 
@@ -28,7 +27,7 @@ public class IntakeArticulator extends SubsystemBase implements IMercShuffleBoar
    */
   public IntakeArticulator() {
     super();
-    intakeArticulator = new MercTalonSRX(CAN.INTAKE_ARTICULATOR);
+    intakeArticulator = new TalonSRX(CAN.INTAKE_ARTICULATOR);
     intakeArticulator.setInverted(true);
     intakePosition = IntakePosition.IN;
   }
@@ -41,12 +40,12 @@ public class IntakeArticulator extends SubsystemBase implements IMercShuffleBoar
   
   public void setIntakeIn() {
     this.intakePosition = IntakePosition.IN;
-    intakeArticulator.setSpeed(IN_SPEED);
+    intakeArticulator.set(ControlMode.PercentOutput, IN_SPEED);
   }
 
   public void setIntakeOut() {
     this.intakePosition = IntakePosition.OUT;
-    intakeArticulator.setSpeed(OUT_SPEED);
+    intakeArticulator.set(ControlMode.PercentOutput, OUT_SPEED);
   }
 
   public IntakePosition getIntakePosition() {
@@ -61,8 +60,7 @@ public class IntakeArticulator extends SubsystemBase implements IMercShuffleBoar
 
   @Override
   public void publishValues() {
-    SmartDashboard.putBoolean(getName() + "/FwdLimit", intakeArticulator.isLimitSwitchClosed(LimitSwitchDirection.FORWARD));
-    SmartDashboard.putBoolean(getName() + "/RevLimit", intakeArticulator.isLimitSwitchClosed(LimitSwitchDirection.REVERSE));
-    SmartDashboard.putNumber(getName() + "/ArticulateSpeed", intakeArticulator.getSpeed());
+    SmartDashboard.putBoolean(getName() + "/FwdLimit", intakeArticulator.getSensorCollection().isFwdLimitSwitchClosed());
+    SmartDashboard.putBoolean(getName() + "/RevLimit", intakeArticulator.getSensorCollection().isRevLimitSwitchClosed());
   }
 }
