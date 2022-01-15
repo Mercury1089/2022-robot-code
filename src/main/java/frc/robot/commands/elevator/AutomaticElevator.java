@@ -67,13 +67,13 @@ public class AutomaticElevator extends CommandBase {
   public boolean isFinished() {
     if (endable && ELEVATOR_THRESHOLD >= Math.abs(targetEncPos - elevator.getCurrentHeight())) {
       return true;
-  }
-  if (targetPos == Elevator.ElevatorPosition.BOTTOM) {
-      if (elevator.getElevatorLeader().isLimitSwitchClosed(IMercMotorController.LimitSwitchDirection.REVERSE)) {
-          elevator.getElevatorLeader().setPosition(targetPos.encPos);
+    }
+    if (targetPos == Elevator.ElevatorPosition.BOTTOM) {
+      if (elevator.getElevatorLeader().getSensorCollection().isRevLimitSwitchClosed()) {
+          elevator.getElevatorLeader().set(ControlMode.MotionMagic, targetEncPos);
           return true;
       }
-  }
-  return false;
+    }
+    return false;
   }
 }
