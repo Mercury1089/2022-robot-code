@@ -8,7 +8,10 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -31,8 +34,9 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
   // private IMercMotorController flywheel;
 
   public static final double NOMINAL_OUT = 0.0, PEAK_OUT = 1.0;
+  public static final double MIN_RPM = 3700.0, MAX_RPM = 5000.0, STEADY_RPM = 4000.0, LOW_RPM = 1000.0;
 
-  private IMercMotorController shooterLeft, shooterRight;
+  private CANSparkMax shooterLeft, shooterRight;
 
   private double currentSpeed;
   private double targetRPM;
@@ -53,18 +57,17 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
     this.mode = mode;
 
     if (mode == ShooterMode.ONE_WHEEL) {
-      shooterLeft = new MercSparkMax(CAN.SHOOTER_LEFT);
-      shooterRight = new MercSparkMax(CAN.SHOOTER_RIGHT);
+      shooterLeft = new CANSparkMax(CAN.SHOOTER_LEFT, CANSparkMaxLowLevel.MotorType.kBrushless);
+      shooterRight = new CANSparkMax(CAN.SHOOTER_RIGHT, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-      shooterLeft.configVoltage(NOMINAL_OUT, PEAK_OUT);
-      shooterRight.configVoltage(NOMINAL_OUT, PEAK_OUT);
+      shooterLeft.getPIDController().setOutputRange(NOMINAL_OUT, PEAK_OUT);
+      shooterRight.getPIDController().setOutputRange(NOMINAL_OUT, PEAK_OUT);
 
-      shooterLeft.setNeutralMode(NeutralMode.Coast);
-      shooterRight.setNeutralMode(NeutralMode.Coast);
+      shooterLeft.setIdleMode(IdleMode.kCoast);
+      shooterRight.setIdleMode(IdleMode.kCoast);
 
       shooterLeft.setInverted(true);
-      shooterRight.setInverted(false);
-      shooterRight.follow(shooterLeft);
+      shooterRight.follow(shooterLeft, true); // Follow inverted
     } else if (mode == ShooterMode.NONE) {
       shooterLeft = shooterRight = null;
     }
@@ -90,15 +93,15 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
     this.currentSpeed = speed;
 
     if (shooterLeft != null && shooterRight != null) {
-      shooterLeft.setNeutralMode(NeutralMode.Coast);
-      shooterRight.setNeutralMode(NeutralMode.Coast);
+      shooterLeft.setIdleMode(IdleMode.kCoast);
+      shooterRight.setIdleMode(IdleMode.kCoast);
   
-      shooterLeft.setSpeed(speed);        
+      shooterLeft.set(speed);        
     }
   }
 
   public void stopShooter() {
-    shooterLeft.stop();
+    shooterLeft.stopMotor();
   }
 
   public void increaseSpeed() {
@@ -112,7 +115,7 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
   }
 
   public double getRPM() {
-    return shooterLeft != null ? shooterLeft.getEncVelocity() : 0.0;
+    return shooterLeft != null ? shooterLeft.getEncoder().getVelocity() : 0.0;
   }
 
   public boolean isReadyToShoot(){
@@ -126,14 +129,16 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
         updateTargetRPMCenter(distance);
         break;
       case MANUAL:
-        targetRPM = 4100.0;
+        targetRPM = STEADY_RPM;
         break;
       case LOWER_PORT:
-        return 1000.0;
+        targetRPM = LOW_RPM;
+        break;
       default:
-        targetRPM = 4000.0;
+        targetRPM = STEADY_RPM;
+        break;
     }
-    return targetRPM < 5000 && targetRPM > 3700 ? targetRPM : 4100;
+    return targetRPM < MAX_RPM && targetRPM > MIN_RPM ? targetRPM : STEADY_RPM;
     //return getRunRPM();
   }
 
@@ -178,11 +183,10 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
     if (shooterLeft != null && shooterRight != null)
     {
       // Ensures shooter is in coast mode
-      shooterLeft.setNeutralMode(NeutralMode.Coast);
-      shooterRight.setNeutralMode(NeutralMode.Coast);
+      shooterLeft.setIdleMode(IdleMode.kCoast);
+      shooterRight.setIdleMode(IdleMode.kCoast);
       // Sets RPM
-      shooterLeft.setVelocity(rpm);
-      // shooterRight.setVelocity(rpm);
+      shooterLeft.getPIDController().setReference(rpm, ControlType.kVelocity);
     }
   }
 
@@ -199,8 +203,6 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
   }
 
   public void publishValues() {
-    //SmartDashboard.putString(getName() + "/ShooterMode",
-        //getMode() == ShooterMode.ONE_WHEEL ? "ONE WHEEL" : "NONE");
     SmartDashboard.putNumber(getName() + "/RPM", getRPM());
     
     //SmartDashboard.putNumber(getName() + "/PIDGains/P", velocityGains.kP);
@@ -219,13 +221,20 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
     return this.velocityGains;
   }
 
+  private void configPID(CANSparkMax sparkmax, int slot, PIDGain gains) {
+    sparkmax.getPIDController().setP(gains.kP, slot);
+    sparkmax.getPIDController().setI(gains.kI, slot);
+    sparkmax.getPIDController().setD(gains.kD, slot);
+    sparkmax.getPIDController().setFF(gains.kF, slot);
+  }
+
   @Override
   public void setPIDGain(int slot, PIDGain gains) {
     this.velocityGains = gains;
 
     if (shooterLeft != null && shooterRight != null) {
-      shooterLeft.configPID(SHOOTER_PID_SLOTS.VELOCITY_GAINS.getValue(), this.velocityGains);
-      shooterRight.configPID(SHOOTER_PID_SLOTS.VELOCITY_GAINS.getValue(), this.velocityGains);
+      configPID(shooterLeft, SHOOTER_PID_SLOTS.VELOCITY_GAINS.getValue(), this.velocityGains);
+      configPID(shooterLeft, SHOOTER_PID_SLOTS.VELOCITY_GAINS.getValue(), this.velocityGains);
     }
   }
 

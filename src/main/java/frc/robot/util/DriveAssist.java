@@ -4,7 +4,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import frc.robot.util.interfaces.IMercMotorController;
 
 /**
  * Helper class for various manual drive controls
