@@ -1,5 +1,8 @@
 package frc.robot.util;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
+
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.util.interfaces.IMercMotorController;
 
@@ -10,10 +13,8 @@ import frc.robot.util.interfaces.IMercMotorController;
  */
 public class DriveAssist {
 
-    private final IMercMotorController LEFT_CONTROLLER, RIGHT_CONTROLLER;
+    private final BaseMotorController LEFT_CONTROLLER, RIGHT_CONTROLLER;
     private double maxOutput = 1.0;
-
-    private DriveDirection direction;
 
     /**
      * Creates a drive train, assuming there is one Controller for the left side
@@ -22,10 +23,9 @@ public class DriveAssist {
      * @param left  Left-side Controller
      * @param right Right-side Controller
      */
-    public DriveAssist(IMercMotorController left, IMercMotorController right, DriveDirection dr) {
+    public DriveAssist(BaseMotorController left, BaseMotorController right) {
         LEFT_CONTROLLER = left;
         RIGHT_CONTROLLER = right;
-        direction = dr;
     }
 
     /**
@@ -45,14 +45,6 @@ public class DriveAssist {
      */
     public void setMaxOutput(double max) {
         maxOutput = max;
-    }
-
-    public DriveDirection getDirection() {
-        return direction;
-    }
-
-    public void setDirection(DriveDirection direction) {
-        this.direction = direction;
     }
 
     /**
@@ -109,8 +101,8 @@ public class DriveAssist {
 
         // Apply speeds to motors.
         // This assumes that the Controllers have been setClawState properly.
-        LEFT_CONTROLLER.setSpeed(leftPercent * maxOutput);
-        RIGHT_CONTROLLER.setSpeed(rightPercent * maxOutput);
+        LEFT_CONTROLLER.set(ControlMode.PercentOutput, leftPercent * maxOutput);
+        RIGHT_CONTROLLER.set(ControlMode.PercentOutput, leftPercent * maxOutput);
     }
 
     /**
@@ -124,19 +116,7 @@ public class DriveAssist {
     public void tankDrive(double leftVal, double rightVal) {
 
         // Apply speeds to motors.
-        // This assumes that the Controllers have been setClawState properly.
-        LEFT_CONTROLLER.setSpeed((direction == DriveDirection.ELECTRONICS_BOARD ? -leftVal : leftVal) * maxOutput);
-        RIGHT_CONTROLLER.setSpeed((direction == DriveDirection.ELECTRONICS_BOARD ? -rightVal : rightVal) * maxOutput);
-    }
-
-    public enum DriveDirection {
-        LIMELIGHT(1.0),
-        ELECTRONICS_BOARD(-1.0);
-
-        public double dir;
-
-        DriveDirection(double direction) {
-            dir = direction;
-        }
+        LEFT_CONTROLLER.set(ControlMode.PercentOutput, leftVal * maxOutput);
+        RIGHT_CONTROLLER.set(ControlMode.PercentOutput, rightVal * maxOutput);
     }
 }

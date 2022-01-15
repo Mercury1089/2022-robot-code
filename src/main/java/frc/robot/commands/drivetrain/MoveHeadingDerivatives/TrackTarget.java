@@ -61,7 +61,6 @@ public class TrackTarget extends MoveHeading {
                 angleError = MercMath.degreesToPigeonUnits(this.limelightCamera.getLimelight().getTargetCenterXAngle());
 
         angleError = MercMath.pigeonUnitsToDegrees(angleError);
-        distError *= this.driveTrain.getDirection().dir;
 
         String sdPrefix = driveTrain.getName() + "/" + getName();
         SmartDashboard.putNumber(sdPrefix + "angleError", angleError);

@@ -13,10 +13,9 @@ import java.util.List;
 
 import com.ctre.phoenix.motion.BufferedTrajectoryPointStream;
 import com.ctre.phoenix.motion.MotionProfileStatus;
-import com.ctre.phoenix.motion.SetValueMotionProfile;
 import com.ctre.phoenix.motion.TrajectoryPoint;
-
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
+import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -33,12 +32,11 @@ import frc.robot.subsystems.DriveTrain.DriveTrainSide;
 import frc.robot.util.MercMotionProfile;
 import frc.robot.util.MercPathLoader;
 import frc.robot.util.MercMotionProfile.ProfileDirection;
-import frc.robot.util.MercMotorController.*;
 
 public class MoveOnTrajectory extends CommandBase {
 
   private DriveTrain driveTrain;
-  private TalonSRX left, right;
+  private BaseMotorController left, right;
   private MotionProfileStatus statusRight;
   private List<TrajectoryPoint> trajectoryPoints;
   private String pathName;
@@ -55,8 +53,8 @@ public class MoveOnTrajectory extends CommandBase {
     trajectoryPoints = MercPathLoader.loadPath(pathName);
     buffer = new BufferedTrajectoryPointStream();
 
-    left = ((MercTalonSRX) this.driveTrain.getLeftLeader()).get();
-    right = ((MercTalonSRX) this.driveTrain.getRightLeader()).get();
+    left = this.driveTrain.getLeftLeader();
+    right = this.driveTrain.getRightLeader();
   }
 
   public MoveOnTrajectory(MercMotionProfile profile, DriveTrain driveTrain) throws FileNotFoundException {
@@ -71,8 +69,8 @@ public class MoveOnTrajectory extends CommandBase {
     trajectoryPoints = profile.getTrajectoryPoints();
     buffer = new BufferedTrajectoryPointStream();
 
-    left = ((MercTalonSRX) this.driveTrain.getLeftLeader()).get();
-    right = ((MercTalonSRX) this.driveTrain.getRightLeader()).get();
+    left = this.driveTrain.getLeftLeader();
+    right = this.driveTrain.getRightLeader();
   }
 
   public MoveOnTrajectory(DriveTrain driveTrain, String ... paths) {
@@ -93,8 +91,8 @@ public class MoveOnTrajectory extends CommandBase {
     }
     trajectoryPoints.get(trajectoryPoints.size() - 1).isLastPoint = true;
     
-    left = ((MercTalonSRX) this.driveTrain.getLeftLeader()).get();
-    right = ((MercTalonSRX) this.driveTrain.getRightLeader()).get();
+    left = this.driveTrain.getLeftLeader();
+    right = this.driveTrain.getRightLeader();
   }
 
   // Called when the command is initially scheduled.
@@ -137,7 +135,7 @@ public class MoveOnTrajectory extends CommandBase {
     //reset();
     driveTrain.configVoltage(DriveTrain.NOMINAL_OUT, DriveTrain.PEAK_OUT);
     driveTrain.setNeutralMode(NeutralMode.Brake);
-    right.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 10, RobotMap.CTRE_TIMEOUT);
+    ((BaseTalon)right).setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 10, RobotMap.CTRE_TIMEOUT);
   }
 
   // Returns true when the command should end.

@@ -10,6 +10,8 @@ package frc.robot.commands.drivetrain.MoveHeadingDerivatives;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FollowerType;
+import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.DriveTrain.DriveTrainSide;
@@ -21,9 +23,9 @@ public class MoveHeading extends CommandBase {
     protected int moveThresholdTicks;   // ticks
     protected int onTargetMinCount; // 100 millis
     protected int checkThreshold = 50;
-    protected IMercMotorController left, right;
+    protected BaseMotorController left, right;
 
-    protected double distance, targetHeading,dirFactor;
+    protected double distance, targetHeading;
     protected int onTargetCount, initialCheckCount, resetCounter;
 
     protected boolean reset;
@@ -47,9 +49,7 @@ public class MoveHeading extends CommandBase {
         moveThresholdTicks = 500;
         onTargetMinCount = 4;
 
-        dirFactor = this.driveTrain.getDirection().dir;
-
-        this.distance = MercMath.inchesToEncoderTicks(distance * dirFactor);
+        this.distance = MercMath.inchesToEncoderTicks(distance);
         this.targetHeading = MercMath.degreesToPigeonUnits(heading);
     }
     // Called just before this Command runs the first time

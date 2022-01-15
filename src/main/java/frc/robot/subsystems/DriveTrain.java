@@ -1,11 +1,20 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.*;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
+import com.ctre.phoenix.motorcontrol.SensorTerm;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
+import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -14,13 +23,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.CAN;
-
-import frc.robot.util.*;
-import frc.robot.util.DriveAssist.DriveDirection;
+import frc.robot.util.DriveAssist;
+import frc.robot.util.MercMath;
+import frc.robot.util.PIDGain;
 import frc.robot.util.interfaces.IMercMotorController;
 import frc.robot.util.interfaces.IMercPIDTunable;
 import frc.robot.util.interfaces.IMercShuffleBoardPublisher;
-import frc.robot.util.MercMotorController.*;
 
 import frc.robot.sensors.Limelight;
 
@@ -58,7 +66,7 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
 
     private PIDGain driveGains, smoothGains, motionProfileGains, turnGains;
 
-    private IMercMotorController leaderLeft, leaderRight, followerLeft, followerRight;
+    private BaseMotorController leaderLeft, leaderRight, followerLeft, followerRight;
     private CANCoder encLeft, encRight;
     private DriveAssist driveAssist;
     private PigeonIMU podgeboi;
@@ -87,12 +95,13 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
         setName("DriveTrain");
         this.layout = layout;
         shootingStyle = ShootingStyle.AUTOMATIC;
+
         switch (layout) {
             case FALCONS:
-                leaderLeft = new MercTalonSRX(CAN.DRIVETRAIN_ML);
-                leaderRight = new MercTalonSRX(CAN.DRIVETRAIN_MR);
-                followerLeft = new MercTalonSRX(CAN.DRIVETRAIN_FL);
-                followerRight = new MercTalonSRX(CAN.DRIVETRAIN_FR);
+                leaderLeft = new TalonFX(CAN.DRIVETRAIN_ML);
+                leaderRight = new TalonFX(CAN.DRIVETRAIN_MR);
+                followerLeft = new TalonFX(CAN.DRIVETRAIN_FL);
+                followerRight = new TalonFX(CAN.DRIVETRAIN_FR);
 
                 encLeft = new CANCoder(RobotMap.CAN.CANCODER_ML);
                 encRight = new CANCoder(RobotMap.CAN.CANCODER_MR);
@@ -105,10 +114,10 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
                 encRight.configSensorDirection(true);
                 break;
             case TALONS_VICTORS:
-                leaderLeft = new MercTalonSRX(CAN.DRIVETRAIN_ML);
-                leaderRight = new MercTalonSRX(CAN.DRIVETRAIN_MR);
-                followerLeft = new MercVictorSPX(CAN.DRIVETRAIN_FL);
-                followerRight = new MercVictorSPX(CAN.DRIVETRAIN_FR);
+                leaderLeft = new TalonSRX(CAN.DRIVETRAIN_ML);
+                leaderRight = new TalonSRX(CAN.DRIVETRAIN_MR);
+                followerLeft = new VictorSPX(CAN.DRIVETRAIN_FL);
+                followerRight = new VictorSPX(CAN.DRIVETRAIN_FR);
 
                 encLeft = encRight = null;
                 break;
@@ -142,7 +151,7 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
 
         resetEncoders();
 
-        driveAssist = new DriveAssist(leaderLeft, leaderRight, DriveDirection.LIMELIGHT);
+        driveAssist = new DriveAssist(leaderLeft, leaderRight);
 
         // Set follower control on back talons. Use follow() instead of ControlMode.Follower so that Talons can follow Victors and vice versa.
         followerLeft.follow(leaderLeft);
@@ -175,17 +184,17 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
     public void initializeMotionMagicFeedback(int framePeriodMs, int pigeonFramePeriodMs) {
         /* Configure left's encoder as left's selected sensor */
         if (layout == DriveTrainLayout.TALONS_VICTORS){
-            leaderLeft.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, DriveTrain.PRIMARY_LOOP);
+            leaderLeft.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, DriveTrain.PRIMARY_LOOP, RobotMap.CTRE_TIMEOUT);
 
             /* Configure the Remote Talon's selected sensor as a remote sensor for the right Talon */
-            leaderRight.configRemoteFeedbackFilter(leaderLeft.getPort(), RemoteSensorSource.TalonSRX_SelectedSensor, DriveTrain.REMOTE_DEVICE_0);
+            leaderRight.configRemoteFeedbackFilter(leaderLeft.getDeviceID(), RemoteSensorSource.TalonSRX_SelectedSensor, DriveTrain.REMOTE_DEVICE_0, RobotMap.CTRE_TIMEOUT);
             /* Setup Sum signal to be used for Distance */
-            leaderRight.configSensorTerm(SensorTerm.Sum0, FeedbackDevice.RemoteSensor0);
+            leaderRight.configSensorTerm(SensorTerm.Sum0, FeedbackDevice.RemoteSensor0, RobotMap.CTRE_TIMEOUT);
             leaderRight.configSensorTerm(SensorTerm.Sum1, FeedbackDevice.CTRE_MagEncoder_Relative);
             /* Configure Sum [Sum of both QuadEncoders] to be used for Primary PID Index */
-            leaderRight.configSelectedFeedbackSensor(FeedbackDevice.SensorSum, DriveTrain.PRIMARY_LOOP);
+            leaderRight.configSelectedFeedbackSensor(FeedbackDevice.SensorSum, DriveTrain.PRIMARY_LOOP, RobotMap.CTRE_TIMEOUT);
             /* Scale Feedback by 0.5 to half the sum of Distance */
-            leaderRight.configSelectedFeedbackCoefficient(0.5, DriveTrain.PRIMARY_LOOP);
+            leaderRight.configSelectedFeedbackCoefficient(0.5, DriveTrain.PRIMARY_LOOP, RobotMap.CTRE_TIMEOUT);
 
         } else {
             /* Set up a Sum signal from both CANCoders on leaderLeft */
@@ -194,18 +203,18 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
             leaderLeft.configSensorTerm(SensorTerm.Sum0, FeedbackDevice.RemoteSensor0);
             leaderLeft.configSensorTerm(SensorTerm.Sum1, FeedbackDevice.RemoteSensor1);
             /* Configure the sensor sum as the selected sensor for leaderLeft with a coefficient of 0.5 (average) */
-            leaderLeft.configSelectedFeedbackSensor(FeedbackDevice.SensorSum, DriveTrain.PRIMARY_LOOP);
-            leaderLeft.configSelectedFeedbackCoefficient(0.5, DriveTrain.PRIMARY_LOOP);
+            leaderLeft.configSelectedFeedbackSensor(FeedbackDevice.SensorSum, DriveTrain.PRIMARY_LOOP, RobotMap.CTRE_TIMEOUT);
+            leaderLeft.configSelectedFeedbackCoefficient(0.5, DriveTrain.PRIMARY_LOOP, RobotMap.CTRE_TIMEOUT);
             /* Configure the selected sensor on leaderLeft (the avg.) as the remote sensor 0 for leaderRight */
-            leaderRight.configRemoteFeedbackFilter(leaderLeft.getPort(), RemoteSensorSource.TalonFX_SelectedSensor, DriveTrain.REMOTE_DEVICE_0);
-            leaderRight.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0, DriveTrain.PRIMARY_LOOP);
+            leaderRight.configRemoteFeedbackFilter(leaderLeft.getDeviceID(), RemoteSensorSource.TalonFX_SelectedSensor, DriveTrain.REMOTE_DEVICE_0);
+            leaderRight.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0, DriveTrain.PRIMARY_LOOP, RobotMap.CTRE_TIMEOUT);
         }
         /* Configure the Pigeon IMU to the other remote slot available on the right Talon */
         leaderRight.configRemoteFeedbackFilter(getPigeon().getDeviceID(), RemoteSensorSource.Pigeon_Yaw, DriveTrain.REMOTE_DEVICE_1);
         /* Configure Remote 1 [Pigeon IMU's Yaw] to be used for Auxiliary PID Index */
-        leaderRight.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor1, DriveTrain.AUXILIARY_LOOP);
+        leaderRight.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor1, DriveTrain.AUXILIARY_LOOP, RobotMap.CTRE_TIMEOUT);
         /* Scale the Feedback Sensor using a coefficient */
-        leaderRight.configSelectedFeedbackCoefficient(1, DriveTrain.AUXILIARY_LOOP);
+        leaderRight.configSelectedFeedbackCoefficient(1, DriveTrain.AUXILIARY_LOOP, RobotMap.CTRE_TIMEOUT);
 
         /* Set status frame periods to ensure we don't have stale data */
         setStatusFramePeriod(framePeriodMs, pigeonFramePeriodMs);
@@ -267,8 +276,8 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
 
     public void resetEncoders() {
         if(layout == DriveTrainLayout.TALONS_VICTORS) {
-            leaderLeft.resetEncoder();
-            leaderRight.resetEncoder();
+            ((TalonSRX) leaderLeft).getSensorCollection().setQuadraturePosition(0, RobotMap.CTRE_TIMEOUT);
+            ((TalonSRX) leaderLeft).getSensorCollection().setQuadraturePosition(0, RobotMap.CTRE_TIMEOUT);
         } else {
             encLeft.setPosition(0.0);
             encRight.setPosition(0.0);
@@ -288,21 +297,24 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
      * Stops the driveAssist train.
      */
     public void stop() {
-        leaderLeft.setSpeed(0.0);
-        leaderLeft.stop();
-        leaderRight.setSpeed(0.0);
-        leaderRight.stop();
+        driveAssist.arcadeDrive(0.0, 0.0, true);
     }
 
     /**
-     * Sets both of the front talons to have a forward output of nominalOutput and peakOutput with the reverse output setClawState to the negated outputs.
+     * Sets both of the front controllers to have a forward output of nominalOutput and peakOutput with the reverse output setClawState to the negated outputs.
      *
      * @param nominalOutput The desired nominal voltage output of the left and right talons, both forward and reverse.
      * @param peakOutput    The desired peak voltage output of the left and right talons, both forward and reverse
      */
     public void configVoltage(double nominalOutput, double peakOutput) {
-        leaderLeft.configVoltage(nominalOutput, peakOutput);
-        leaderRight.configVoltage(nominalOutput, peakOutput);
+        leaderLeft.configNominalOutputForward(nominalOutput, RobotMap.CTRE_TIMEOUT);
+        leaderLeft.configNominalOutputReverse(-nominalOutput, RobotMap.CTRE_TIMEOUT);
+        leaderLeft.configPeakOutputForward(peakOutput, RobotMap.CTRE_TIMEOUT);
+        leaderLeft.configPeakOutputReverse(-peakOutput, RobotMap.CTRE_TIMEOUT);
+        leaderRight.configNominalOutputForward(nominalOutput, RobotMap.CTRE_TIMEOUT);
+        leaderRight.configNominalOutputReverse(-nominalOutput, RobotMap.CTRE_TIMEOUT);
+        leaderRight.configPeakOutputForward(peakOutput, RobotMap.CTRE_TIMEOUT);
+        leaderRight.configPeakOutputReverse(-peakOutput, RobotMap.CTRE_TIMEOUT);
     }
 
     /**
@@ -314,23 +326,6 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
         leaderRight.configNeutralDeadband(percentDeadband);
     }
 
-    public DriveDirection getDirection() {
-        return driveAssist.getDirection();
-    }
-
-    public void setDirection(DriveDirection dd) {
-        driveAssist.setDirection(dd);
-    }
-
-    public void switchDirection(){
-        if (getDirection() == DriveDirection.LIMELIGHT){
-            setDirection(DriveDirection.ELECTRONICS_BOARD);
-        }
-        else{
-            setDirection(DriveDirection.LIMELIGHT);
-        }
-    }
-
     public boolean isAligned(){
         return limelight.getTargetAcquired() && Math.abs(limelight.getTargetCenterXAngle()) <= ON_TARGET_THRESHOLD_DEG;
     }
@@ -338,11 +333,6 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
     public PigeonIMU getPigeon() {
         return podgeboi;
     }
-
-    //public LIDAR getLidar() {
-        //return lidar;
-    //}
-
     
     public double getPigeonYaw() {
         double[] currYawPitchRoll = new double[3];
@@ -364,20 +354,20 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
 
     public double getLeftEncPositionInTicks() {
         if (layout == DriveTrainLayout.TALONS_VICTORS)
-            return leaderLeft.getEncTicks();
+            return leaderLeft.getSelectedSensorPosition(0);
         else
             return encLeft.getPosition();
     }
 
     public double getRightEncPositionInTicks() {
         if (layout == DriveTrainLayout.TALONS_VICTORS)
-            return leaderRight.getEncTicks();
+            return leaderRight.getSelectedSensorPosition(0);
         else
             return encRight.getPosition();
     }
     public double getLeftEncVelocityInTicksPerTenth() {
         if (layout == DriveTrainLayout.TALONS_VICTORS)
-            return leaderLeft.getEncVelocity();
+            return leaderLeft.getSelectedSensorVelocity(0);
         else
             // CANCoder returns velocity in tick/s, so divide by 10
             return encLeft.getVelocity() / 10;
@@ -385,7 +375,7 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
 
     public double getRightEncVelocityInTicksPerTenth() {
         if (layout == DriveTrainLayout.TALONS_VICTORS)
-            return leaderRight.getEncVelocity();
+            return leaderRight.getSelectedSensorVelocity(0);
         else
             // CANCoder returns velocity in tick/s, so divide by 10
             return encRight.getVelocity() / 10;
@@ -399,19 +389,19 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
         return MercMath.getEncPosition(getRightEncPositionInTicks());
     }
 
-    public IMercMotorController getLeftLeader() {
+    public BaseMotorController getLeftLeader() {
         return leaderLeft;
     }
 
-    public IMercMotorController getRightLeader() {
+    public BaseMotorController getRightLeader() {
         return leaderRight;
     }
 
-    public IMercMotorController getLeftFollower() {
+    public BaseMotorController getLeftFollower() {
         return followerLeft;
     }
 
-    public IMercMotorController getRightFollower() {
+    public BaseMotorController getRightFollower() {
         return followerRight;
     }
 
@@ -541,28 +531,36 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
         return gains;
     }
 
+    private void configPID(BaseMotorController talon, int slot, PIDGain gains) {
+        talon.config_kP(slot, gains.kP, 10);
+        talon.config_kI(slot, gains.kI, 10);
+        talon.config_kD(slot, gains.kD, 10);
+        talon.config_kF(slot, gains.kF, 10);
+        talon.configClosedLoopPeakOutput(slot, gains.clMaxOut, 10);
+    }
+
     @Override
     public void setPIDGain(int slot, PIDGain gains) {
         switch (slot) {
             case DRIVE_PID_SLOT:
                 driveGains = gains;
-                leaderRight.configPID(DRIVE_PID_SLOT, driveGains);
-                leaderLeft.configPID(DRIVE_PID_SLOT, driveGains);
+                configPID(leaderRight, DRIVE_PID_SLOT, driveGains);
+                configPID(leaderLeft, DRIVE_PID_SLOT, driveGains);
                 break;
             case DRIVE_SMOOTH_MOTION_SLOT:
                 smoothGains = gains;
-                leaderRight.configPID(DRIVE_SMOOTH_MOTION_SLOT, smoothGains);
-                leaderLeft.configPID(DRIVE_SMOOTH_MOTION_SLOT, smoothGains);
+                configPID(leaderRight, DRIVE_SMOOTH_MOTION_SLOT, smoothGains);
+                configPID(leaderLeft, DRIVE_SMOOTH_MOTION_SLOT, smoothGains);
                 break;
             case DRIVE_MOTION_PROFILE_SLOT:
                 motionProfileGains = gains;
-                leaderRight.configPID(DRIVE_MOTION_PROFILE_SLOT, motionProfileGains);
-                leaderLeft.configPID(DRIVE_MOTION_PROFILE_SLOT, motionProfileGains);
+                configPID(leaderRight, DRIVE_MOTION_PROFILE_SLOT, motionProfileGains);
+                configPID(leaderLeft, DRIVE_MOTION_PROFILE_SLOT, motionProfileGains);
                 break;
             case DRIVE_SMOOTH_TURN_SLOT:
                 turnGains = gains;
-                leaderRight.configPID(DRIVE_SMOOTH_TURN_SLOT, turnGains);
-                leaderLeft.configPID(DRIVE_SMOOTH_TURN_SLOT, turnGains);
+                configPID(leaderRight, DRIVE_SMOOTH_TURN_SLOT, turnGains);
+                configPID(leaderLeft, DRIVE_SMOOTH_TURN_SLOT, turnGains);
                 break;
         }
     }
