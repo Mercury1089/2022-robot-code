@@ -7,17 +7,17 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotMap.CAN;
-import frc.robot.util.MercMotorController.*;
-import frc.robot.util.interfaces.IMercMotorController;
 import frc.robot.util.interfaces.IMercShuffleBoardPublisher;
 
 public class Intake extends SubsystemBase implements IMercShuffleBoardPublisher {
-  private final IMercMotorController intakeRoller, agitator;
+  private final VictorSPX intakeRoller, agitator;
   public final double INTAKE_SPEED, AGITATOR_SPEED;
   public final boolean IS_CLOCKWISE;
   /**
@@ -32,35 +32,35 @@ public class Intake extends SubsystemBase implements IMercShuffleBoardPublisher 
     
     setName("Intake");
     
-    intakeRoller = new MercVictorSPX(CAN.INTAKE_ROLLER);
+    intakeRoller = new VictorSPX(CAN.INTAKE_ROLLER);
     intakeRoller.setInverted(true);
-    agitator = new MercVictorSPX(CAN.AGITATOR);
+    agitator = new VictorSPX(CAN.AGITATOR);
     agitator.setInverted(IS_CLOCKWISE);
     agitator.setNeutralMode(NeutralMode.Brake);
   }
 
   public void setRollerSpeed(double speed) {
-    intakeRoller.setSpeed(speed);
+    intakeRoller.set(ControlMode.PercentOutput, speed);
   }
 
   public void runIntakeRoller(double velocityProportion) {
-    intakeRoller.setSpeed(INTAKE_SPEED * velocityProportion);
+    setRollerSpeed(INTAKE_SPEED * velocityProportion);
   }
 
   public void runIntakeRoller() {
-    intakeRoller.setSpeed(INTAKE_SPEED);
+    setRollerSpeed(INTAKE_SPEED);
   }
 
   public void stopIntakeRoller() {
-    intakeRoller.setSpeed(0.0);
+    setRollerSpeed(0.0);
   }
 
   public void runAgitator() {
-    agitator.setSpeed(AGITATOR_SPEED);
+    agitator.set(ControlMode.PercentOutput, AGITATOR_SPEED);
   }
 
   public void stopAgitator() {
-    agitator.setSpeed(0.0);
+    agitator.set(ControlMode.PercentOutput, 0.0);
   }
 
   public boolean getIsClockwise() {
