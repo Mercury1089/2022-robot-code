@@ -67,7 +67,7 @@ public class MoveOnTrajectory extends CommandBase {
       minTime = Math.min(point.timeDur, minTime);
       buffer.Write(point);
     }
-    driveTrain.trajectoryDrive(buffer, minTime);
+    driveTrain.moveOnTrajectory(buffer, minTime);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

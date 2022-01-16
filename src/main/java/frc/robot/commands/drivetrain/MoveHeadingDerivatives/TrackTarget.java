@@ -7,10 +7,8 @@
 
 package frc.robot.commands.drivetrain.MoveHeadingDerivatives;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.LimelightCamera;
-import frc.robot.util.MercMath;
 
 public class TrackTarget extends MoveHeading {
     private double allowableDistError = 19; //inches
@@ -38,10 +36,10 @@ public class TrackTarget extends MoveHeading {
     // Called repeatedly when this Command is scheduled to run
     @Override
     public void execute() {
-        double adjustedDistance = MercMath.feetToEncoderTicks(this.limelightCamera.getLimelight().getRawVertDistance() - allowableDistError);
+        double adjustedDistance = this.limelightCamera.getLimelight().getRawVertDistance() - allowableDistError;
         //adjustedDistance *= Robot.driveTrain.getDirection().dir;
-        double adjustedHeading = MercMath.degreesToPigeonUnits(this.limelightCamera.getLimelight().getTargetCenterXAngle());
-        driveTrain.motionMagicDrive(adjustedDistance, adjustedHeading);
+        double adjustedHeading = this.limelightCamera.getLimelight().getTargetCenterXAngle();
+        driveTrain.moveHeading(adjustedDistance, adjustedHeading);
     }
 
     // Make this return true when this Command no longer needs to run execute()
@@ -52,22 +50,10 @@ public class TrackTarget extends MoveHeading {
             return false;
         }
 
-        double distError = MercMath.inchesToEncoderTicks(this.limelightCamera.getLimelight().getRawVertDistance() - allowableDistError),
-                angleError = MercMath.degreesToPigeonUnits(this.limelightCamera.getLimelight().getTargetCenterXAngle());
-
-        angleError = MercMath.pigeonUnitsToDegrees(angleError);
-
-        String sdPrefix = driveTrain.getName() + "/" + getName();
-        SmartDashboard.putNumber(sdPrefix + "angleError", angleError);
-        SmartDashboard.putNumber(sdPrefix + "distError", distError);
-
-        System.out.println(distError);
-
         boolean isFinished = false;
 
-        boolean isOnTarget = (Math.abs(distError) < moveThresholdTicks &&
-                Math.abs(angleError) < DriveTrain.ANGLE_THRESHOLD_DEG &&
-                this.limelightCamera.getLimelight().isSafeToTrack());
+        boolean isOnTarget = driveTrain.isOnTarget() &&
+                this.limelightCamera.getLimelight().isSafeToTrack();
 
         if (isOnTarget) {
             onTargetCount++;

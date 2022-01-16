@@ -53,12 +53,15 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
     public static final int
         MAG_ENCODER_TICKS_PER_REVOLUTION = 4096,
         PIGEON_NATIVE_UNITS_PER_ROTATION = 8192;
-    public static final double MAX_SPEED = 1,
+    public static final double 
+        MAX_SPEED = 1,
         MIN_SPEED = -1;
-    public static final double GEAR_RATIO = 1,
+    public static final double
+        GEAR_RATIO = 1,
         MAX_RPM = 610,
         WHEEL_DIAMETER_INCHES = 6.0;
     public static final double
+        DISTANCE_THRESHOLD_INCHES = 1.0,
         ANGLE_THRESHOLD_DEG = 1.2,
         ON_TARGET_THRESHOLD_DEG = 1.2;
     public static final double
@@ -352,12 +355,12 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
 
     /**
      * Drive the robot using CTRE MotionMagic closed-loop control
-     * @param distance distance to drive
-     * @param heading heading to rotate to
+     * @param distance distance (in inches) to drive
+     * @param heading heading (in degrees) to rotate to
      */
-    public void motionMagicDrive(double distance, double heading) {
+    public void moveHeading(double distance, double heading) {
         leaderLeft.follow(leaderRight, FollowerType.AuxOutput1);
-        leaderRight.set(ControlMode.MotionMagic, distance, DemandType.AuxPID, heading);
+        leaderRight.set(ControlMode.MotionMagic, MercMath.inchesToEncoderTicks(distance), DemandType.AuxPID, MercMath.degreesToPigeonUnits(heading));
     }
 
     /**
@@ -365,7 +368,7 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
      * @param buffer buffer to stream trajectory points
      * @param minTime the minimum time duration of the points in the buffer
      */
-    public void trajectoryDrive(BufferedTrajectoryPointStream buffer, int minTime) {
+    public void moveOnTrajectory(BufferedTrajectoryPointStream buffer, int minTime) {
         int halfFramePeriod = minTime / 2;
         if(halfFramePeriod < 1)
           halfFramePeriod = 1;
@@ -397,7 +400,7 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
      * @return the error in encoder units
      */
     public double getDistanceError() {
-        return leaderRight.getClosedLoopError(PRIMARY_LOOP);
+        return MercMath.encoderTicksToInches(leaderRight.getClosedLoopError(PRIMARY_LOOP));
     }
 
     /**
@@ -406,6 +409,11 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
      */
     public double getAngleError() {
         return MercMath.pigeonUnitsToDegrees(leaderLeft.getClosedLoopError(AUXILIARY_LOOP));
+    }
+
+    public boolean isOnTarget() {
+        return (Math.abs(getDistanceError()) < DISTANCE_THRESHOLD_INCHES &&
+                Math.abs(getAngleError()) < ANGLE_THRESHOLD_DEG);
     }
 
     public boolean isAligned(){

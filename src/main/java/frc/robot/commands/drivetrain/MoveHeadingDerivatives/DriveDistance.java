@@ -19,54 +19,7 @@ public class DriveDistance extends MoveHeading{
     public DriveDistance(double distance, DriveTrain driveTrain) {
         super(distance, 0, driveTrain);
         setName("DriveDistance");
-        moveThresholdTicks = 500;
         onTargetMinCount = 10;
     }
 
-    // Called just before this Command runs the first time
-    @Override
-    public void initialize() {
-        super.initialize();
-    }
-
-    // Called repeatedly when this Command is scheduled to run
-    @Override
-    public void execute() {
-        super.execute();
-    }
-
-    // Make this return true when this Command no longer needs to run execute()
-    @Override
-    public boolean isFinished() {
-        if (initialCheckCount < checkThreshold) {
-            initialCheckCount++;
-            return false;
-        }
-
-        double distError = driveTrain.getDistanceError();
-
-        boolean isFinished = false;
-
-        boolean isOnTarget = (Math.abs(distError) < moveThresholdTicks);
-
-        if (isOnTarget) {
-            onTargetCount++;
-        } else {
-            if (onTargetCount > 0)
-                onTargetCount = 0;
-        }
-
-        if (onTargetCount > onTargetMinCount) {
-            isFinished = true;
-            onTargetCount = 0;
-        }
-
-        return isFinished;
-    }
-
-    // Called once after isFinished returns true
-    @Override
-    public void end(boolean interrupted) {
-        super.end(interrupted);
-    }
 }

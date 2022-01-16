@@ -13,8 +13,7 @@ import frc.robot.util.MercMath;
 
 public class MoveHeading extends CommandBase {
     protected final int CLOSED_LOOP_TIME_MS = 1;
-    protected int moveThresholdTicks;   // ticks
-    protected int onTargetMinCount; // 100 millis
+    protected int onTargetMinCount;
     protected int checkThreshold = 50;
 
     protected double distance, targetHeading;
@@ -35,11 +34,10 @@ public class MoveHeading extends CommandBase {
         setName("MoveHeading");
         this.driveTrain = driveTrain;
 
-        moveThresholdTicks = 500;
-        onTargetMinCount = 4;
+        onTargetMinCount = 4; // 100 millis
 
-        this.distance = MercMath.inchesToEncoderTicks(distance);
-        this.targetHeading = MercMath.degreesToPigeonUnits(heading);
+        this.distance = distance;
+        this.targetHeading = heading;
     }
     // Called just before this Command runs the first time
     @Override
@@ -74,7 +72,7 @@ public class MoveHeading extends CommandBase {
                     driveTrain.getLeftEncPositionInTicks() == 0.0 && 
                     driveTrain.getRightEncPositionInTicks() == 0.0;
         } else {
-            driveTrain.motionMagicDrive(distance, targetHeading);
+            driveTrain.moveHeading(distance, targetHeading);
         }
     }
 
@@ -85,15 +83,9 @@ public class MoveHeading extends CommandBase {
             initialCheckCount++;
             return false;
         }
-
-        double distError = driveTrain.getDistanceError(), angleError = driveTrain.getAngleError();
-
         boolean isFinished = false;
 
-        boolean isOnTarget = (Math.abs(distError) < moveThresholdTicks &&
-                Math.abs(angleError) < DriveTrain.ANGLE_THRESHOLD_DEG);
-
-        if (isOnTarget) {
+        if (driveTrain.isOnTarget()) {
             onTargetCount++;
         } else {
             if (onTargetCount > 0)
