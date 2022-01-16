@@ -46,8 +46,6 @@ public class DegreeRotate extends MoveHeading {
     public boolean isFinished() {
         angleError = driveTrain.getAngleError();
 
-        angleError = MercMath.pigeonUnitsToDegrees(angleError);
-
         boolean isFinished = false;
 
         boolean isOnTarget = (Math.abs(angleError) < angleThresholdDeg);

@@ -50,7 +50,6 @@ public class RotateToTarget extends DegreeRotate {
     @Override
     public void execute() {
         double angleError = driveTrain.getAngleError();
-        angleError = MercMath.pigeonUnitsToDegrees(angleError);
 
         isOnTarget = (Math.abs(angleError) < DriveTrain.ANGLE_THRESHOLD_DEG);
         if(isOnTarget) {
@@ -61,6 +60,8 @@ public class RotateToTarget extends DegreeRotate {
                 onTargetCount = 0;
                 reTargetCount++;
             } else {
+                // Once isReadyToShoot is true, stop checking limelight and relay in gyro only
+                // (This is in case the camera becomes obscured)
                 this.isReadyToShoot = true;
             }
         }

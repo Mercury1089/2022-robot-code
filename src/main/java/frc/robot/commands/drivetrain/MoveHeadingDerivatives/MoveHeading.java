@@ -88,8 +88,6 @@ public class MoveHeading extends CommandBase {
 
         double distError = driveTrain.getDistanceError(), angleError = driveTrain.getAngleError();
 
-        angleError = MercMath.pigeonUnitsToDegrees(angleError);
-
         boolean isFinished = false;
 
         boolean isOnTarget = (Math.abs(distError) < moveThresholdTicks &&

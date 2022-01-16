@@ -402,10 +402,10 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
 
     /**
      * Get the current angle error for closed loop driving
-     * @return the error in IMU units
+     * @return the error in degrees
      */
     public double getAngleError() {
-        return leaderLeft.getClosedLoopError(AUXILIARY_LOOP);
+        return MercMath.pigeonUnitsToDegrees(leaderLeft.getClosedLoopError(AUXILIARY_LOOP));
     }
 
     public boolean isAligned(){
