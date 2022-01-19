@@ -101,7 +101,7 @@ public class DriveAssist {
         // Apply speeds to motors.
         // This assumes that the Controllers have been setClawState properly.
         LEFT_CONTROLLER.set(ControlMode.PercentOutput, leftPercent * maxOutput);
-        RIGHT_CONTROLLER.set(ControlMode.PercentOutput, leftPercent * maxOutput);
+        RIGHT_CONTROLLER.set(ControlMode.PercentOutput, rightPercent * maxOutput);
     }
 
     /**
