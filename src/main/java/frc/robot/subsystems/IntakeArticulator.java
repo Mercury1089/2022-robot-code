@@ -34,7 +34,8 @@ public class IntakeArticulator extends SubsystemBase implements IMercShuffleBoar
 
   public enum IntakePosition {
     OUT,
-    IN
+    IN,
+    DISABLED
   }
 
   
@@ -48,9 +49,16 @@ public class IntakeArticulator extends SubsystemBase implements IMercShuffleBoar
     intakeArticulator.set(ControlMode.PercentOutput, OUT_SPEED);
   }
 
+  public void setIntakeDisabled() {
+    this.intakePosition = IntakePosition.DISABLED;
+    intakeArticulator.set(ControlMode.PercentOutput, 0.0);
+  }
+
   public IntakePosition getIntakePosition() {
     return this.intakePosition;
   }
+
+
 
 
   @Override

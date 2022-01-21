@@ -113,7 +113,7 @@ public class RobotContainer {
 
         //driver controls
         //toggle intake in and out
-        left1.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator), new RunIntake(intake)));
+        left1.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator), new RunIntake(intake))); 
         left2.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intake.stopIntakeRoller(), intake), 
                                                    new RunCommand(() -> intakeArticulator.setIntakeIn(), intakeArticulator)));
         left3.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator), 
@@ -121,6 +121,8 @@ public class RobotContainer {
                                 
         left4.toggleWhenPressed(new RunShooterRPMPID(shooter, limelight, ShootingStyle.LOWER_PORT));
         left6.whenPressed(new SwitchLEDState(limelightCamera));
+
+        left10.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeDisabled(), intakeArticulator), new RunIntake(intake)));
 
         right2.whenPressed(new EndFullyAutoAimBot(driveTrain, feeder, hopper, shooter));
         right4.whenPressed(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
