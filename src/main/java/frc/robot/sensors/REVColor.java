@@ -20,12 +20,41 @@ public class REVColor {
 
   private final I2C.Port i2cPort;
   private final ColorSensorV3 colorSensor;
+  private final ColorMatch colorMatch;
+  private final Color targetRed;
+  private final Color targetBlue;
   
   private Color detectedColor;
 
   public REVColor() {
     i2cPort = I2C.Port.kOnboard;
     colorSensor = new ColorSensorV3(i2cPort);
+    colorMatch = new ColorMatch();
+    targetRed = new Color(1.0, 0.0, 0.0);
+    targetBlue = new Color(0.0, 0.0, 1.0);
+
+    colorMatch.addColorMatch(targetRed);
+    colorMatch.addColorMatch(targetBlue);
+
+    colorMatch.setConfidenceThreshold(0.1); // need to change this?
+
+  }
+
+  public CargoColor getColor() {
+    detectedColor = colorSensor.getColor();
+    try {
+      ColorMatchResult match = colorMatch.matchColor(detectedColor);
+
+      if (match.color == targetRed) {
+        return CargoColor.RED;
+      } else if (match.color == targetBlue) {
+        return CargoColor.BLUE;
+      }
+      return CargoColor.UNKNOWN;
+
+    } catch (Exception nullPointerException) {
+      return CargoColor.UNKNOWN;
+    }
   }
 
   public Color getRawColor() {
@@ -34,5 +63,11 @@ public class REVColor {
 
   public Color getDetectedColor() {
     return detectedColor;
+  }
+
+  public enum CargoColor {
+    RED,
+    BLUE,
+    UNKNOWN
   }
 }

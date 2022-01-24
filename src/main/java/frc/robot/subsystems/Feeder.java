@@ -19,11 +19,13 @@ import frc.robot.RobotMap.CAN;
 import frc.robot.util.interfaces.IMercShuffleBoardPublisher;
 
 import frc.robot.sensors.REVColor;
+import frc.robot.sensors.REVColor.CargoColor;
 
 public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher {
   
   private TalonSRX feedWheel;
   private static final double RUN_SPEED = 1.0;
+  private REVColor colorSensor;
 
   /**
    * Creates a new Feeder.
@@ -39,7 +41,7 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
     colorMatcher.addColorMatch(kBlueTarget);
     colorMatcher.addColorMatch(kRedTarget);
 
-    REVColor sensor = new REVColor();
+    colorSensor = new REVColor();
   }
 
   private void setSpeed(double speed) {
@@ -56,6 +58,10 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
 
   public void stopFeeder() {
     this.setSpeed(0.0);
+  }
+
+  public boolean checkCorrectColor(CargoColor allianceColor){
+    return colorSensor.getColor() == allianceColor;
   }
 
   @Override
