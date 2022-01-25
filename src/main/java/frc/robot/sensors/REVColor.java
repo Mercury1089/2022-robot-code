@@ -31,13 +31,18 @@ public class REVColor {
     i2cPort = I2C.Port.kOnboard;
     colorSensor = new ColorSensorV3(i2cPort);
     colorMatch = new ColorMatch();
-    targetRed = new Color(1.0, 0.0, 0.0);
-    targetBlue = new Color(0.0, 0.0, 1.0);
+    // raw RGB vals
+   // targetRed = new Color(1.0, 0.0, 0.0);
+    // targetBlue = new Color(0.0, 0.0, 1.0);
+
+    // calibrated RGB's
+    targetRed = new Color(0.471, 0.376, 0.149);
+    targetBlue = new Color(0.204, 0.427, 0.364);
 
     colorMatch.addColorMatch(targetRed);
     colorMatch.addColorMatch(targetBlue);
 
-    colorMatch.setConfidenceThreshold(0.1); // need to change this?
+    colorMatch.setConfidenceThreshold(0.05); // need to change this?
 
   }
 
@@ -58,6 +63,8 @@ public class REVColor {
       return CargoColor.UNKNOWN;
     }
   }
+
+
 
   public Color getRawColor() {
     return colorSensor.getColor();

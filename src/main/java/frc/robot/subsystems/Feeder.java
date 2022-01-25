@@ -70,9 +70,10 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
 
     SmartDashboard.putString(getName() + "/Color/Detected", colorSensor.getDetectedColor().toString());
     SmartDashboard.putNumber(getName() + "/Color/Confidence", colorSensor.getConfidence());
-    
-    SmartDashboard.putNumber(getName() + "/Color/RGB/Red", colorSensor.getDetectedColor().red);
-    SmartDashboard.putNumber(getName() + "/Color/RGB/Green", colorSensor.getDetectedColor().green);
-    SmartDashboard.putNumber(getName() + "/Color/RGB/Blue", colorSensor.getDetectedColor().blue);
+    SmartDashboard.putString(getName() + "/Color/ENUM", colorSensor.getColor().toString());
+   
+    SmartDashboard.putNumber(getName() + "/Color/RGB/Red", colorSensor.getDetectedColor().red * 255);
+    SmartDashboard.putNumber(getName() + "/Color/RGB/Green", colorSensor.getDetectedColor().green * 255);
+    SmartDashboard.putNumber(getName() + "/Color/RGB/Blue", colorSensor.getDetectedColor().blue * 255);
   }
 }
