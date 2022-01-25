@@ -23,6 +23,7 @@ public class REVColor {
   private final ColorMatch colorMatch;
   private final Color targetRed;
   private final Color targetBlue;
+  private double confidence = 0.0;
   
   private Color detectedColor;
 
@@ -44,6 +45,7 @@ public class REVColor {
     detectedColor = colorSensor.getColor();
     try {
       ColorMatchResult match = colorMatch.matchColor(detectedColor);
+      confidence = match.confidence;
 
       if (match.color == targetRed) {
         return CargoColor.RED;
@@ -62,7 +64,14 @@ public class REVColor {
   }
 
   public Color getDetectedColor() {
+    if (detectedColor == null) {
+      return colorSensor.getColor();
+    }
     return detectedColor;
+  }
+
+  public double getConfidence() {
+    return confidence;
   }
 
   public enum CargoColor {

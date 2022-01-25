@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.ColorMatch;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -66,6 +67,12 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
 
   @Override
   public void publishValues() {
-    //SmartDashboard.putNumber("Speed", feedWheel.getSpeed());
+
+    SmartDashboard.putString(getName() + "/Color/Detected", colorSensor.getDetectedColor().toString());
+    SmartDashboard.putNumber(getName() + "/Color/Confidence", colorSensor.getConfidence());
+    
+    SmartDashboard.putNumber(getName() + "/Color/RGB/Red", colorSensor.getDetectedColor().red);
+    SmartDashboard.putNumber(getName() + "/Color/RGB/Green", colorSensor.getDetectedColor().green);
+    SmartDashboard.putNumber(getName() + "/Color/RGB/Blue", colorSensor.getDetectedColor().blue);
   }
 }
