@@ -27,8 +27,16 @@ public class REVColor {
   
   private Color detectedColor;
 
-  public REVColor() {
-    i2cPort = I2C.Port.kOnboard;
+  public REVColor(ColorSensorPort port) {
+    
+    if (port == ColorSensorPort.KONBOARD) {
+      i2cPort = I2C.Port.kOnboard;
+    } else if (port == ColorSensorPort.MXP) {
+      i2cPort = I2C.Port.kMXP;
+    } else {
+      i2cPort = null;
+    }
+    
     colorSensor = new ColorSensorV3(i2cPort);
     colorMatch = new ColorMatch();
     // raw RGB vals
@@ -85,5 +93,10 @@ public class REVColor {
     RED,
     BLUE,
     UNKNOWN
+  }
+
+  public enum ColorSensorPort {
+    MXP,
+    KONBOARD
   }
 }
