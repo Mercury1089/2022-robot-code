@@ -26,6 +26,7 @@ import frc.robot.commands.shooter.FullyAutoAimbot;
 import frc.robot.commands.shooter.RunShooterRPMPID;
 import frc.robot.sensors.Limelight;
 import frc.robot.sensors.Limelight.LimelightLEDState;
+import frc.robot.sensors.REVColor.ColorSensorPort;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.DriveTrain.DriveTrainLayout;
 import frc.robot.subsystems.DriveTrain.ShootingStyle;
@@ -61,7 +62,7 @@ public class RobotContainer {
     private Shooter shooter;
     private Intake intake;
     private IntakeArticulator intakeArticulator;
-    private Feeder feeder;
+    private Feeder feeder, feeder2;
     private Hopper hopper;
     private Elevator elevator;
     private LimelightCamera limelightCamera;
@@ -88,7 +89,9 @@ public class RobotContainer {
 
         intake = new Intake();
         intakeArticulator = new IntakeArticulator();
-        feeder = new Feeder();
+        //feeder = new Feeder();
+        feeder = new Feeder(ColorSensorPort.FRONT_SENSOR);
+        feeder2 = new Feeder(ColorSensorPort.BACK_SENSOR);
         intake = new Intake();
         limelightCamera = new LimelightCamera();
         limelightCamera.getLimelight().setLEDState(LimelightLEDState.OFF);
@@ -105,6 +108,7 @@ public class RobotContainer {
         //shuffleDash.addPublisher(intakeArticulator);
         //shuffleDash.addPublisher(elevator);
         shuffleDash.addPublisher(feeder);
+        shuffleDash.addPublisher(feeder2);
         //shuffleDash.addPublisher(hopper);
         //shuffleDash.addPIDTunable(shooter, "Shooter");
         //shuffleDash.addPIDTunable(driveTrain, "DriveTrain");

@@ -29,9 +29,9 @@ public class REVColor {
 
   public REVColor(ColorSensorPort port) {
     
-    if (port == ColorSensorPort.KONBOARD) {
+    if (port == ColorSensorPort.FRONT_SENSOR) {
       i2cPort = I2C.Port.kOnboard;
-    } else if (port == ColorSensorPort.MXP) {
+    } else if (port == ColorSensorPort.BACK_SENSOR) {
       i2cPort = I2C.Port.kMXP;
     } else {
       i2cPort = null;
@@ -96,7 +96,7 @@ public class REVColor {
   }
 
   public enum ColorSensorPort {
-    MXP,
-    KONBOARD
+    FRONT_SENSOR,
+    BACK_SENSOR
   }
 }

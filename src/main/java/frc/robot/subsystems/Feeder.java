@@ -36,7 +36,7 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
     feedWheel = new TalonSRX(CAN.FEEDER);
     feedWheel.setInverted(false);
     feedWheel.setNeutralMode(NeutralMode.Brake);
-    setName("Feeder");
+    setName("Feeder " + colorPort.toString());
     
 
     colorSensor = new REVColor(colorPort);
@@ -45,10 +45,6 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
   private void setSpeed(double speed) {
     feedWheel.set(ControlMode.PercentOutput, speed);
   }
-
-  //public boolean checkColor() {
-    //Color match = sensor.
-  //}
 
   public void runFeeder() {
     this.setSpeed(RUN_SPEED);
