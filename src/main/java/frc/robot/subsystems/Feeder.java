@@ -21,6 +21,7 @@ import frc.robot.util.interfaces.IMercShuffleBoardPublisher;
 
 import frc.robot.sensors.REVColor;
 import frc.robot.sensors.REVColor.CargoColor;
+import frc.robot.sensors.REVColor.ColorSensorPort;
 
 public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher {
   
@@ -31,18 +32,14 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
   /**
    * Creates a new Feeder.
    */
-  public Feeder() {
+  public Feeder(ColorSensorPort colorPort) {
     feedWheel = new TalonSRX(CAN.FEEDER);
     feedWheel.setInverted(false);
     feedWheel.setNeutralMode(NeutralMode.Brake);
     setName("Feeder");
-    ColorMatch colorMatcher = new ColorMatch();
-    Color kBlueTarget = new Color(0.143, 0.427, 0.429);
-    Color kRedTarget = new Color(0.561, 0.232, 0.114);
-    colorMatcher.addColorMatch(kBlueTarget);
-    colorMatcher.addColorMatch(kRedTarget);
+    
 
-    colorSensor = new REVColor();
+    colorSensor = new REVColor(colorPort);
   }
 
   private void setSpeed(double speed) {
