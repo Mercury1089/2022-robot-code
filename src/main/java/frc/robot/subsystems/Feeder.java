@@ -28,11 +28,13 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
   private TalonSRX feedWheel;
   private static final double RUN_SPEED = 1.0;
   private REVColor colorSensor;
+  private CargoColor allianceColor;
 
   /**
    * Creates a new Feeder.
    */
-  public Feeder(ColorSensorPort colorPort) {
+  public Feeder(ColorSensorPort colorPort, CargoColor alliance) {
+    allianceColor = alliance;
     feedWheel = new TalonSRX(CAN.FEEDER);
     feedWheel.setInverted(false);
     feedWheel.setNeutralMode(NeutralMode.Brake);
@@ -54,7 +56,7 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
     this.setSpeed(0.0);
   }
 
-  public boolean checkCorrectColor(CargoColor allianceColor){
+  public boolean checkCorrectColor(){
     return colorSensor.getColor() == allianceColor;
   }
 
@@ -64,6 +66,7 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
     SmartDashboard.putString(getName() + "/Color/Detected", colorSensor.getDetectedColor().toString());
     SmartDashboard.putNumber(getName() + "/Color/Confidence", colorSensor.getConfidence());
     SmartDashboard.putString(getName() + "/Color/ENUM", colorSensor.getColor().toString());
+    SmartDashboard.putString(getName() + "/Color/SameAllianceColor", "" + checkCorrectColor());
    
     SmartDashboard.putNumber(getName() + "/Color/RGB/Red", colorSensor.getDetectedColor().red * 255);
     SmartDashboard.putNumber(getName() + "/Color/RGB/Green", colorSensor.getDetectedColor().green * 255);
