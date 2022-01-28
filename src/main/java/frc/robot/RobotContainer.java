@@ -38,6 +38,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.IntakeArticulator;
 import frc.robot.subsystems.LimelightCamera;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Shooter.ShooterMode;
 import frc.robot.util.ShuffleDash;
 import frc.robot.util.TriggerButton;
@@ -61,6 +62,7 @@ public class RobotContainer {
 
     private DriveTrain driveTrain;
     private Shooter shooter;
+    private Turret turret;
     private Intake intake;
     private IntakeArticulator intakeArticulator;
     private Feeder feeder, feeder2;
@@ -88,6 +90,7 @@ public class RobotContainer {
         hopper = new Hopper(); 
         //hopper.setDefaultCommand(new RunCommand(() -> hopper.setSpeed(0.0), hopper));
 
+
         intake = new Intake();
         intakeArticulator = new IntakeArticulator();
         //feeder = new Feeder();
@@ -98,6 +101,9 @@ public class RobotContainer {
         limelightCamera.getLimelight().setLEDState(LimelightLEDState.OFF);
         elevator = new Elevator();
         elevator.setDefaultCommand(new ManualElevator(elevator));
+
+        turret = new Turret();
+        turret.setDefaultCommand(new RunCommand(() -> turret.setSpeed(() ->getGamepadAxis(GAMEPAD_AXIS.leftX)), turret));
 
         
         shuffleDash = new ShuffleDash();
@@ -126,6 +132,9 @@ public class RobotContainer {
                                 
         left4.toggleWhenPressed(new RunShooterRPMPID(shooter, limelight, ShootingStyle.LOWER_PORT));
         left6.whenPressed(new SwitchLEDState(limelightCamera));
+
+        left8.whenPressed(new RunCommand(() -> turret.setPosition(4096.0), turret));
+        left9.whenPressed(new RunCommand(() -> turret.setPosition(0.0), turret));
 
         left10.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeDisabled(), intakeArticulator), new RunIntake(intake)));
 
