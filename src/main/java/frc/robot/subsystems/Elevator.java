@@ -27,12 +27,12 @@ public class Elevator extends SubsystemBase implements IMercShuffleBoardPublishe
   private Relay elevatorLock;
 
   private static final int MAX_ELEV_RPM = 18000;
+  private static final double ELEVATOR_POSITION_THRESHOLD = 500;
   private static final double NORMAL_P_VAL = 0.21;
   private static final int PRIMARY_PID_LOOP = 0;
 
 
   private TalonSRX elevator;
-  private double runSpeed;
 
   /**
    * Creates a new Elevator.
@@ -45,8 +45,8 @@ public class Elevator extends SubsystemBase implements IMercShuffleBoardPublishe
     elevatorLock.set(Relay.Value.kOff);
 
     elevator = new TalonSRX(CAN.ELEVATOR);
+    elevator.configFactoryDefault();
 
-    runSpeed = 0.5;
     elevator.setNeutralMode(NeutralMode.Brake);
 
     elevator.configMotionAcceleration((int)(MercMath.revsPerMinuteToTicksPerTenth(18000 * 2)));
@@ -73,6 +73,10 @@ public class Elevator extends SubsystemBase implements IMercShuffleBoardPublishe
 
   }
 
+  /**
+   * Enable/disable the release on the ratchet that prevents upward movement of the elevator
+   * @param state true to release the ratchet, false otherwise
+   */
   public void setLockEngaged(boolean state){
     if (state) {
       elevatorLock.set(Relay.Value.kOn);
@@ -81,33 +85,45 @@ public class Elevator extends SubsystemBase implements IMercShuffleBoardPublishe
     }
   }
 
+  /**
+   * Retrieve the status of the ratchet
+   * @return true if the ratchet is released, false otherwise
+   */
   public Relay.Value getLockState(){
     return elevatorLock.get();
   }
 
-  public double getRunSpeed() {
-    return runSpeed;
-  }
-
+  /**
+   * Move the elevator manually at a provided speed
+   * @param speed the speed expressed as a double between -1.0 and 1.0
+   */
   public void setSpeed(double speed){
     elevator.set(ControlMode.PercentOutput, speed);
   }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
+  /**
+   * Move the elevator to a specific position
+   * @param pos the position to move to
+   */
+  public void setPosition(ElevatorPosition pos) {
+    double targetEncPos = pos.encPos;
+    if (pos.isRelative) {
+      targetEncPos += getCurrentHeight();;
+    }
+    elevator.set(ControlMode.MotionMagic, targetEncPos);
   }
 
   /**
-   * @return the motor controller for the elevator
+   * Check if the elevator at the last requested position
+   * @return true if in position, false otherwise
    */
-  public TalonSRX getElevatorLeader() {
-    return elevator;
+  public boolean isInPosition() {
+    return (elevator.getClosedLoopError(PRIMARY_PID_LOOP) < ELEVATOR_POSITION_THRESHOLD ||
+            elevator.getSensorCollection().isRevLimitSwitchClosed());
   }
-
+  
   /**
    * Get current height of claw on elevator.
-   *
    * @return height of claw as read by the encoder, in ticks
    */
   public double getCurrentHeight() {

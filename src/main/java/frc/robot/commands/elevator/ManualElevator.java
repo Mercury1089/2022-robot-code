@@ -7,24 +7,25 @@
 
 package frc.robot.commands.elevator;
 
-import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.Relay.Value;
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
-import frc.robot.RobotMap.GAMEPAD_AXIS;
+
 import frc.robot.subsystems.Elevator;
 
 public class ManualElevator extends CommandBase {
   /**
    * Creates a new ManualElevator.
    */
-  private Elevator elevator;
   private final double DEADZONE = 0.2;
+  private Elevator elevator;
+  Supplier<Double> speedSupplier;
 
-  public ManualElevator(Elevator elevator) {
+  public ManualElevator(Elevator elevator, Supplier<Double> speedSupplier) {
     addRequirements(elevator);
     setName("ManualElevator");
     this.elevator = elevator;
+    this.speedSupplier = speedSupplier;
   }
 
   // Called when the command is initially scheduled.
@@ -35,7 +36,7 @@ public class ManualElevator extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double speed = Robot.robotContainer.getGamepadAxis(GAMEPAD_AXIS.leftY);
+    double speed = speedSupplier.get();
     elevator.setSpeed(Math.abs(speed) < DEADZONE ? 0:speed);
   }
 

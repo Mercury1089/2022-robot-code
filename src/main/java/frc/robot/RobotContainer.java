@@ -100,7 +100,7 @@ public class RobotContainer {
         limelightCamera = new LimelightCamera();
         limelightCamera.getLimelight().setLEDState(LimelightLEDState.OFF);
         elevator = new Elevator();
-        elevator.setDefaultCommand(new ManualElevator(elevator));
+        elevator.setDefaultCommand(new ManualElevator(elevator, () -> getGamepadAxis(GAMEPAD_AXIS.leftY)));
 
         turret = new Turret();
         turret.setDefaultCommand(new RunCommand(() -> turret.setSpeed(() ->getGamepadAxis(GAMEPAD_AXIS.leftX)), turret));
@@ -150,10 +150,10 @@ public class RobotContainer {
 
         gamepadA.whenPressed(new AutomaticElevator(elevator, Elevator.ElevatorPosition.BOTTOM));
         gamepadY.whenPressed(new AutomaticElevator(elevator, Elevator.ElevatorPosition.READY, false));
-        gamepadL3.whenPressed(new ManualElevator(elevator));
+        gamepadL3.whenPressed(new ManualElevator(elevator, () -> getGamepadAxis(GAMEPAD_AXIS.leftY)));
         gamepadStart.and(gamepadBack).whenActive(new ParallelCommandGroup(new SequentialCommandGroup(new InstantCommand(() -> elevator.setLockEngaged(true), elevator),
                                                                                                      new AutomaticElevator(elevator, Elevator.ElevatorPosition.HANG),
-                                                                                                     new ManualElevator(elevator)),
+                                                                                                     new ManualElevator(elevator, () -> getGamepadAxis(GAMEPAD_AXIS.leftY))),
                                                  new RunCommand(() -> shooter.stopShooter(), shooter))); //lock the elevator
     }
 
