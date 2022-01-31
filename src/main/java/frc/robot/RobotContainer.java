@@ -113,7 +113,6 @@ public class RobotContainer {
         //shuffleDash.addPublisher(intake);
         shuffleDash.addPublisher(limelightCamera);
         //shuffleDash.addPublisher(intakeArticulator);
-        //shuffleDash.addPublisher(elevator);
         shuffleDash.addPublisher(feeder);
         shuffleDash.addPublisher(feeder2);
         //shuffleDash.addPublisher(hopper);

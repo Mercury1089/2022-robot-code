@@ -13,16 +13,16 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Relay;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.CAN;
 import frc.robot.util.MercMath;
-import frc.robot.util.interfaces.IMercShuffleBoardPublisher;
 
-public class Elevator extends SubsystemBase implements IMercShuffleBoardPublisher {
+public class Elevator extends SubsystemBase implements Sendable {
 
   private Relay elevatorLock;
 
@@ -131,10 +131,16 @@ public class Elevator extends SubsystemBase implements IMercShuffleBoardPublishe
   }
 
   @Override
-  public void publishValues() {
-    //SmartDashboard.putNumber(getName() + "/Height(ticks)", getEncTicks());
-    SmartDashboard.putBoolean(getName() + "/FwdLimit", elevator.getSensorCollection().isFwdLimitSwitchClosed());
-    SmartDashboard.putBoolean(getName() + "/RevLimit", elevator.getSensorCollection().isRevLimitSwitchClosed());
+  public void initSendable(SendableBuilder builder) {
+    
+    builder.setActuator(true); // Only allow setting values when in Test mode
+    builder.setSafeState(() -> setSpeed(0)); // Provide method to make the subsystem safe
+    builder.addDoubleProperty("Height", // property name for smartdash
+                              () -> getCurrentHeight(), // getter function (returns current value)
+                              (x) -> elevator.set(ControlMode.MotionMagic, x) // setter function (sets new value)
+    );
+    builder.addBooleanProperty("ForwardLimit", () -> elevator.getSensorCollection().isFwdLimitSwitchClosed(), null);
+    builder.addBooleanProperty("ReverseLimit", () -> elevator.getSensorCollection().isRevLimitSwitchClosed(), null);
   }
   
   public enum ElevatorPosition{
