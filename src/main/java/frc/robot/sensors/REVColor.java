@@ -23,12 +23,16 @@ public class REVColor {
   private final ColorMatch colorMatch;
   private final Color targetRed;
   private final Color targetBlue;
-  private double confidence = 0.0;
+  private final double CONFIDENCE_THRESHOLD;
+  private double confidence;
+  
+  
   
   private Color detectedColor;
 
   public REVColor(ColorSensorPort port) {
-    
+
+
     if (port == ColorSensorPort.FRONT_SENSOR) {
       i2cPort = I2C.Port.kOnboard;
     } else if (port == ColorSensorPort.BACK_SENSOR) {
@@ -39,18 +43,23 @@ public class REVColor {
     
     colorSensor = new ColorSensorV3(i2cPort);
     colorMatch = new ColorMatch();
+
+    CONFIDENCE_THRESHOLD = 0.9;
+    setConfidence(CONFIDENCE_THRESHOLD);
     // raw RGB vals
    // targetRed = new Color(1.0, 0.0, 0.0);
     // targetBlue = new Color(0.0, 0.0, 1.0);
 
     // calibrated RGB's
     targetRed = new Color(0.471, 0.376, 0.149);
-    targetBlue = new Color(0.204, 0.427, 0.364);
+    //targetBlue = new Color(0.204, 0.427, 0.364);
+    targetBlue = new Color(0.16, 0.408, 0.424);
 
     colorMatch.addColorMatch(targetRed);
     colorMatch.addColorMatch(targetBlue);
 
-    colorMatch.setConfidenceThreshold(0.05); // need to change this?
+    // move this out of setConfidence()
+    // colorMatch.setConfidenceThreshold(confidenceThreshold); // need to change this?
 
   }
 
@@ -88,6 +97,11 @@ public class REVColor {
   public double getConfidence() {
     return confidence;
   }
+
+  public void setConfidence(double confThresh) {
+    colorMatch.setConfidenceThreshold(confThresh); // need to change this?
+  }
+
 
   public enum CargoColor {
     RED,
