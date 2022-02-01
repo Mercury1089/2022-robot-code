@@ -56,8 +56,8 @@ public class Turret extends SubsystemBase {
     turret.config_kP(RobotMap.PID.PRIMARY_PID_LOOP, NORMAL_P_VAL, RobotMap.CTRE_TIMEOUT);
     turret.config_kI(RobotMap.PID.PRIMARY_PID_LOOP, 0.0, RobotMap.CTRE_TIMEOUT);
     turret.config_kD(RobotMap.PID.PRIMARY_PID_LOOP, 0.0, RobotMap.CTRE_TIMEOUT);
-    turret.config_kF(RobotMap.PID.PRIMARY_PID_LOOP, 0.0, RobotMap.CTRE_TIMEOUT);
-    turret.configClosedLoopPeakOutput(RobotMap.PID.PRIMARY_PID_LOOP, MercMath.calculateFeedForward(MAX_ELEV_RPM), RobotMap.CTRE_TIMEOUT);
+    turret.config_kF(RobotMap.PID.PRIMARY_PID_LOOP, MercMath.calculateFeedForward(MAX_ELEV_RPM), RobotMap.CTRE_TIMEOUT);
+    turret.configClosedLoopPeakOutput(RobotMap.PID.PRIMARY_PID_LOOP, 1.0, RobotMap.CTRE_TIMEOUT);
   }
 
   public void setSpeed(Supplier<Double> speedSupplier) {

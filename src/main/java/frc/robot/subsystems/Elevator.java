@@ -68,8 +68,8 @@ public class Elevator extends SubsystemBase implements Sendable {
     elevator.config_kP(Elevator.PRIMARY_PID_LOOP, NORMAL_P_VAL, RobotMap.CTRE_TIMEOUT);
     elevator.config_kI(Elevator.PRIMARY_PID_LOOP, 0.0, RobotMap.CTRE_TIMEOUT);
     elevator.config_kD(Elevator.PRIMARY_PID_LOOP, 0.0, RobotMap.CTRE_TIMEOUT);
-    elevator.config_kF(Elevator.PRIMARY_PID_LOOP, 0.0, RobotMap.CTRE_TIMEOUT);
-    elevator.configClosedLoopPeakOutput(Elevator.PRIMARY_PID_LOOP, MercMath.calculateFeedForward(MAX_ELEV_RPM), RobotMap.CTRE_TIMEOUT);
+    elevator.config_kF(Elevator.PRIMARY_PID_LOOP, MercMath.calculateFeedForward(MAX_ELEV_RPM), RobotMap.CTRE_TIMEOUT);
+    elevator.configClosedLoopPeakOutput(Elevator.PRIMARY_PID_LOOP, 1.0, RobotMap.CTRE_TIMEOUT);
 
   }
 
