@@ -239,7 +239,7 @@ public class MercMath {
 
 
     public static double revsPerMinuteToTicksPerTenth(double revsPerMinute) {
-        return revsPerMinute * UNITS.MAG_ENCODER_TICKS_PER_REVOLUTION / 600;
+        return revsPerMinute / 600 * UNITS.MAG_ENCODER_TICKS_PER_REVOLUTION;
     }
 
     public static double revsPerMinuteToMetersPerSecond(double revsPerMinute) {
@@ -270,9 +270,9 @@ public class MercMath {
         return meters / 0.0254;
     }
 
-    public static double calculateFeedForward(double rpm) {
+    public static double calculateFeedForward(double revsPerMinute) {
         final double MAX_MOTOR_OUTPUT = 1023;
-        final double NATIVE_UNITS_PER_100 = rpm / 600 * UNITS.MAG_ENCODER_TICKS_PER_REVOLUTION;
+        final double NATIVE_UNITS_PER_100 = revsPerMinuteToTicksPerTenth(revsPerMinute);
         return MAX_MOTOR_OUTPUT / NATIVE_UNITS_PER_100;
     }
 
