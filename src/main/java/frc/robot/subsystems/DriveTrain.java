@@ -50,9 +50,6 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
     public static final int
         PRIMARY_LOOP = 0,
         AUXILIARY_LOOP = 1;
-    public static final int
-        MAG_ENCODER_TICKS_PER_REVOLUTION = 4096,
-        PIGEON_NATIVE_UNITS_PER_ROTATION = 8192;
     public static final double 
         MAX_SPEED = 1,
         MIN_SPEED = -1;

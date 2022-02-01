@@ -2,8 +2,6 @@ package frc.robot;
 
 public class RobotMap {
 
-    public static final int CTRE_TIMEOUT = 10;
-
     public static class CAN {
         public static final int
                 DRIVETRAIN_ML = 1,
@@ -28,20 +26,20 @@ public class RobotMap {
         }
     }
 
-    public static class JOYSTICK_ADJUSTMENTS {
-        public static final double
-            LEFT_X = 1.0,
-            LEFT_Y = 1.0,
-            RIGHT_X = 0.8,
-            RIGHT_Y = 1.0;
-        
-        private JOYSTICK_ADJUSTMENTS() {}
+    public static final int CTRE_TIMEOUT = 10;
+    
+    public static class UNITS {
+        public static final int
+                MAG_ENCODER_TICKS_PER_REVOLUTION = 4096,
+                PIGEON_NATIVE_UNITS_PER_ROTATION = 8192;
+
+        private UNITS() {
+        }
     }
 
     public static class PCM {
 
         private PCM() {
-
         }
     }
 
@@ -130,6 +128,16 @@ public class RobotMap {
         public static final int DOWN_LEFT = 225;
         public static final int LEFT = 270;
         public static final int UP_LEFT = 315;
+    }
+
+    public static class JOYSTICK_ADJUSTMENTS {
+        public static final double
+            LEFT_X = 1.0,
+            LEFT_Y = 1.0,
+            RIGHT_X = 0.8,
+            RIGHT_Y = 1.0;
+        
+        private JOYSTICK_ADJUSTMENTS() {}
     }
 
     public static class JOYSTICK_BUTTONS {

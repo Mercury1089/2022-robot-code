@@ -1,6 +1,7 @@
 package frc.robot.util;
 
 import frc.robot.RobotContainer;
+import frc.robot.RobotMap.UNITS;
 import frc.robot.subsystems.DriveTrain;
 //import jdk.javadoc.internal.doclets.formats.html.resources.standard;
 
@@ -162,7 +163,7 @@ public class MercMath {
     }
 
     public static double getEncPosition(double ticks) {
-        return inchesToFeet((ticks / DriveTrain.MAG_ENCODER_TICKS_PER_REVOLUTION) *
+        return inchesToFeet((ticks / UNITS.MAG_ENCODER_TICKS_PER_REVOLUTION) *
                             (Math.PI * DriveTrain.WHEEL_DIAMETER_INCHES));
     }
 
@@ -187,24 +188,24 @@ public class MercMath {
 
     public static double inchesToEncoderTicks(double inches) {
         return inches / (Math.PI * DriveTrain.WHEEL_DIAMETER_INCHES) *
-                (DriveTrain.MAG_ENCODER_TICKS_PER_REVOLUTION);
+                (UNITS.MAG_ENCODER_TICKS_PER_REVOLUTION);
     }
 
     public static double encoderTicksToInches(double ticks) {
-        return ticks / DriveTrain.MAG_ENCODER_TICKS_PER_REVOLUTION *
+        return ticks / UNITS.MAG_ENCODER_TICKS_PER_REVOLUTION *
                 (Math.PI * DriveTrain.WHEEL_DIAMETER_INCHES);
     }
 
     public static double degreesToPigeonUnits(double degrees) {
-        return DriveTrain.PIGEON_NATIVE_UNITS_PER_ROTATION * degrees / 360;
+        return UNITS.PIGEON_NATIVE_UNITS_PER_ROTATION * degrees / 360;
     }
 
     public static double pigeonUnitsToDegrees(double pigeonUnits) {
-        return pigeonUnits * 360 / DriveTrain.PIGEON_NATIVE_UNITS_PER_ROTATION;
+        return pigeonUnits * 360 / UNITS.PIGEON_NATIVE_UNITS_PER_ROTATION;
     }
 
     public static double radiansToPigeonUnits(double radians) {
-        return DriveTrain.PIGEON_NATIVE_UNITS_PER_ROTATION * Math.toDegrees(radians) / 360;
+        return UNITS.PIGEON_NATIVE_UNITS_PER_ROTATION * Math.toDegrees(radians) / 360;
     }
 
     public static double radiansToDegrees(double rad) {
@@ -216,11 +217,11 @@ public class MercMath {
     }
 
     public static double encoderTicksToRevs(double ticks) {
-        return ticks / DriveTrain.MAG_ENCODER_TICKS_PER_REVOLUTION;
+        return ticks / UNITS.MAG_ENCODER_TICKS_PER_REVOLUTION;
     }
 
     public static double revsToEncoderTicks(double revs) {
-        return revs * DriveTrain.MAG_ENCODER_TICKS_PER_REVOLUTION;
+        return revs * UNITS.MAG_ENCODER_TICKS_PER_REVOLUTION;
     }
 
     /**
@@ -233,12 +234,12 @@ public class MercMath {
      * @return Revs per minute
      */
     public static double ticksPerTenthToRevsPerMinute(double ticksPerTenthSecond) {
-        return ticksPerTenthSecond / DriveTrain.MAG_ENCODER_TICKS_PER_REVOLUTION * 600;
+        return ticksPerTenthSecond / UNITS.MAG_ENCODER_TICKS_PER_REVOLUTION * 600;
     }
 
 
     public static double revsPerMinuteToTicksPerTenth(double revsPerMinute) {
-        return revsPerMinute * DriveTrain.MAG_ENCODER_TICKS_PER_REVOLUTION / 600;
+        return revsPerMinute * UNITS.MAG_ENCODER_TICKS_PER_REVOLUTION / 600;
     }
 
     public static double revsPerMinuteToMetersPerSecond(double revsPerMinute) {
@@ -271,7 +272,7 @@ public class MercMath {
 
     public static double calculateFeedForward(double rpm) {
         final double MAX_MOTOR_OUTPUT = 1023;
-        final double NATIVE_UNITS_PER_100 = rpm / 600 * DriveTrain.MAG_ENCODER_TICKS_PER_REVOLUTION;
+        final double NATIVE_UNITS_PER_100 = rpm / 600 * UNITS.MAG_ENCODER_TICKS_PER_REVOLUTION;
         return MAX_MOTOR_OUTPUT / NATIVE_UNITS_PER_100;
     }
 
