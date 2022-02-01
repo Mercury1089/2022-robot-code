@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.ColorMatch;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -71,5 +72,20 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
     SmartDashboard.putNumber(getName() + "/Color/RGB/Red", colorSensor.getDetectedColor().red * 255);
     SmartDashboard.putNumber(getName() + "/Color/RGB/Green", colorSensor.getDetectedColor().green * 255);
     SmartDashboard.putNumber(getName() + "/Color/RGB/Blue", colorSensor.getDetectedColor().blue * 255);
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    
+    builder.setActuator(true); // Only allow setting values when in Test mode
+    builder.setSafeState(() -> setSpeed(0)); // Provide method to make the subsystem safe
+    builder.addStringProperty("Color/Detected", () -> colorSensor.getDetectedColor().toString(), null);
+    builder.addDoubleProperty("Color/Confidence", () -> colorSensor.getConfidence(), null);
+    builder.addStringProperty("Color/ENUM", () -> colorSensor.getColor().toString(), null);
+    builder.addStringProperty("Color/SameAllianceColor", () -> "" + checkCorrectColor(), null);
+
+    builder.addDoubleProperty("Color/RGB/Red", () -> colorSensor.getDetectedColor().red * 255, null);
+    builder.addDoubleProperty("Color/RGB/Green", () -> colorSensor.getDetectedColor().green * 255, null);
+    builder.addDoubleProperty("Color/RGB/Blue", () -> colorSensor.getDetectedColor().blue * 255, null);
   }
 }

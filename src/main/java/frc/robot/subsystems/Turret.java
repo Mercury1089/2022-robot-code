@@ -12,10 +12,11 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.CAN;
 import frc.robot.util.MercMath;
@@ -26,7 +27,8 @@ public class Turret extends SubsystemBase {
   private TalonSRX turret;
   private double runSpeed;
   private static final int MAX_ELEV_RPM = 18000;
-  private static final double NORMAL_P_VAL = 0.001;
+  private static final double NORMAL_P_VAL = 0.1;
+  private double positionInput;
   
 
   /** Creates a new Turret. */
@@ -38,6 +40,7 @@ public class Turret extends SubsystemBase {
     setName("Turret");
 
     runSpeed = 0.5;
+    positionInput = 0.0;
     turret.setNeutralMode(NeutralMode.Brake);
 
     turret.configMotionAcceleration((int)(MercMath.revsPerMinuteToTicksPerTenth(18000 * 2)));
@@ -45,8 +48,8 @@ public class Turret extends SubsystemBase {
 
     turret.setSensorPhase(false);
     turret.setInverted(false);
-    turret.configNominalOutputForward(1.0, RobotMap.CTRE_TIMEOUT);
-    turret.configNominalOutputReverse(-1.0, RobotMap.CTRE_TIMEOUT);
+    turret.configNominalOutputForward(0.05, RobotMap.CTRE_TIMEOUT);
+    turret.configNominalOutputReverse(-0.05, RobotMap.CTRE_TIMEOUT);
     turret.configPeakOutputForward(1.0, RobotMap.CTRE_TIMEOUT);
     turret.configPeakOutputReverse(-1.0, RobotMap.CTRE_TIMEOUT);
     turret.configClosedLoopPeriod(0, 1);
@@ -54,7 +57,7 @@ public class Turret extends SubsystemBase {
     turret.configSetParameter(ParamEnum.eClearPositionOnLimitR, 1, 0, 0);
     turret.getSensorCollection().setQuadraturePosition(0, RobotMap.CTRE_TIMEOUT);
     
-
+    turret.configAllowableClosedloopError(RobotMap.PID.PRIMARY_PID_LOOP, 4096 / 360, RobotMap.CTRE_TIMEOUT);
     turret.config_kP(RobotMap.PID.PRIMARY_PID_LOOP, NORMAL_P_VAL, RobotMap.CTRE_TIMEOUT);
     turret.config_kI(RobotMap.PID.PRIMARY_PID_LOOP, 0.0, RobotMap.CTRE_TIMEOUT);
     turret.config_kD(RobotMap.PID.PRIMARY_PID_LOOP, 0.0, RobotMap.CTRE_TIMEOUT);
@@ -67,13 +70,20 @@ public class Turret extends SubsystemBase {
   }
 
   public void setPosition(double posSupplier) {
-    turret.set(ControlMode.MotionMagic, posSupplier);
+    positionInput = posSupplier;
+    turret.set(ControlMode.MotionMagic, positionInput);
+  }
+
+  public double getPosInput() {
+    return positionInput;
   }
 
   @Override
-  public void periodic() {
-
-    SmartDashboard.putNumber(getName() + "/Encoder/Value", turret.getSelectedSensorPosition(0));
-    SmartDashboard.putNumber(getName() + "/Encoder/Velocity", turret.getSelectedSensorVelocity()); // +1750 and -1720
+  public void initSendable(SendableBuilder builder) {
+    
+    builder.setActuator(true); // Only allow setting values when in Test mode
+    builder.addDoubleProperty("Encoder/Value", () -> turret.getClosedLoopTarget(),  (x) -> setPosition(x));
+    builder.addDoubleProperty("Encoder/Velocity", () -> turret.getSelectedSensorVelocity(), null);
   }
+
 }
