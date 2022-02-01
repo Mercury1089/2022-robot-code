@@ -71,7 +71,7 @@ public class Turret extends SubsystemBase {
 
   public void setPosition(double posSupplier) {
     positionInput = posSupplier;
-    turret.set(ControlMode.MotionMagic, positionInput);
+    turret.set(ControlMode.Position, positionInput);
   }
 
   public double getPosInput() {
