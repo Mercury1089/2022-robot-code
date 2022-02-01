@@ -224,6 +224,14 @@ public class MercMath {
         return revs * UNITS.MAG_ENCODER_TICKS_PER_REVOLUTION;
     }
 
+    public static double degreesToEncoderTicks(double degrees) {
+        return UNITS.MAG_ENCODER_TICKS_PER_REVOLUTION * degrees / 360;
+    }
+
+    public static double encoderTicksToDegrees(double pigeonUnits) {
+        return pigeonUnits * 360 / UNITS.MAG_ENCODER_TICKS_PER_REVOLUTION;
+    }
+
     /**
      * <pre>
      *     public double ticksPerTenthToRevsPerMinute(double ticksPerTenthSecond)

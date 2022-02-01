@@ -13,21 +13,17 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.Relay;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.CAN;
 import frc.robot.util.MercMath;
-import frc.robot.util.interfaces.IMercShuffleBoardPublisher;
 
 public class Turret extends SubsystemBase {
   
   private TalonSRX turret;
-  private double runSpeed;
-  private static final int MAX_ELEV_RPM = 18000;
-  private static final double NORMAL_P_VAL = 0.1;
+  private static final int MAX_ELEV_RPM = 250;
+  private static final double THRESHOLD_DEGREES = 1.0;
+  private static final double NORMAL_P_VAL = 0.001;
   private double positionInput;
   
 
@@ -39,7 +35,6 @@ public class Turret extends SubsystemBase {
     turret.configFactoryDefault();
     setName("Turret");
 
-    runSpeed = 0.5;
     positionInput = 0.0;
     turret.setNeutralMode(NeutralMode.Brake);
 
@@ -57,7 +52,7 @@ public class Turret extends SubsystemBase {
     turret.configSetParameter(ParamEnum.eClearPositionOnLimitR, 1, 0, 0);
     turret.getSensorCollection().setQuadraturePosition(0, RobotMap.CTRE_TIMEOUT);
     
-    turret.configAllowableClosedloopError(RobotMap.PID.PRIMARY_PID_LOOP, 4096 / 360, RobotMap.CTRE_TIMEOUT);
+    turret.configAllowableClosedloopError(RobotMap.PID.PRIMARY_PID_LOOP, MercMath.degreesToEncoderTicks(THRESHOLD_DEGREES), RobotMap.CTRE_TIMEOUT);
     turret.config_kP(RobotMap.PID.PRIMARY_PID_LOOP, NORMAL_P_VAL, RobotMap.CTRE_TIMEOUT);
     turret.config_kI(RobotMap.PID.PRIMARY_PID_LOOP, 0.0, RobotMap.CTRE_TIMEOUT);
     turret.config_kD(RobotMap.PID.PRIMARY_PID_LOOP, 0.0, RobotMap.CTRE_TIMEOUT);
