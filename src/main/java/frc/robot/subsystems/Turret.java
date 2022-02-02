@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -21,9 +22,9 @@ import frc.robot.util.MercMath;
 public class Turret extends SubsystemBase {
   
   private TalonSRX turret;
-  private static final int MAX_ELEV_RPM = 250;
+  private static final int MAX_TURRET_RPM = 250;
   private static final double THRESHOLD_DEGREES = 1.0;
-  private static final double NORMAL_P_VAL = 0.001;
+  private static double NORMAL_P_VAL = 0.15;
   private double positionInput;
   
 
@@ -35,50 +36,63 @@ public class Turret extends SubsystemBase {
     turret.configFactoryDefault();
     setName("Turret");
 
-    positionInput = 0.0;
-    turret.setNeutralMode(NeutralMode.Brake);
-
-    turret.configMotionAcceleration((int)(MercMath.revsPerMinuteToTicksPerTenth(18000 * 2)));
-    turret.configMotionCruiseVelocity((int) MercMath.revsPerMinuteToTicksPerTenth(MAX_ELEV_RPM));
-
+    turret.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, RobotMap.PID.PRIMARY_PID_LOOP, RobotMap.CTRE_TIMEOUT);
     turret.setSensorPhase(false);
     turret.setInverted(false);
-    turret.configNominalOutputForward(0.05, RobotMap.CTRE_TIMEOUT);
-    turret.configNominalOutputReverse(-0.05, RobotMap.CTRE_TIMEOUT);
+
+    turret.configNominalOutputForward(0, RobotMap.CTRE_TIMEOUT);
+    turret.configNominalOutputReverse(0, RobotMap.CTRE_TIMEOUT);
     turret.configPeakOutputForward(1.0, RobotMap.CTRE_TIMEOUT);
     turret.configPeakOutputReverse(-1.0, RobotMap.CTRE_TIMEOUT);
-    turret.configClosedLoopPeriod(0, 1);
-    turret.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, RobotMap.PID.PRIMARY_PID_LOOP, RobotMap.CTRE_TIMEOUT);
-    turret.configSetParameter(ParamEnum.eClearPositionOnLimitR, 1, 0, 0);
-    turret.getSensorCollection().setQuadraturePosition(0, RobotMap.CTRE_TIMEOUT);
-    
-    turret.configAllowableClosedloopError(RobotMap.PID.PRIMARY_PID_LOOP, MercMath.degreesToEncoderTicks(THRESHOLD_DEGREES), RobotMap.CTRE_TIMEOUT);
+
+    turret.configAllowableClosedloopError(RobotMap.PID.PRIMARY_PID_LOOP, 0, RobotMap.CTRE_TIMEOUT);
+
     turret.config_kP(RobotMap.PID.PRIMARY_PID_LOOP, NORMAL_P_VAL, RobotMap.CTRE_TIMEOUT);
     turret.config_kI(RobotMap.PID.PRIMARY_PID_LOOP, 0.0, RobotMap.CTRE_TIMEOUT);
     turret.config_kD(RobotMap.PID.PRIMARY_PID_LOOP, 0.0, RobotMap.CTRE_TIMEOUT);
-    turret.config_kF(RobotMap.PID.PRIMARY_PID_LOOP, MercMath.calculateFeedForward(MAX_ELEV_RPM), RobotMap.CTRE_TIMEOUT);
-    turret.configClosedLoopPeakOutput(RobotMap.PID.PRIMARY_PID_LOOP, 1.0, RobotMap.CTRE_TIMEOUT);
+    turret.config_kF(RobotMap.PID.PRIMARY_PID_LOOP, 0.0, RobotMap.CTRE_TIMEOUT);
+
+    int absolutePosition = turret.getSensorCollection().getPulseWidthPosition();
+    absolutePosition &= 0xFFF;
+
+    turret.setSelectedSensorPosition(absolutePosition, RobotMap.PID.PRIMARY_PID_LOOP, RobotMap.CTRE_TIMEOUT);
+
+  //   positionInput = 0.0;
+  //   turret.setNeutralMode(NeutralMode.Brake);
+
+  //   turret.configMotionAcceleration((int)(MercMath.revsPerMinuteToTicksPerTenth(MAX_TURRET_RPM * 2)));
+  //   turret.configMotionCruiseVelocity((int) MercMath.revsPerMinuteToTicksPerTenth(MAX_TURRET_RPM));
+   
+    
+  //  // turret.configClosedLoopPeriod(0, 1);
+    
+  //   turret.getSensorCollection().setQuadraturePosition(0, RobotMap.CTRE_TIMEOUT);
+    
+    
+    
+    
+  //   turret.configClosedLoopPeakOutput(RobotMap.PID.PRIMARY_PID_LOOP, 1.0, RobotMap.CTRE_TIMEOUT);
   }
 
   public void setSpeed(Supplier<Double> speedSupplier) {
     turret.set(ControlMode.PercentOutput, speedSupplier.get());
   }
 
-  public void setPosition(double posSupplier) {
-    positionInput = posSupplier;
-    turret.set(ControlMode.Position, positionInput);
-  }
-
-  public double getPosInput() {
-    return positionInput;
+  public void setPosition(double pos) {
+    //double ticks = MercMath.degreesToEncoderTicks(pos);
+    turret.set(ControlMode.Position, pos);
   }
 
   @Override
   public void initSendable(SendableBuilder builder) {
     
     builder.setActuator(true); // Only allow setting values when in Test mode
-    builder.addDoubleProperty("Encoder/Value", () -> turret.getClosedLoopTarget(),  (x) -> setPosition(x));
-    builder.addDoubleProperty("Encoder/Velocity", () -> turret.getSelectedSensorVelocity(), null);
+    builder.addDoubleProperty("Encoder", () -> turret.getSelectedSensorPosition(0), null);
+    builder.addDoubleProperty("Position",
+                        () -> turret.getClosedLoopTarget(),
+                        (x) -> setPosition(x));
+    builder.addDoubleProperty("Velocity", () -> turret.getSelectedSensorVelocity(), null);
+    builder.addDoubleProperty("PID/kP", () -> NORMAL_P_VAL, (x) -> NORMAL_P_VAL=x);
   }
 
 }

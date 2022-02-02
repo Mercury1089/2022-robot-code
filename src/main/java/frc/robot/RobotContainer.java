@@ -132,8 +132,9 @@ public class RobotContainer {
         left4.toggleWhenPressed(new RunShooterRPMPID(shooter, limelight, ShootingStyle.LOWER_PORT));
         left6.whenPressed(new SwitchLEDState(limelightCamera));
 
-        left8.whenPressed(new RunCommand(() -> turret.setPosition(4096.0), turret));
-        left9.whenPressed(new RunCommand(() -> turret.setPosition(0.0), turret));
+        left7.whenPressed(new RunCommand(() -> turret.setPosition(-4096.0), turret));
+        left8.whenPressed(new RunCommand(() -> turret.setPosition(0.0), turret));
+        left9.whenPressed(new RunCommand(() -> turret.setPosition(4096.0), turret));
 
         left10.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeDisabled(), intakeArticulator), new RunIntake(intake)));
 
