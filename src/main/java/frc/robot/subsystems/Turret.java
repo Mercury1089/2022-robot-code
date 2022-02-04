@@ -24,7 +24,7 @@ public class Turret extends SubsystemBase {
   private TalonSRX turret;
   private static final int MAX_TURRET_RPM = 250;
   private static final double THRESHOLD_DEGREES = 1.0;
-  private static double NORMAL_P_VAL = 0.15;
+  private static double NORMAL_P_VAL = 0.11;
   private double positionInput;
   
 
@@ -36,6 +36,7 @@ public class Turret extends SubsystemBase {
     turret.configFactoryDefault();
     setName("Turret");
 
+    turret.configNeutralDeadband(0.01);
     turret.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, RobotMap.PID.PRIMARY_PID_LOOP, RobotMap.CTRE_TIMEOUT);
     turret.setSensorPhase(false);
     turret.setInverted(false);
@@ -79,9 +80,28 @@ public class Turret extends SubsystemBase {
   }
 
   public void setPosition(double pos) {
-    //double ticks = MercMath.degreesToEncoderTicks(pos);
-    turret.set(ControlMode.Position, pos);
+    // pos is in degrees
+    double ticks = MercMath.degreesToEncoderTicks(pos);
+    ticks *= 9; // 9:1 gear ratio
+    turret.set(ControlMode.Position, ticks);
   }
+
+  public double getCustomTickInDegrees() {
+    double ticks = turret.getSelectedSensorPosition(0) / 9;
+    double degs = MercMath.encoderTicksToDegrees(ticks);
+    return degs;
+  }
+
+  public void setPVal(double PVal) {
+    NORMAL_P_VAL = PVal;
+    turret.config_kP(RobotMap.PID.PRIMARY_PID_LOOP, PVal, RobotMap.CTRE_TIMEOUT);
+  }
+
+  public double getPVal() {
+    return NORMAL_P_VAL;
+  }
+
+  
 
   @Override
   public void initSendable(SendableBuilder builder) {
@@ -89,10 +109,11 @@ public class Turret extends SubsystemBase {
     builder.setActuator(true); // Only allow setting values when in Test mode
     builder.addDoubleProperty("Encoder", () -> turret.getSelectedSensorPosition(0), null);
     builder.addDoubleProperty("Position",
-                        () -> turret.getClosedLoopTarget(),
+                        () -> MercMath.encoderTicksToDegrees(turret.getClosedLoopTarget()/9),
                         (x) -> setPosition(x));
+    builder.addDoubleProperty("EncoderDegrees", () -> getCustomTickInDegrees(), null);
     builder.addDoubleProperty("Velocity", () -> turret.getSelectedSensorVelocity(), null);
-    builder.addDoubleProperty("PID/kP", () -> NORMAL_P_VAL, (x) -> NORMAL_P_VAL=x);
+    builder.addDoubleProperty("PID/kP", () -> getPVal(), (x) -> setPVal(x));
   }
 
 }
