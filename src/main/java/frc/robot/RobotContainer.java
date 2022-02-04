@@ -81,7 +81,7 @@ public class RobotContainer {
 
         limelight = new Limelight();
 
-        driveTrain = new DriveTrain(DriveTrainLayout.FALCONS, limelight); //make sure to switch it back to Falcons
+        driveTrain = new DriveTrain(DriveTrainLayout.FALCONS); //make sure to switch it back to Falcons
         driveTrain.setDefaultCommand(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
 
         shooter = new Shooter(ShooterMode.NONE, limelight);
@@ -102,7 +102,7 @@ public class RobotContainer {
         elevator = new Elevator();
         elevator.setDefaultCommand(new ManualElevator(elevator, () -> getGamepadAxis(GAMEPAD_AXIS.leftY)));
 
-        turret = new Turret();
+        turret = new Turret(limelight);
         turret.setDefaultCommand(new RunCommand(() -> turret.setSpeed(() ->getGamepadAxis(GAMEPAD_AXIS.leftX)), turret));
 
         
