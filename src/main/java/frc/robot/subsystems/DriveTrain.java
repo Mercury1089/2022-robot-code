@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.CAN;
-import frc.robot.sensors.Limelight;
 import frc.robot.util.DriveAssist;
 import frc.robot.util.MercMath;
 import frc.robot.util.PIDGain;
@@ -79,7 +78,6 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
     private PigeonIMU podgeboi;
 
     private DriveTrainLayout layout;
-    private Limelight limelight;
     private ShootingStyle shootingStyle;
 
     public enum DriveType {
@@ -98,15 +96,14 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
      *
      * @param layout The layout of motor controllers used on the drivetrain
      */
-    public DriveTrain(DriveTrain.DriveTrainLayout layout, Limelight limelight) {
+    public DriveTrain(DriveTrain.DriveTrainLayout layout) {
         //This should eventually be fully configurable
         // At this point it's based on what the layout is
 
         super();
         setName("DriveTrain");
         this.layout = layout;
-        this.limelight = limelight;
-
+        
         shootingStyle = ShootingStyle.AUTOMATIC;
 
         // Initialize the motor controllers and (if applicable) the encoders
@@ -308,9 +305,6 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
         return false;
     }
 
-    public Limelight getLimelight() {
-        return this.limelight;
-    }
 
     public void resetEncoders() {
         if(layout == DriveTrainLayout.TALONS_VICTORS) {
@@ -412,10 +406,6 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
         return (Math.abs(getDistanceError()) < DISTANCE_THRESHOLD_INCHES &&
                 Math.abs(getAngleError()) < ANGLE_THRESHOLD_DEG);
     }
-
-    public boolean isAligned(){
-        return limelight.getTargetAcquired() && Math.abs(limelight.getTargetCenterXAngle()) <= ON_TARGET_THRESHOLD_DEG;
-    }
     
     public double getPigeonYaw() {
         double[] currYawPitchRoll = new double[3];
@@ -499,9 +489,7 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
         //Angle From Pigeon
         //SmartDashboard.putNumber(getName() + "/Yaw", getPigeonYaw());
 
-        SmartDashboard.putBoolean(getName() + "/IsAligned", isAligned());
-        SmartDashboard.putBoolean(getName() + "/TargetAcquired", limelight.getTargetAcquired());
-        SmartDashboard.putBoolean(getName() + "/LimelightLEDState", limelight.getLEDState());
+        
         //Publish Current Command
         SmartDashboard.putString(getName() + "/Command", getCurrentCommand() != null ? getCurrentCommand().getName() : "None");
 

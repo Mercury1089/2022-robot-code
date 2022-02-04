@@ -17,11 +17,13 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.CAN;
+import frc.robot.sensors.Limelight;
 import frc.robot.util.MercMath;
 
 public class Turret extends SubsystemBase {
   
   private TalonSRX turret;
+  private Limelight limelight;
   private static final int MAX_TURRET_RPM = 250;
   private static final double THRESHOLD_DEGREES = 1.0;
   private static double NORMAL_P_VAL = 0.11;
@@ -29,8 +31,10 @@ public class Turret extends SubsystemBase {
   
 
   /** Creates a new Turret. */
-  public Turret() {
+  public Turret(Limelight limelight) {
     super();
+
+    this.limelight = limelight;
     turret = new TalonSRX(CAN.TURRET);
 
     turret.configFactoryDefault();
@@ -58,21 +62,6 @@ public class Turret extends SubsystemBase {
 
     turret.setSelectedSensorPosition(absolutePosition, RobotMap.PID.PRIMARY_PID_LOOP, RobotMap.CTRE_TIMEOUT);
 
-  //   positionInput = 0.0;
-  //   turret.setNeutralMode(NeutralMode.Brake);
-
-  //   turret.configMotionAcceleration((int)(MercMath.revsPerMinuteToTicksPerTenth(MAX_TURRET_RPM * 2)));
-  //   turret.configMotionCruiseVelocity((int) MercMath.revsPerMinuteToTicksPerTenth(MAX_TURRET_RPM));
-   
-    
-  //  // turret.configClosedLoopPeriod(0, 1);
-    
-  //   turret.getSensorCollection().setQuadraturePosition(0, RobotMap.CTRE_TIMEOUT);
-    
-    
-    
-    
-  //   turret.configClosedLoopPeakOutput(RobotMap.PID.PRIMARY_PID_LOOP, 1.0, RobotMap.CTRE_TIMEOUT);
   }
 
   public void setSpeed(Supplier<Double> speedSupplier) {
@@ -101,6 +90,14 @@ public class Turret extends SubsystemBase {
     return NORMAL_P_VAL;
   }
 
+  public Limelight getLimelight() {
+    return this.limelight;
+  }
+
+  public boolean isAligned(){
+    return limelight.getTargetAcquired() && Math.abs(limelight.getTargetCenterXAngle()) <= ON_TARGET_THRESHOLD_DEG;
+  }
+
   
 
   @Override
@@ -114,6 +111,12 @@ public class Turret extends SubsystemBase {
     builder.addDoubleProperty("EncoderDegrees", () -> getCustomTickInDegrees(), null);
     builder.addDoubleProperty("Velocity", () -> turret.getSelectedSensorVelocity(), null);
     builder.addDoubleProperty("PID/kP", () -> getPVal(), (x) -> setPVal(x));
+
+    builder.addBooleanProperty("TargetAcquired", () -> getLimelight().getTargetAcquired(), null);
+    builder.addBooleanProperty("LimelightLEDState", () -> getLimelight().getLEDState(), null);
+    builder.addBooleanProperty("IsAligned", () -> isAligned(), null);
+
   }
+
 
 }
