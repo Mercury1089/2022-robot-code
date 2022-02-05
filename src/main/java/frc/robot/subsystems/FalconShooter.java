@@ -34,9 +34,6 @@ public class FalconShooter extends SubsystemBase implements IMercShuffleBoardPub
   private TalonFX shooter_left, shooter_right;
   private double runSpeed;
 
-  /**
-   * Creates a new Elevator.
-   */
   public FalconShooter() {
     super();
     setName("FalconShooter");

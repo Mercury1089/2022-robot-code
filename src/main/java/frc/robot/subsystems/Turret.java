@@ -25,7 +25,7 @@ public class Turret extends SubsystemBase {
   private TalonSRX turret;
   private Limelight limelight;
   private static final int MAX_TURRET_RPM = 250;
-  private static final double THRESHOLD_DEGREES = 1.0;
+  public static final double THRESHOLD_DEGREES = 1.0;
   private static double NORMAL_P_VAL = 0.11;
   private double positionInput;
   
@@ -75,6 +75,14 @@ public class Turret extends SubsystemBase {
     turret.set(ControlMode.Position, ticks);
   }
 
+  public double getAngleError() {
+    return MercMath.encoderTicksToDegrees(turret.getClosedLoopError());
+  }
+
+  public boolean isOnTarget() {
+    return (Math.abs(getAngleError()) < Turret.THRESHOLD_DEGREES);
+  }
+
   public double getCustomTickInDegrees() {
     double ticks = turret.getSelectedSensorPosition(0) / 9;
     double degs = MercMath.encoderTicksToDegrees(ticks);
@@ -95,10 +103,13 @@ public class Turret extends SubsystemBase {
   }
 
   public boolean isAligned(){
-    return limelight.getTargetAcquired() && Math.abs(limelight.getTargetCenterXAngle()) <= ON_TARGET_THRESHOLD_DEG;
+    return limelight.getTargetAcquired() && Math.abs(limelight.getTargetCenterXAngle()) <= THRESHOLD_DEGREES;
+    //ON_TARGET_THRESHOLD_DEG;
   }
 
-  
+  public double getAngleToTarget(){
+    return limelight.getTargetCenterXAngle();
+  }
 
   @Override
   public void initSendable(SendableBuilder builder) {
@@ -117,6 +128,8 @@ public class Turret extends SubsystemBase {
     builder.addBooleanProperty("IsAligned", () -> isAligned(), null);
 
   }
+
+    // Called repeatedly when this Command is scheduled to run
 
 
 }
