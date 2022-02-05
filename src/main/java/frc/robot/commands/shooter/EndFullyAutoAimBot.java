@@ -14,8 +14,8 @@ public class EndFullyAutoAimBot extends CommandBase {
   /**
    * Creates a new EndFullyAutoAimBot.
    */
-  public EndFullyAutoAimBot(DriveTrain driveTrain, Feeder feeder, Hopper hopper, Shooter shooter) {
-    addRequirements(driveTrain, feeder, hopper, shooter);
+  public EndFullyAutoAimBot(Turret turret, Feeder feeder, Shooter shooter) {
+    addRequirements(turret, feeder, shooter);
   }
 
   // Called when the command is initially scheduled.

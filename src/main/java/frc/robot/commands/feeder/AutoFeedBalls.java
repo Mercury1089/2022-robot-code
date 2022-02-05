@@ -8,38 +8,28 @@
 package frc.robot.commands.feeder;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.DriveTrain.ShootingStyle;
 import frc.robot.subsystems.Feeder;
-import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Turret;
 
 public class AutoFeedBalls extends CommandBase {
   private Feeder feeder;
-  private Hopper hopper;
   private Shooter shooter;
-  private DriveTrain driveTrain;
-  private ShootingStyle shootingStyle;
+  private Turret turret;
   private Intake intake;
   private boolean started;
 
   /**
    * Creates a new AutoFeedBalls.
    */
-  public AutoFeedBalls(Feeder feeder, Hopper hopper, Intake intake, Shooter shooter, DriveTrain driveTrain, ShootingStyle shootingStyle) {
+  public AutoFeedBalls(Feeder feeder, Intake intake, Shooter shooter, Turret turret) {
     //addRequirements(feeder, hopper);
-    addRequirements(feeder, hopper, intake);
+    addRequirements(feeder, intake);
     this.feeder = feeder;
-    this.hopper = hopper;
     this.intake = intake;
     this.shooter = shooter;
-    this.driveTrain = driveTrain;
-    this.shootingStyle = shootingStyle;
-  }
-
-  public AutoFeedBalls(Feeder feeder, Hopper hopper, Intake intake, Shooter shooter, DriveTrain driveTrain) {
-    this(feeder, hopper, intake, shooter, driveTrain, ShootingStyle.AUTOMATIC);
+    this.turret = turret;
   }
 
   // Called when the command is initially scheduled.
@@ -51,12 +41,10 @@ public class AutoFeedBalls extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(driveTrain.isReadyToShoot() && shooter.isReadyToShoot()){
-      hopper.runHopper();
+    if(turret.isReadyToShoot() && shooter.isReadyToShoot()){
       feeder.runFeeder();
       started = true;
     } else {
-      hopper.stopHopper();
       feeder.stopFeeder();
     }
     if (started) {
@@ -73,7 +61,6 @@ public class AutoFeedBalls extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     feeder.stopFeeder();
-    hopper.stopHopper();
     intake.stopAgitator();
     intake.stopIntakeRoller();
   }
