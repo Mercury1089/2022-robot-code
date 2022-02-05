@@ -293,19 +293,6 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
         return shootingStyle;
     }
 
-    public boolean isReadyToShoot(){
-        switch(shootingStyle) {
-            case AUTOMATIC:
-                return isAligned();
-            case MANUAL:
-                return true;
-            case LOWER_PORT:
-                return true;
-        }
-        return false;
-    }
-
-
     public void resetEncoders() {
         if(layout == DriveTrainLayout.TALONS_VICTORS) {
             ((TalonSRX) leaderLeft).getSensorCollection().setQuadraturePosition(0, RobotMap.CTRE_TIMEOUT);

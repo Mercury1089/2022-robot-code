@@ -107,6 +107,10 @@ public class Turret extends SubsystemBase {
     //ON_TARGET_THRESHOLD_DEG;
   }
 
+  public boolean isReadyToShoot(){
+    return isOnTarget();
+}
+
   public double getAngleToTarget(){
     return limelight.getTargetCenterXAngle();
   }
