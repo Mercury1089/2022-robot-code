@@ -34,13 +34,19 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
   private REVColor colorSensor;
   private CargoColor allianceColor;
   private DigitalInput breakBeamSensor;
+  private int dioPort;
 
   /**
    * Creates a new Feeder.
    */
-  public Feeder(ColorSensorPort colorPort, CargoColor alliance) {
+  public Feeder(ColorSensorPort colorPort, CargoColor alliance, BreakBeamDIO DIOPort) {
 
-    breakBeamSensor = new DigitalInput(0); // change channel
+    if (DIOPort == BreakBeamDIO.FRONT) {
+      dioPort = 0;
+    } else if (DIOPort == BreakBeamDIO.BACK) {
+      dioPort = 1;
+    }
+    breakBeamSensor = new DigitalInput(dioPort); // change channel
     allianceColor = alliance;
     feedWheel = new TalonSRX(CAN.FEEDER);
     feedWheel.setInverted(false);
@@ -71,6 +77,13 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
 
   public boolean beamIsBroken() {
     return breakBeamSensor.get(); //might need to swap
+  }
+
+  
+
+  public enum BreakBeamDIO {
+    FRONT,
+    BACK
   }
 
   @Override

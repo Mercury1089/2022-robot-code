@@ -32,6 +32,7 @@ import frc.robot.sensors.REVColor.ColorSensorPort;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.DriveTrain.DriveTrainLayout;
 import frc.robot.subsystems.DriveTrain.ShootingStyle;
+import frc.robot.subsystems.Feeder.BreakBeamDIO;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Intake;
@@ -89,9 +90,9 @@ public class RobotContainer {
 
         intake = new Intake();
         intakeArticulator = new IntakeArticulator();
-        //feeder = new Feeder();
-        feeder = new Feeder(ColorSensorPort.BACK_SENSOR, CargoColor.BLUE);
-        feeder2 = new Feeder(ColorSensorPort.BACK_SENSOR, CargoColor.BLUE);
+        
+        feeder = new Feeder(ColorSensorPort.BACK_SENSOR, CargoColor.BLUE, BreakBeamDIO.FRONT);
+        feeder2 = new Feeder(ColorSensorPort.BACK_SENSOR, CargoColor.BLUE, BreakBeamDIO.BACK);
         intake = new Intake();
         limelightCamera = new LimelightCamera();
         limelightCamera.getLimelight().setLEDState(LimelightLEDState.OFF);
