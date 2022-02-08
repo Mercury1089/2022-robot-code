@@ -9,18 +9,12 @@
 package frc.robot.commands.turret;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.sensors.Limelight;
-import frc.robot.sensors.Limelight.LimelightLEDState;
-import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Turret;
-import frc.robot.util.MercMath;
 
 public class RotateToTarget extends CommandBase 
 {
 
     private int reTargetCount = 0;
-    private boolean isReadyToShoot;
     private Turret turret;
     private double targetHeading;
     private double currentEncoderPos;

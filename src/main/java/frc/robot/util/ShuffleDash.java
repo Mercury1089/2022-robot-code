@@ -51,10 +51,6 @@ public class ShuffleDash {
         ntInstance = NetworkTableInstance.getDefault();
 
         autonPositionChooser = new SendableChooser<>();
-        autonPositionChooser.addOption("Left", StartingPosition.LEFT);
-        autonPositionChooser.addOption("Center", StartingPosition.CENTER);
-        autonPositionChooser.addOption("Right", StartingPosition.RIGHT);
-        autonPositionChooser.addOption("Far Right", StartingPosition.FAR_RIGHT);
         autonPositionChooser.addOption("Any Position", StartingPosition.ANY_POSITION);
         
         SmartDashboard.putData("Auton Position", autonPositionChooser);
@@ -124,42 +120,6 @@ public class ShuffleDash {
         return autonChooser.getSelected();
     }
 
-    public void addLeftAutons() {
-        autonChooser.addOption("Left", null);
-        //autonChooser.addOption("5BallTrenchRun", "Left5BallTrench");
-        autonChooser.addOption("2BallTrenchRun", Autons.LEFT_2BALL_TRENCH);
-        autonChooser.addOption("5BallTrenchRun", Autons.LEFT_5BALL_TRENCH);
-    }
-
-    public void addRightAutons() {
-        autonChooser.addOption("Right", null);
-        //autonChooser.addOption("5BallRendezvousRun", "Right5BallRendezvous");
-        //autonChooser.addOption("2BallRendezvousRun", Autons.RIGHT_2BALL_RENDEZVOUS);
-        autonChooser.addOption("5BallRendezvousRun", Autons.RIGHT_5BALL_RENDEZVOUS);
-    }
-
-    public void addCenterAutons() {
-        autonChooser.addOption("Center", null);
-        //autonChooser.addOption("5BallRendezvousRun", "Center5BallRendezvous");
-        //autonChooser.addOption("5BallTrenchRun", "Center5BallTrench");
-        autonChooser.addOption("2BallRendezvousRun", Autons.CENTER_2BALL_RENDEZVOUS);
-        autonChooser.addOption("5BallRendezvousRun", Autons.CENTER_5BALL_RENDEZVOUS);
-        autonChooser.addOption("5BallTrenchRun", Autons.CENTER_5BALL_TRENCH);
-    }
-
-    public void addFarRightAutons() {
-        autonChooser.addOption("Far Right", null);     
-        //autonChooser.addOption("Opposite Trench Run", "StealOpponentTwoBall");
-        autonChooser.addOption("Opposite Trench Run", Autons.STEAL_OPPONENT_2BALL);       
-    }
-
-    public void addAnyPositionAutons() {
-        autonChooser.addOption("Any Position", null);     
-        //autonChooser.addOption("Cross Initiation Line", "InitiationLine");
-        //autonChooser.addOption("Cross Initiation Line And Shoot", "InitiationLineAndShoot");
-        autonChooser.addOption("Cross Initiation Line", Autons.INITIATION_LINE);     
-    }
-
     public void updateAutonChooser() {
         StartingPosition startingPosition = getStartingPosition();
         if(oldPosition == StartingPosition.NULL && startingPosition == StartingPosition.NULL)
@@ -170,26 +130,6 @@ public class ShuffleDash {
             //autonChooser = new SendableChooser<String>();
             autonChooser = new SendableChooser<Autons>();
             switch(startingPosition) {
-                case LEFT:
-                    addLeftAutons();
-                    oldPosition = StartingPosition.LEFT;
-                    break;
-                case RIGHT:
-                    addRightAutons();
-                    oldPosition = StartingPosition.RIGHT;
-                    break;
-                case CENTER:
-                    addCenterAutons();
-                    oldPosition = StartingPosition.CENTER;
-                    break;
-                case FAR_RIGHT:
-                    addFarRightAutons();
-                    oldPosition = StartingPosition.FAR_RIGHT;
-                    break;
-                case ANY_POSITION:
-                    addAnyPositionAutons();
-                    oldPosition = StartingPosition.ANY_POSITION;
-                    break;
                 default:
                     //autonChooser.addOption("No Option", "No Option");
                     autonChooser.addOption("No Option", Autons.NOTHING);
@@ -221,23 +161,11 @@ public class ShuffleDash {
     }
 
     public enum StartingPosition {
-        ANY_POSITION,
-        CENTER,
-        FAR_RIGHT,
-        LEFT,
         NULL,
-        RIGHT
+        ANY_POSITION
     }
 
     public enum Autons {
-        CENTER_2BALL_RENDEZVOUS,
-        CENTER_5BALL_RENDEZVOUS,
-        CENTER_5BALL_TRENCH,
-        INITIATION_LINE,
-        LEFT_2BALL_TRENCH,
-        LEFT_5BALL_TRENCH,
-        NOTHING,
-        RIGHT_5BALL_RENDEZVOUS,
-        STEAL_OPPONENT_2BALL
+        NOTHING
     }
 }
