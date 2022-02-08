@@ -15,6 +15,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.ColorMatch;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -32,11 +33,14 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
   private static final double RUN_SPEED = 1.0;
   private REVColor colorSensor;
   private CargoColor allianceColor;
+  private DigitalInput breakBeamSensor;
 
   /**
    * Creates a new Feeder.
    */
   public Feeder(ColorSensorPort colorPort, CargoColor alliance) {
+
+    breakBeamSensor = new DigitalInput(0); // change channel
     allianceColor = alliance;
     feedWheel = new TalonSRX(CAN.FEEDER);
     feedWheel.setInverted(false);
@@ -46,6 +50,8 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
 
     colorSensor = new REVColor(colorPort);
   }
+
+  
 
   private void setSpeed(double speed) {
     feedWheel.set(ControlMode.PercentOutput, speed);
@@ -61,6 +67,10 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
 
   public boolean isCorrectColor() {
     return colorSensor.getColor() == allianceColor;
+  }
+
+  public boolean beamIsBroken() {
+    return breakBeamSensor.get(); //might need to swap
   }
 
   @Override
@@ -85,9 +95,11 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
     builder.addDoubleProperty("Color/Confidence", () -> colorSensor.getConfidence(), null);
     builder.addStringProperty("Color/ENUM", () -> colorSensor.getColor().toString(), null);
     builder.addStringProperty("Color/SameAllianceColor", () -> "" + isCorrectColor(), null);
-
+    
     builder.addDoubleProperty("Color/RGB/Red", () -> colorSensor.getDetectedColor().red * 255, null);
     builder.addDoubleProperty("Color/RGB/Green", () -> colorSensor.getDetectedColor().green * 255, null);
     builder.addDoubleProperty("Color/RGB/Blue", () -> colorSensor.getDetectedColor().blue * 255, null);
+
+    builder.addBooleanProperty("breakBeamSensor", () -> beamIsBroken(), null);
   }
 }
