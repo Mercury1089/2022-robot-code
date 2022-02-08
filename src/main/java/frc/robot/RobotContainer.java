@@ -24,6 +24,7 @@ import frc.robot.commands.limelightCamera.SwitchLEDState;
 import frc.robot.commands.shooter.EndFullyAutoAimBot;
 import frc.robot.commands.shooter.FullyAutoAimbot;
 import frc.robot.commands.shooter.RunShooterRPMPID;
+import frc.robot.commands.turret.RotateToTarget;
 import frc.robot.sensors.Limelight;
 import frc.robot.sensors.Limelight.LimelightLEDState;
 import frc.robot.sensors.REVColor.CargoColor;
@@ -89,7 +90,7 @@ public class RobotContainer {
         intake = new Intake();
         intakeArticulator = new IntakeArticulator();
         //feeder = new Feeder();
-        feeder = new Feeder(ColorSensorPort.FRONT_SENSOR, CargoColor.BLUE);
+        feeder = new Feeder(ColorSensorPort.BACK_SENSOR, CargoColor.BLUE);
         feeder2 = new Feeder(ColorSensorPort.BACK_SENSOR, CargoColor.BLUE);
         intake = new Intake();
         limelightCamera = new LimelightCamera();
@@ -134,6 +135,8 @@ public class RobotContainer {
 
         right2.whenPressed(new EndFullyAutoAimBot(driveTrain, feeder, shooter));
         right4.whenPressed(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
+
+        right6.whenPressed(new RotateToTarget(turret));
 
         right10.whenPressed(new DriveDistance(-24.0, driveTrain));
 

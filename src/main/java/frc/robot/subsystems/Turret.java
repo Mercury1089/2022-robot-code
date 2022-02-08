@@ -76,13 +76,18 @@ public class Turret extends SubsystemBase {
   }
 
   public double getAngleError() {
-    return MercMath.encoderTicksToDegrees(turret.getClosedLoopError());
+    return MercMath.encoderTicksToDegrees(turret.getClosedLoopError()/9);
   }
 
   public boolean isOnTarget() {
     return (Math.abs(getAngleError()) < Turret.THRESHOLD_DEGREES);
   }
 
+  public double getAngle() {
+    return getLimelight().getTargetCenterXAngle();
+  }
+
+  
   public double getCustomTickInDegrees() {
     double ticks = turret.getSelectedSensorPosition(0) / 9;
     double degs = MercMath.encoderTicksToDegrees(ticks);
@@ -103,7 +108,7 @@ public class Turret extends SubsystemBase {
   }
 
   public boolean isAligned(){
-    return limelight.getTargetAcquired() && Math.abs(limelight.getTargetCenterXAngle()) <= THRESHOLD_DEGREES;
+    return Math.abs(limelight.getTargetCenterXAngle()) <= THRESHOLD_DEGREES;
     //ON_TARGET_THRESHOLD_DEG;
   }
 
@@ -130,7 +135,10 @@ public class Turret extends SubsystemBase {
     builder.addBooleanProperty("TargetAcquired", () -> getLimelight().getTargetAcquired(), null);
     builder.addBooleanProperty("LimelightLEDState", () -> getLimelight().getLEDState(), null);
     builder.addBooleanProperty("IsAligned", () -> isAligned(), null);
-
+    builder.addDoubleProperty("LimelightXAngle", () -> getAngleToTarget(), null);
+    builder.addBooleanProperty("isOnTarget", () -> isOnTarget(), null);
+    //builder.addDoubleProperty(key, getter, setter);
+    
   }
 
     // Called repeatedly when this Command is scheduled to run

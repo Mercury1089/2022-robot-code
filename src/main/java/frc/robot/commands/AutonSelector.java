@@ -23,7 +23,6 @@ import frc.robot.commands.drivetrain.*;
 import frc.robot.commands.drivetrain.MoveHeadingDerivatives.*;
 import frc.robot.commands.elevator.*;
 import frc.robot.commands.feeder.*;
-import frc.robot.commands.hopper.*;
 import frc.robot.commands.intake.*;
 import frc.robot.commands.limelightCamera.*;
 import frc.robot.commands.shooter.*;
@@ -40,7 +39,6 @@ public class AutonSelector extends InstantCommand {
   DriveTrain driveTrain;
   Elevator elevator;
   Feeder feeder;
-  Hopper hopper;
   Intake intake;
   IntakeArticulator intakeArticulator;
   Limelight limelight;
@@ -48,7 +46,7 @@ public class AutonSelector extends InstantCommand {
   Shooter shooter;
 
   public AutonSelector(ShuffleDash shuffleDash, CommandGroupBase autonCommand, DriveTrain driveTrain, 
-    Elevator elevator, Feeder feeder, Hopper hopper, 
+    Elevator elevator, Feeder feeder, 
     Intake intake, IntakeArticulator intakeArticulator, Limelight limeLight, 
     LimelightCamera limelightCamera, Shooter shooter) {
 
@@ -60,7 +58,6 @@ public class AutonSelector extends InstantCommand {
     this.driveTrain = driveTrain;
     this.elevator = elevator;
     this.feeder = feeder;
-    this.hopper = hopper;
     this.intake = intake;
     this.intakeArticulator = intakeArticulator;
     this.limelight = limelight;
@@ -124,7 +121,7 @@ public class AutonSelector extends InstantCommand {
                     new MoveOnTrajectory(new MercMotionProfile("2BallRendezvousToShoot", ProfileDirection.FORWARD), driveTrain),
                     new RunCommand(() -> intakeArticulator.setIntakeIn(), intakeArticulator)
                 ),
-                new FullyAutoAimbot(driveTrain, shooter, feeder, hopper, intake, limelight, ShootingStyle.AUTOMATIC)
+                new FullyAutoAimbot(driveTrain, shooter, feeder, intake, limelight, ShootingStyle.AUTOMATIC)
             );
     } catch (Exception e) {
       System.out.println(e);
@@ -151,7 +148,7 @@ public class AutonSelector extends InstantCommand {
     try {
       autonCommand = new SequentialCommandGroup(
                 new DriveDistance(-24.0, driveTrain),
-                new FullyAutoAimbot(driveTrain, shooter, feeder, hopper, intake, limelight)
+                new FullyAutoAimbot(driveTrain, shooter, feeder, intake, limelight)
       );
     } catch (Exception e) {
       System.out.println(e);
