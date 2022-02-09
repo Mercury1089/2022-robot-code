@@ -8,8 +8,6 @@ public class RobotMap {
                 DRIVETRAIN_MR = 2,
                 DRIVETRAIN_FL = 3,
                 DRIVETRAIN_FR = 4,
-                FEEDER = 5,
-                HOPPER_BELT = 6,
                 INTAKE_ROLLER = 13,
                 INTAKE_ARTICULATOR = 7,
                 SHOOTER_LEFT = 8,
@@ -20,7 +18,9 @@ public class RobotMap {
                 AGITATOR = 14,
                 CANCODER_ML = 1,
                 CANCODER_MR = 2,
-                TURRET = 15;
+                TURRET = 15,
+                FEEDER_F = 5,
+                FEEDER_B = 6;
 
         private CAN() {
         }

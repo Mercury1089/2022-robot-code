@@ -5,56 +5,69 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+
 package frc.robot.commands.turret;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Turret;
-import frc.robot.util.MercMath;
 
-public class RotateToTarget extends CommandBase {
+public class RotateToTarget extends CommandBase 
+{
 
+    private int reTargetCount = 0;
     private Turret turret;
-    private int onTargetCount = 0, reTargetCount = 0;
-    private boolean isReadyToShoot;
     private double targetHeading;
+    private double currentEncoderPos;
+    
 
     public RotateToTarget(Turret turret) {
+        setName("RotateToTarget");
+        addRequirements(turret);
+
         this.turret = turret;
+    
     }
+    
 
     // Called just before this Command runs the first time
     @Override
     public void initialize() {
-        this.isReadyToShoot = false;
+        
+        // turret.getLimelight().setLEDState(LimelightLEDState.ON);
+        
         
         targetHeading = turret.getAngleToTarget();
+        currentEncoderPos = turret.getCustomTickInDegrees();
         System.out.println("RotateToTarget initialized with angle " + targetHeading);
-        reTargetCount = 0;
+
+        turret.setPosition(currentEncoderPos+targetHeading);
+        
     }
     
-    /**
-     * Get the current angle error for closed loop driving
-     * @return the error in degrees
-     */
-    public double getAngleError() {
-        return turret.getAngleError();
-    }
+  
 
     @Override
     public void execute() {
+        double newHeading = turret.getAngleToTarget();
 
-        if(turret.isOnTarget()) {
-            double checkTarget = turret.getAngleToTarget();
-            if(Math.abs(checkTarget) > DriveTrain.ANGLE_THRESHOLD_DEG && !this.isReadyToShoot) {
-                targetHeading = -MercMath.degreesToPigeonUnits(checkTarget);
-                onTargetCount = 0;
-                reTargetCount++;
-            } else {
-                // Once isReadyToShoot is true, stop checking limelight and relay in gyro only
-                // (This is in case the camera becomes obscured)
-                this.isReadyToShoot = true;
-            }
+        if (newHeading != targetHeading) {
+            targetHeading = newHeading;
+            currentEncoderPos = turret.getCustomTickInDegrees();
+            turret.setPosition(currentEncoderPos+targetHeading);
         }
+    }
+
+
+    @Override
+    public boolean isFinished() {
+
+       return false;
+       
+    }
+
+    // Called once after isFinished returns true
+    @Override
+    public void end(boolean interrupted) {
+
     }
 }

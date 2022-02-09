@@ -25,7 +25,7 @@ public class Turret extends SubsystemBase {
   private TalonSRX turret;
   private Limelight limelight;
   private static final int MAX_TURRET_RPM = 250;
-  public static final double THRESHOLD_DEGREES = 1.0;
+  public static final double THRESHOLD_DEGREES = 3.0;
   private static double NORMAL_P_VAL = 0.11;
   private double positionInput;
   
@@ -45,8 +45,8 @@ public class Turret extends SubsystemBase {
     turret.setSensorPhase(false);
     turret.setInverted(false);
 
-    turret.configNominalOutputForward(0, RobotMap.CTRE_TIMEOUT);
-    turret.configNominalOutputReverse(0, RobotMap.CTRE_TIMEOUT);
+    turret.configNominalOutputForward(0.02, RobotMap.CTRE_TIMEOUT);
+    turret.configNominalOutputReverse(-0.02, RobotMap.CTRE_TIMEOUT);
     turret.configPeakOutputForward(1.0, RobotMap.CTRE_TIMEOUT);
     turret.configPeakOutputReverse(-1.0, RobotMap.CTRE_TIMEOUT);
 
@@ -76,13 +76,18 @@ public class Turret extends SubsystemBase {
   }
 
   public double getAngleError() {
-    return MercMath.encoderTicksToDegrees(turret.getClosedLoopError());
+    return MercMath.encoderTicksToDegrees(turret.getClosedLoopError()/9);
   }
 
   public boolean isOnTarget() {
     return (Math.abs(getAngleError()) < Turret.THRESHOLD_DEGREES);
   }
 
+  public double getAngle() {
+    return getLimelight().getTargetCenterXAngle();
+  }
+
+  
   public double getCustomTickInDegrees() {
     double ticks = turret.getSelectedSensorPosition(0) / 9;
     double degs = MercMath.encoderTicksToDegrees(ticks);
@@ -103,7 +108,7 @@ public class Turret extends SubsystemBase {
   }
 
   public boolean isAligned(){
-    return limelight.getTargetAcquired() && Math.abs(limelight.getTargetCenterXAngle()) <= THRESHOLD_DEGREES;
+    return Math.abs(limelight.getTargetCenterXAngle()) <= THRESHOLD_DEGREES;
     //ON_TARGET_THRESHOLD_DEG;
   }
 
@@ -130,7 +135,10 @@ public class Turret extends SubsystemBase {
     builder.addBooleanProperty("TargetAcquired", () -> getLimelight().getTargetAcquired(), null);
     builder.addBooleanProperty("LimelightLEDState", () -> getLimelight().getLEDState(), null);
     builder.addBooleanProperty("IsAligned", () -> isAligned(), null);
-
+    builder.addDoubleProperty("LimelightXAngle", () -> getAngleToTarget(), null);
+    builder.addBooleanProperty("isOnTarget", () -> isOnTarget(), null);
+    //builder.addDoubleProperty(key, getter, setter);
+    
   }
 
     // Called repeatedly when this Command is scheduled to run

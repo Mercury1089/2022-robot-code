@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
@@ -19,11 +20,13 @@ import frc.robot.commands.drivetrain.DriveWithJoysticks.DriveType;
 import frc.robot.commands.drivetrain.MoveHeadingDerivatives.DriveDistance;
 import frc.robot.commands.elevator.AutomaticElevator;
 import frc.robot.commands.elevator.ManualElevator;
+import frc.robot.commands.feeder.RunFeeder;
 import frc.robot.commands.intake.RunIntake;
 import frc.robot.commands.limelightCamera.SwitchLEDState;
 import frc.robot.commands.shooter.EndFullyAutoAimBot;
 import frc.robot.commands.shooter.FullyAutoAimbot;
 import frc.robot.commands.shooter.RunShooterRPMPID;
+import frc.robot.commands.turret.RotateToTarget;
 import frc.robot.sensors.Limelight;
 import frc.robot.sensors.Limelight.LimelightLEDState;
 import frc.robot.sensors.REVColor.CargoColor;
@@ -31,6 +34,7 @@ import frc.robot.sensors.REVColor.ColorSensorPort;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.DriveTrain.DriveTrainLayout;
 import frc.robot.subsystems.DriveTrain.ShootingStyle;
+import frc.robot.subsystems.Feeder.BreakBeamDIO;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Intake;
@@ -88,9 +92,9 @@ public class RobotContainer {
 
         intake = new Intake();
         intakeArticulator = new IntakeArticulator();
-        //feeder = new Feeder();
-        feeder = new Feeder(ColorSensorPort.FRONT_SENSOR, CargoColor.BLUE);
-        feeder2 = new Feeder(ColorSensorPort.BACK_SENSOR, CargoColor.BLUE);
+        
+        feeder = new Feeder(ColorSensorPort.BACK_SENSOR, CargoColor.BLUE, BreakBeamDIO.FRONT, RobotMap.CAN.FEEDER_F);
+        feeder2 = new Feeder(ColorSensorPort.BACK_SENSOR, CargoColor.BLUE, BreakBeamDIO.BACK, RobotMap.CAN.FEEDER_B);
         intake = new Intake();
         limelightCamera = new LimelightCamera();
         limelightCamera.getLimelight().setLEDState(LimelightLEDState.OFF);
@@ -98,7 +102,7 @@ public class RobotContainer {
         elevator.setDefaultCommand(new ManualElevator(elevator, () -> getGamepadAxis(GAMEPAD_AXIS.leftY)));
 
         turret = new Turret(limelight);
-        turret.setDefaultCommand(new RunCommand(() -> turret.setSpeed(() ->getGamepadAxis(GAMEPAD_AXIS.leftX)), turret));
+        turret.setDefaultCommand(new RotateToTarget(turret));
 
         
         shuffleDash = new ShuffleDash();
@@ -133,6 +137,9 @@ public class RobotContainer {
         left10.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeDisabled(), intakeArticulator), new RunIntake(intake)));
 
         right4.whenPressed(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
+
+        right6.whenPressed(new RotateToTarget(turret));
+        right7.whenPressed(new RunFeeder(feeder));
 
         right10.whenPressed(new DriveDistance(-24.0, driveTrain));
 
