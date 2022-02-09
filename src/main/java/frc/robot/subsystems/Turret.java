@@ -25,7 +25,7 @@ public class Turret extends SubsystemBase {
   private TalonSRX turret;
   private Limelight limelight;
   private static final int MAX_TURRET_RPM = 250;
-  public static final double THRESHOLD_DEGREES = 1.0;
+  public static final double THRESHOLD_DEGREES = 3.0;
   private static double NORMAL_P_VAL = 0.11;
   private double positionInput;
   
@@ -45,8 +45,8 @@ public class Turret extends SubsystemBase {
     turret.setSensorPhase(false);
     turret.setInverted(false);
 
-    turret.configNominalOutputForward(0, RobotMap.CTRE_TIMEOUT);
-    turret.configNominalOutputReverse(0, RobotMap.CTRE_TIMEOUT);
+    turret.configNominalOutputForward(0.02, RobotMap.CTRE_TIMEOUT);
+    turret.configNominalOutputReverse(-0.02, RobotMap.CTRE_TIMEOUT);
     turret.configPeakOutputForward(1.0, RobotMap.CTRE_TIMEOUT);
     turret.configPeakOutputReverse(-1.0, RobotMap.CTRE_TIMEOUT);
 

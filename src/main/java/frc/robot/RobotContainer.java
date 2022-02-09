@@ -100,7 +100,7 @@ public class RobotContainer {
         elevator.setDefaultCommand(new ManualElevator(elevator, () -> getGamepadAxis(GAMEPAD_AXIS.leftY)));
 
         turret = new Turret(limelight);
-        turret.setDefaultCommand(new RunCommand(() -> turret.setSpeed(() ->getGamepadAxis(GAMEPAD_AXIS.leftX)), turret));
+        turret.setDefaultCommand(new RotateToTarget(turret));
 
         
         shuffleDash = new ShuffleDash();

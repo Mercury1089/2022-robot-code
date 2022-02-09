@@ -48,14 +48,10 @@ public class RotateToTarget extends CommandBase
 
     @Override
     public void execute() {
-        if (turret.isOnTarget()) {
-            reTargetCount++;
-        } else {
-            reTargetCount = 0;   
-        }
+        double newHeading = turret.getAngleToTarget();
 
-        if (reTargetCount > 5) {
-            targetHeading = turret.getAngleToTarget();
+        if (newHeading != targetHeading) {
+            targetHeading = newHeading;
             currentEncoderPos = turret.getCustomTickInDegrees();
             turret.setPosition(currentEncoderPos+targetHeading);
         }
@@ -65,7 +61,7 @@ public class RotateToTarget extends CommandBase
     @Override
     public boolean isFinished() {
 
-       return turret.isOnTarget() && turret.isAligned();
+       return false;
        
     }
 
