@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
@@ -19,6 +20,7 @@ import frc.robot.commands.drivetrain.DriveWithJoysticks.DriveType;
 import frc.robot.commands.drivetrain.MoveHeadingDerivatives.DriveDistance;
 import frc.robot.commands.elevator.AutomaticElevator;
 import frc.robot.commands.elevator.ManualElevator;
+import frc.robot.commands.feeder.RunFeeder;
 import frc.robot.commands.intake.RunIntake;
 import frc.robot.commands.limelightCamera.SwitchLEDState;
 import frc.robot.commands.shooter.EndFullyAutoAimBot;
@@ -91,8 +93,8 @@ public class RobotContainer {
         intake = new Intake();
         intakeArticulator = new IntakeArticulator();
         
-        feeder = new Feeder(ColorSensorPort.BACK_SENSOR, CargoColor.BLUE, BreakBeamDIO.FRONT);
-        feeder2 = new Feeder(ColorSensorPort.BACK_SENSOR, CargoColor.BLUE, BreakBeamDIO.BACK);
+        feeder = new Feeder(ColorSensorPort.BACK_SENSOR, CargoColor.BLUE, BreakBeamDIO.FRONT, RobotMap.CAN.FEEDER_F);
+        feeder2 = new Feeder(ColorSensorPort.BACK_SENSOR, CargoColor.BLUE, BreakBeamDIO.BACK, RobotMap.CAN.FEEDER_B);
         intake = new Intake();
         limelightCamera = new LimelightCamera();
         limelightCamera.getLimelight().setLEDState(LimelightLEDState.OFF);
@@ -137,6 +139,7 @@ public class RobotContainer {
         right4.whenPressed(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
 
         right6.whenPressed(new RotateToTarget(turret));
+        right7.whenPressed(new RunFeeder(feeder));
 
         right10.whenPressed(new DriveDistance(-24.0, driveTrain));
 

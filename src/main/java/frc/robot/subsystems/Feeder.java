@@ -12,6 +12,7 @@ import java.rmi.server.RemoteObjectInvocationHandler;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.ColorMatch;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -29,7 +30,7 @@ import frc.robot.sensors.REVColor.ColorSensorPort;
 
 public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher {
   
-  private TalonSRX feedWheel;
+  private VictorSPX feedWheel;
   private static final double RUN_SPEED = 1.0;
   private REVColor colorSensor;
   private CargoColor allianceColor;
@@ -39,7 +40,7 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
   /**
    * Creates a new Feeder.
    */
-  public Feeder(ColorSensorPort colorPort, CargoColor alliance, BreakBeamDIO DIOPort) {
+  public Feeder(ColorSensorPort colorPort, CargoColor alliance, BreakBeamDIO DIOPort, int motorControllerID) {
 
     if (DIOPort == BreakBeamDIO.FRONT) {
       dioPort = 0;
@@ -48,10 +49,11 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
     }
     breakBeamSensor = new DigitalInput(dioPort); // change channel
     allianceColor = alliance;
-    feedWheel = new TalonSRX(CAN.FEEDER);
-    feedWheel.setInverted(false);
+    feedWheel = new VictorSPX(motorControllerID);
+    feedWheel.configFactoryDefault();
+    feedWheel.setInverted(true);
     feedWheel.setNeutralMode(NeutralMode.Brake);
-    setName("Feeder " + colorPort.toString());
+    setName("Feeder " + DIOPort.toString());
     
 
     colorSensor = new REVColor(colorPort);
@@ -59,7 +61,7 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
 
   
 
-  private void setSpeed(double speed) {
+  public void setSpeed(double speed) {
     feedWheel.set(ControlMode.PercentOutput, speed);
   }
 
@@ -75,11 +77,9 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
     return colorSensor.getColor() == allianceColor;
   }
 
-  public boolean beamIsBroken() {
-    return breakBeamSensor.get(); //might need to swap
+  public boolean isBeamBroken() {
+    return !breakBeamSensor.get(); 
   }
-
-  
 
   public enum BreakBeamDIO {
     FRONT,
@@ -113,6 +113,6 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
     builder.addDoubleProperty("Color/RGB/Green", () -> colorSensor.getDetectedColor().green * 255, null);
     builder.addDoubleProperty("Color/RGB/Blue", () -> colorSensor.getDetectedColor().blue * 255, null);
 
-    builder.addBooleanProperty("breakBeamSensor", () -> beamIsBroken(), null);
+    builder.addBooleanProperty("breakBeamSensor", () -> isBeamBroken(), null);
   }
 }
