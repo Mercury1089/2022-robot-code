@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.util.Color;
 
 /** Add your docs here. */
-public class DualColorSensorThread {
+public class DualColorSensorThread implements AutoCloseable {
     private final TCA9548A MUX;
     private final Notifier NOTIFIER;
     private final int NUM_SENSORS = 2;
@@ -84,7 +84,14 @@ public class DualColorSensorThread {
         }
 
         return null;
-
     }
+
+    @Override
+    public void close() {
+        NOTIFIER.stop();
+        NOTIFIER.close();
+    }
+
+
 
 }
