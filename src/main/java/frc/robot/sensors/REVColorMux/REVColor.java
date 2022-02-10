@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.sensors;
+package frc.robot.sensors.REVColorMux;
 
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
@@ -18,30 +18,34 @@ import com.revrobotics.ColorMatch;
  */
 public class REVColor {
 
-  private final I2C.Port i2cPort;
+  
   private final ColorSensorV3 colorSensor;
   private final ColorMatch colorMatch;
   private final Color targetRed;
   private final Color targetBlue;
   private final double CONFIDENCE_THRESHOLD;
   private double confidence;
+  private final int colorSensorID;
   
   
   
   private Color detectedColor;
 
-  public REVColor(ColorSensorPort port) {
+  public REVColor(ColorSensorID colorSensorIDEnum) {
 
-
-    if (port == ColorSensorPort.FRONT_SENSOR) {
-      i2cPort = I2C.Port.kOnboard;
-    } else if (port == ColorSensorPort.BACK_SENSOR) {
-      i2cPort = I2C.Port.kMXP;
+    if (colorSensorIDEnum == ColorSensorID.FRONT) {
+      colorSensorID = 0;
+    } else if (colorSensorIDEnum == ColorSensorID.BACK) {
+      colorSensorID = 1;
     } else {
-      i2cPort = null;
+      colorSensorID = -1;
     }
+
+
     
-    colorSensor = new ColorSensorV3(i2cPort);
+    // do we wanna create a new DualColorSensorThread everytime we create REVColor?
+    // will running constructor (either DualColor or TCA9548A) multiple times be bad
+    colorSensor = new DualColorSensorThread().getColorSensor(colorSensorID); 
     colorMatch = new ColorMatch();
 
     CONFIDENCE_THRESHOLD = 0.9;
@@ -58,8 +62,7 @@ public class REVColor {
     colorMatch.addColorMatch(targetRed);
     colorMatch.addColorMatch(targetBlue);
 
-    // move this out of setConfidence()
-    // colorMatch.setConfidenceThreshold(confidenceThreshold); // need to change this?
+    
 
   }
 
@@ -109,8 +112,8 @@ public class REVColor {
     UNKNOWN
   }
 
-  public enum ColorSensorPort {
-    FRONT_SENSOR,
-    BACK_SENSOR
+  public enum ColorSensorID {
+    FRONT,
+    BACK
   }
 }

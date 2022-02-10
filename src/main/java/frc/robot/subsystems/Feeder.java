@@ -22,11 +22,10 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotMap.CAN;
+import frc.robot.sensors.REVColorMux.REVColor;
+import frc.robot.sensors.REVColorMux.REVColor.CargoColor;
+import frc.robot.sensors.REVColorMux.REVColor.ColorSensorID;
 import frc.robot.util.interfaces.IMercShuffleBoardPublisher;
-
-import frc.robot.sensors.REVColor;
-import frc.robot.sensors.REVColor.CargoColor;
-import frc.robot.sensors.REVColor.ColorSensorPort;
 
 public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher {
   
@@ -40,14 +39,14 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
   /**
    * Creates a new Feeder.
    */
-  public Feeder(ColorSensorPort colorPort, CargoColor alliance, BreakBeamDIO DIOPort, int motorControllerID) {
+  public Feeder(ColorSensorID colorSensorID, CargoColor alliance, BreakBeamDIO DIOPort, int motorControllerID) {
 
     if (DIOPort == BreakBeamDIO.FRONT) {
       dioPort = 0;
     } else if (DIOPort == BreakBeamDIO.BACK) {
       dioPort = 1;
     }
-    breakBeamSensor = new DigitalInput(dioPort); // change channel
+    breakBeamSensor = new DigitalInput(dioPort); 
     allianceColor = alliance;
     feedWheel = new VictorSPX(motorControllerID);
     feedWheel.configFactoryDefault();
@@ -56,7 +55,7 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
     setName("Feeder " + DIOPort.toString());
     
 
-    colorSensor = new REVColor(colorPort);
+    colorSensor = new REVColor(colorSensorID);
   }
 
   

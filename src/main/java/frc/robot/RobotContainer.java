@@ -29,8 +29,8 @@ import frc.robot.commands.shooter.RunShooterRPMPID;
 import frc.robot.commands.turret.RotateToTarget;
 import frc.robot.sensors.Limelight;
 import frc.robot.sensors.Limelight.LimelightLEDState;
-import frc.robot.sensors.REVColor.CargoColor;
-import frc.robot.sensors.REVColor.ColorSensorPort;
+import frc.robot.sensors.REVColorMux.REVColor.CargoColor;
+import frc.robot.sensors.REVColorMux.REVColor.ColorSensorID;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.DriveTrain.DriveTrainLayout;
 import frc.robot.subsystems.DriveTrain.ShootingStyle;
@@ -93,8 +93,8 @@ public class RobotContainer {
         intake = new Intake();
         intakeArticulator = new IntakeArticulator();
         
-        feeder = new Feeder(ColorSensorPort.BACK_SENSOR, CargoColor.BLUE, BreakBeamDIO.FRONT, RobotMap.CAN.FEEDER_F);
-        feeder2 = new Feeder(ColorSensorPort.BACK_SENSOR, CargoColor.BLUE, BreakBeamDIO.BACK, RobotMap.CAN.FEEDER_B);
+        feeder = new Feeder(ColorSensorID.FRONT, CargoColor.BLUE, BreakBeamDIO.FRONT, RobotMap.CAN.FEEDER_F);
+        feeder2 = new Feeder(ColorSensorID.BACK, CargoColor.BLUE, BreakBeamDIO.BACK, RobotMap.CAN.FEEDER_B);
         intake = new Intake();
         limelightCamera = new LimelightCamera();
         limelightCamera.getLimelight().setLEDState(LimelightLEDState.OFF);
