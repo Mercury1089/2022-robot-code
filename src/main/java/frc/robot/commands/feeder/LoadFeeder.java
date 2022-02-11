@@ -7,21 +7,23 @@ package frc.robot.commands.feeder;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Feeder;
 
-public class RunFeeder extends CommandBase {
+public class LoadFeeder extends CommandBase {
 
   private Feeder feeder;
+  private double runSpeed;
+  private double shootSpeed;
   /** Creates a new RunFeeder. */
-  public RunFeeder(Feeder feeder) {
+  public LoadFeeder(Feeder feeder) {
     this.feeder = feeder;
     addRequirements(feeder);
-    setName("RunFeeder");
+    setName("LoadFeeder");
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this.feeder.setSpeed(1.0);
+    this.feeder.setSpeed(0.60);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

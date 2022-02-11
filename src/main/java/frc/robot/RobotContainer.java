@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,7 +22,7 @@ import frc.robot.commands.drivetrain.DriveWithJoysticks.DriveType;
 import frc.robot.commands.drivetrain.MoveHeadingDerivatives.DriveDistance;
 import frc.robot.commands.elevator.AutomaticElevator;
 import frc.robot.commands.elevator.ManualElevator;
-import frc.robot.commands.feeder.RunFeeder;
+import frc.robot.commands.feeder.LoadFeeder;
 import frc.robot.commands.intake.RunIntake;
 import frc.robot.commands.limelightCamera.SwitchLEDState;
 import frc.robot.commands.shooter.EndFullyAutoAimBot;
@@ -68,7 +70,7 @@ public class RobotContainer {
     private Turret turret;
     private Intake intake;
     private IntakeArticulator intakeArticulator;
-    private Feeder feeder, feeder2;
+    private Feeder frontFeeder, backFeeder;
     private Elevator elevator;
     private LimelightCamera limelightCamera;
 
@@ -93,8 +95,8 @@ public class RobotContainer {
         intake = new Intake();
         intakeArticulator = new IntakeArticulator();
         
-        feeder = new Feeder(ColorSensorID.FRONT, CargoColor.BLUE, BreakBeamDIO.FRONT, RobotMap.CAN.FEEDER_F);
-        feeder2 = new Feeder(ColorSensorID.BACK, CargoColor.BLUE, BreakBeamDIO.BACK, RobotMap.CAN.FEEDER_B);
+        frontFeeder = new Feeder(ColorSensorID.FRONT, CargoColor.BLUE, BreakBeamDIO.FRONT, RobotMap.CAN.FEEDER_F);
+        backFeeder = new Feeder(ColorSensorID.BACK, CargoColor.BLUE, BreakBeamDIO.BACK, RobotMap.CAN.FEEDER_B);
         intake = new Intake();
         limelightCamera = new LimelightCamera();
         limelightCamera.getLimelight().setLEDState(LimelightLEDState.OFF);
@@ -112,8 +114,8 @@ public class RobotContainer {
         //shuffleDash.addPublisher(intake);
         shuffleDash.addPublisher(limelightCamera);
         //shuffleDash.addPublisher(intakeArticulator);
-        shuffleDash.addPublisher(feeder);
-        shuffleDash.addPublisher(feeder2);
+        shuffleDash.addPublisher(frontFeeder);
+        shuffleDash.addPublisher(backFeeder);
         //shuffleDash.addPIDTunable(shooter, "Shooter");
         //shuffleDash.addPIDTunable(driveTrain, "DriveTrain");
     
@@ -139,8 +141,12 @@ public class RobotContainer {
         right4.whenPressed(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
 
         right6.whenPressed(new RotateToTarget(turret));
-        right7.whenPressed(new RunFeeder(feeder));
-
+       // right7.whenPressed(new ParallelCommandGroup(new LoadFeeder(feeder).withInterrupt(feeder.isBeamBroken()), new LoadFeeder(feeder2).withInterrupt(feeder2.isBeamBroken())));
+       // right7.whenPressed(new ParallelCommandGroup(new LoadFeeder(feeder).withInterrupt(feeder.isBeamBroken()), new LoadFeeder(feeder2).withInterrupt(feeder2.isBeamBroken())));
+        right7.whenPressed(new ParallelCommandGroup(
+            new RunCommand(() -> frontFeeder.setSpeed(0.60), frontFeeder).withInterrupt(() -> frontFeeder.isBeamBroken()), 
+            new RunCommand(() -> backFeeder.setSpeed(0.60), backFeeder).withInterrupt(() -> backFeeder.isBeamBroken() && frontFeeder.isBeamBroken())));
+       //right8.whenPressed(new RunFeeder(feeder2));
         right10.whenPressed(new DriveDistance(-24.0, driveTrain));
 
         gamepadA.whenPressed(new AutomaticElevator(elevator, Elevator.ElevatorPosition.BOTTOM));
