@@ -4,16 +4,21 @@
 
 package frc.robot.commands.feeder;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Feeder;
 
 public class LoadFeeder extends CommandBase {
 
   private Feeder feeder;
+  private Supplier<Boolean> beamIsBroken;
   private double runSpeed;
   private double shootSpeed;
   /** Creates a new RunFeeder. */
-  public LoadFeeder(Feeder feeder) {
+  public LoadFeeder(Feeder feeder, Supplier<Boolean> beamIsBroken) {
+    this.beamIsBroken = beamIsBroken;
     this.feeder = feeder;
     addRequirements(feeder);
     setName("LoadFeeder");
@@ -39,6 +44,6 @@ public class LoadFeeder extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return this.feeder.isBeamBroken();
+    return this.beamIsBroken.get();
   }
 }

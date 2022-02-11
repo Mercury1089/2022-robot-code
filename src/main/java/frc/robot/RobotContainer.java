@@ -141,12 +141,10 @@ public class RobotContainer {
         right4.whenPressed(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
 
         right6.whenPressed(new RotateToTarget(turret));
-       // right7.whenPressed(new ParallelCommandGroup(new LoadFeeder(feeder).withInterrupt(feeder.isBeamBroken()), new LoadFeeder(feeder2).withInterrupt(feeder2.isBeamBroken())));
-       // right7.whenPressed(new ParallelCommandGroup(new LoadFeeder(feeder).withInterrupt(feeder.isBeamBroken()), new LoadFeeder(feeder2).withInterrupt(feeder2.isBeamBroken())));
+       
         right7.whenPressed(new ParallelCommandGroup(
-            new RunCommand(() -> frontFeeder.setSpeed(0.60), frontFeeder).withInterrupt(() -> frontFeeder.isBeamBroken()), 
-            new RunCommand(() -> backFeeder.setSpeed(0.60), backFeeder).withInterrupt(() -> backFeeder.isBeamBroken() && frontFeeder.isBeamBroken())));
-       //right8.whenPressed(new RunFeeder(feeder2));
+            new LoadFeeder(frontFeeder, () -> frontFeeder.isBeamBroken()),
+            new LoadFeeder(backFeeder, () -> backFeeder.isBeamBroken() && frontFeeder.isBeamBroken())));
         right10.whenPressed(new DriveDistance(-24.0, driveTrain));
 
         gamepadA.whenPressed(new AutomaticElevator(elevator, Elevator.ElevatorPosition.BOTTOM));
