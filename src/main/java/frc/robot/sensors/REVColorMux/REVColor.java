@@ -20,6 +20,7 @@ public class REVColor {
 
   
   private final ColorSensorV3 colorSensor;
+  private final I2CMUX mux;
   private final ColorMatch colorMatch;
   private final Color targetRed;
   private final Color targetBlue;
@@ -31,7 +32,8 @@ public class REVColor {
   
   private Color detectedColor;
 
-  public REVColor(ColorSensorID colorSensorIDEnum) {
+  public REVColor(ColorSensorID colorSensorIDEnum, I2CMUX mux) {
+    this.mux = mux;
 
     if (colorSensorIDEnum == ColorSensorID.FRONT) {
       colorSensorID = 0;
@@ -40,12 +42,9 @@ public class REVColor {
     } else {
       colorSensorID = -1;
     }
-
-
     
-    // do we wanna create a new DualColorSensorThread everytime we create REVColor?
-    // will running constructor (either DualColor or TCA9548A) multiple times be bad
-    colorSensor = new DualColorSensorThread().getColorSensor(colorSensorID); 
+   
+    colorSensor = new ColorSensorV3(I2C.Port.kMXP); 
     colorMatch = new ColorMatch();
 
     CONFIDENCE_THRESHOLD = 0.9;
@@ -67,7 +66,7 @@ public class REVColor {
   }
 
   public CargoColor getColor() {
-    detectedColor = colorSensor.getColor();
+    detectedColor = getRawColor();
     try {
       ColorMatchResult match = colorMatch.matchColor(detectedColor);
       confidence = match.confidence;
@@ -86,13 +85,14 @@ public class REVColor {
 
 
 
-  public Color getRawColor() {
+  public synchronized Color getRawColor() {
+    mux.setEnabledBuses(colorSensorID);
     return colorSensor.getColor();
   }
 
   public Color getDetectedColor() {
     if (detectedColor == null) {
-      return colorSensor.getColor();
+      return getRawColor();
     }
     return detectedColor;
   }

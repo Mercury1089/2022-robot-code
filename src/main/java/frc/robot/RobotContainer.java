@@ -29,6 +29,7 @@ import frc.robot.commands.shooter.RunShooterRPMPID;
 import frc.robot.commands.turret.RotateToTarget;
 import frc.robot.sensors.Limelight;
 import frc.robot.sensors.Limelight.LimelightLEDState;
+import frc.robot.sensors.REVColorMux.I2CMUX;
 import frc.robot.sensors.REVColorMux.REVColor.CargoColor;
 import frc.robot.sensors.REVColorMux.REVColor.ColorSensorID;
 import frc.robot.subsystems.DriveTrain;
@@ -93,8 +94,9 @@ public class RobotContainer {
         intake = new Intake();
         intakeArticulator = new IntakeArticulator();
         
-        feeder = new Feeder(ColorSensorID.FRONT, CargoColor.BLUE, BreakBeamDIO.FRONT, RobotMap.CAN.FEEDER_F);
-        feeder2 = new Feeder(ColorSensorID.BACK, CargoColor.BLUE, BreakBeamDIO.BACK, RobotMap.CAN.FEEDER_B);
+        I2CMUX mux = new I2CMUX();
+        feeder = new Feeder(ColorSensorID.FRONT, CargoColor.BLUE, BreakBeamDIO.FRONT, RobotMap.CAN.FEEDER_F, mux);
+        feeder2 = new Feeder(ColorSensorID.BACK, CargoColor.BLUE, BreakBeamDIO.BACK, RobotMap.CAN.FEEDER_B, mux);
         intake = new Intake();
         limelightCamera = new LimelightCamera();
         limelightCamera.getLimelight().setLEDState(LimelightLEDState.OFF);
@@ -112,8 +114,6 @@ public class RobotContainer {
         //shuffleDash.addPublisher(intake);
         shuffleDash.addPublisher(limelightCamera);
         //shuffleDash.addPublisher(intakeArticulator);
-        shuffleDash.addPublisher(feeder);
-        shuffleDash.addPublisher(feeder2);
         //shuffleDash.addPIDTunable(shooter, "Shooter");
         //shuffleDash.addPIDTunable(driveTrain, "DriveTrain");
     

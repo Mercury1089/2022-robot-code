@@ -7,27 +7,19 @@
 
 package frc.robot.subsystems;
 
-import java.rmi.server.RemoteObjectInvocationHandler;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import com.revrobotics.ColorMatch;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import frc.robot.RobotMap.CAN;
+import frc.robot.sensors.REVColorMux.I2CMUX;
 import frc.robot.sensors.REVColorMux.REVColor;
 import frc.robot.sensors.REVColorMux.REVColor.CargoColor;
 import frc.robot.sensors.REVColorMux.REVColor.ColorSensorID;
-import frc.robot.util.interfaces.IMercShuffleBoardPublisher;
 
-public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher {
+public class Feeder extends SubsystemBase {
   
   private VictorSPX feedWheel;
   private static final double RUN_SPEED = 1.0;
@@ -39,7 +31,7 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
   /**
    * Creates a new Feeder.
    */
-  public Feeder(ColorSensorID colorSensorID, CargoColor alliance, BreakBeamDIO DIOPort, int motorControllerID) {
+  public Feeder(ColorSensorID colorSensorID, CargoColor alliance, BreakBeamDIO DIOPort, int motorControllerID, I2CMUX mux) {
 
     if (DIOPort == BreakBeamDIO.FRONT) {
       dioPort = 0;
@@ -55,7 +47,7 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
     setName("Feeder " + DIOPort.toString());
     
 
-    colorSensor = new REVColor(colorSensorID);
+    colorSensor = new REVColor(colorSensorID, mux);
   }
 
   
@@ -83,19 +75,6 @@ public class Feeder extends SubsystemBase implements IMercShuffleBoardPublisher 
   public enum BreakBeamDIO {
     FRONT,
     BACK
-  }
-
-  @Override
-  public void publishValues() {
-
-    SmartDashboard.putString(getName() + "/Color/Detected", colorSensor.getDetectedColor().toString());
-    SmartDashboard.putNumber(getName() + "/Color/Confidence", colorSensor.getConfidence());
-    SmartDashboard.putString(getName() + "/Color/ENUM", colorSensor.getColor().toString());
-    SmartDashboard.putString(getName() + "/Color/SameAllianceColor", "" + isCorrectColor());
-   
-    SmartDashboard.putNumber(getName() + "/Color/RGB/Red", colorSensor.getDetectedColor().red * 255);
-    SmartDashboard.putNumber(getName() + "/Color/RGB/Green", colorSensor.getDetectedColor().green * 255);
-    SmartDashboard.putNumber(getName() + "/Color/RGB/Blue", colorSensor.getDetectedColor().blue * 255);
   }
 
   @Override

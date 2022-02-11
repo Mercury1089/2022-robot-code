@@ -11,11 +11,11 @@ import edu.wpi.first.wpilibj.I2C.Port;
 /** Add your docs here. */
 
 // Based off: https://github.com/FRC3005/I2CMux-Example/blob/main/src/main/java/frc/robot/TCA9548A.java
-public class TCA9548A {
+public class I2CMUX {
     private final int I2CADDRESS;
     private final I2C i2c;
 
-    public TCA9548A() {
+    public I2CMUX() {
         I2CADDRESS = 0x70; // Default address for the common PCB available
         i2c = new I2C(Port.kMXP, I2CADDRESS);
     }
@@ -25,7 +25,7 @@ public class TCA9548A {
    *
    * @return bit field of enabled buses
    */
-  public int enabledBuses() {
+  public int getEnabledBuses() {
     byte[] result = new byte[1];
     i2c.readOnly(result, 1);
     return result[0];
