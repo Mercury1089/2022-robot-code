@@ -44,18 +44,17 @@ public class REVColor {
     }
     
    
-    colorSensor = new ColorSensorV3(I2C.Port.kMXP); 
+    synchronized(this) {
+      mux.setEnabledBuses(colorSensorID);
+      colorSensor = new ColorSensorV3(I2C.Port.kMXP);
+    }
     colorMatch = new ColorMatch();
 
     CONFIDENCE_THRESHOLD = 0.9;
     setConfidence(CONFIDENCE_THRESHOLD);
-    // raw RGB vals
-   // targetRed = new Color(1.0, 0.0, 0.0);
-    // targetBlue = new Color(0.0, 0.0, 1.0);
 
     // calibrated RGB's
     targetRed = new Color(0.471, 0.376, 0.149);
-    //targetBlue = new Color(0.204, 0.427, 0.364);
     targetBlue = new Color(0.16, 0.408, 0.424);
 
     colorMatch.addColorMatch(targetRed);
