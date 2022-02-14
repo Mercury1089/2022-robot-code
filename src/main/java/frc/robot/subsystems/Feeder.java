@@ -7,16 +7,19 @@
 
 package frc.robot.subsystems;
 
+import java.sql.Driver;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.sensors.REVColorMux.I2CMUX;
 import frc.robot.sensors.REVColorMux.REVColor;
-import frc.robot.sensors.REVColorMux.REVColor.CargoColor;
+
 import frc.robot.sensors.REVColorMux.REVColor.ColorSensorID;
 
 public class Feeder extends SubsystemBase {
@@ -24,20 +27,22 @@ public class Feeder extends SubsystemBase {
   private VictorSPX feedWheel;
   private static final double RUN_SPEED = 1.0;
   private REVColor colorSensor;
-  private CargoColor allianceColor;
+  private DriverStation.Alliance allianceColor;
   private DigitalInput breakBeamSensor;
   private int dioPort;
 
   /**
    * Creates a new Feeder.
    */
-  public Feeder(ColorSensorID colorSensorID, CargoColor alliance, BreakBeamDIO DIOPort, int motorControllerID, I2CMUX mux) {
+  public Feeder(ColorSensorID colorSensorID, DriverStation.Alliance alliance, BreakBeamDIO DIOPort, int motorControllerID, I2CMUX mux) {
 
     if (DIOPort == BreakBeamDIO.FRONT) {
       dioPort = 0;
     } else if (DIOPort == BreakBeamDIO.BACK) {
       dioPort = 1;
     }
+
+    
     breakBeamSensor = new DigitalInput(dioPort); 
     allianceColor = alliance;
     feedWheel = new VictorSPX(motorControllerID);

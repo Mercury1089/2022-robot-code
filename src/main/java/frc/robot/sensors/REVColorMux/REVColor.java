@@ -7,6 +7,7 @@
 
 package frc.robot.sensors.REVColorMux;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 import com.revrobotics.ColorSensorV3;
@@ -64,21 +65,21 @@ public class REVColor {
 
   }
 
-  public CargoColor getColor() {
+  public DriverStation.Alliance getColor() {
     detectedColor = getRawColor();
     try {
       ColorMatchResult match = colorMatch.matchColor(detectedColor);
       confidence = match.confidence;
 
       if (match.color == targetRed) {
-        return CargoColor.RED;
+        return DriverStation.Alliance.Red;
       } else if (match.color == targetBlue) {
-        return CargoColor.BLUE;
+        return DriverStation.Alliance.Blue;
       }
-      return CargoColor.UNKNOWN;
+      return DriverStation.Alliance.Invalid;
 
     } catch (Exception nullPointerException) {
-      return CargoColor.UNKNOWN;
+      return DriverStation.Alliance.Invalid;
     }
   }
 
@@ -105,11 +106,7 @@ public class REVColor {
   }
 
 
-  public enum CargoColor {
-    RED,
-    BLUE,
-    UNKNOWN
-  }
+
 
   public enum ColorSensorID {
     FRONT,

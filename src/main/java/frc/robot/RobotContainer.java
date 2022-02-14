@@ -3,7 +3,9 @@ package frc.robot;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj.CAN;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -32,7 +34,6 @@ import frc.robot.commands.turret.RotateToTarget;
 import frc.robot.sensors.Limelight;
 import frc.robot.sensors.Limelight.LimelightLEDState;
 import frc.robot.sensors.REVColorMux.I2CMUX;
-import frc.robot.sensors.REVColorMux.REVColor.CargoColor;
 import frc.robot.sensors.REVColorMux.REVColor.ColorSensorID;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.DriveTrain.DriveTrainLayout;
@@ -97,8 +98,9 @@ public class RobotContainer {
         intakeArticulator = new IntakeArticulator();
         
         I2CMUX mux = new I2CMUX();
-        frontFeeder = new Feeder(ColorSensorID.FRONT, CargoColor.BLUE, BreakBeamDIO.FRONT, RobotMap.CAN.FEEDER_F, mux);
-        backFeeder = new Feeder(ColorSensorID.BACK, CargoColor.BLUE, BreakBeamDIO.BACK, RobotMap.CAN.FEEDER_B, mux);
+        DriverStation.Alliance allianceColor = DriverStation.getAlliance();
+        frontFeeder = new Feeder(ColorSensorID.FRONT, allianceColor, BreakBeamDIO.FRONT, RobotMap.CAN.FEEDER_F, mux);
+        backFeeder = new Feeder(ColorSensorID.BACK, allianceColor, BreakBeamDIO.BACK, RobotMap.CAN.FEEDER_B, mux);
         intake = new Intake();
         limelightCamera = new LimelightCamera();
         limelightCamera.getLimelight().setLEDState(LimelightLEDState.OFF);
