@@ -2,6 +2,8 @@ package frc.robot;
 
 import java.util.function.BooleanSupplier;
 
+import org.opencv.video.TrackerGOTURN;
+
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
@@ -13,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotMap.DS_USB;
 import frc.robot.RobotMap.GAMEPAD_AXIS;
 import frc.robot.RobotMap.GAMEPAD_BUTTONS;
@@ -24,6 +26,7 @@ import frc.robot.commands.drivetrain.DriveWithJoysticks.DriveType;
 import frc.robot.commands.drivetrain.MoveHeadingDerivatives.DriveDistance;
 import frc.robot.commands.elevator.AutomaticElevator;
 import frc.robot.commands.elevator.ManualElevator;
+import frc.robot.commands.feeder.FeederTrigger;
 import frc.robot.commands.feeder.LoadFeeder;
 import frc.robot.commands.intake.RunIntake;
 import frc.robot.commands.limelightCamera.SwitchLEDState;
@@ -101,6 +104,7 @@ public class RobotContainer {
         DriverStation.Alliance allianceColor = DriverStation.getAlliance();
         frontFeeder = new Feeder(ColorSensorID.FRONT, allianceColor, BreakBeamDIO.FRONT, RobotMap.CAN.FEEDER_F, mux);
         backFeeder = new Feeder(ColorSensorID.BACK, allianceColor, BreakBeamDIO.BACK, RobotMap.CAN.FEEDER_B, mux);
+        frontFeeder.setDefaultCommand(new FeederTrigger(frontFeeder, backFeeder));
         intake = new Intake();
         limelightCamera = new LimelightCamera();
         limelightCamera.getLimelight().setLEDState(LimelightLEDState.OFF);
@@ -112,11 +116,11 @@ public class RobotContainer {
 
         
         shuffleDash = new ShuffleDash();
-        shuffleDash.addPublisher(shooter);
+        //shuffleDash.addPublisher(shooter);
         shuffleDash.addPublisher(driveTrain);
         //shuffleDash.addPublisher(spinner);
         //shuffleDash.addPublisher(intake);
-        shuffleDash.addPublisher(limelightCamera);
+        //shuffleDash.addPublisher(limelightCamera);
         //shuffleDash.addPublisher(intakeArticulator);
         //shuffleDash.addPIDTunable(shooter, "Shooter");
         //shuffleDash.addPIDTunable(driveTrain, "DriveTrain");
@@ -143,7 +147,35 @@ public class RobotContainer {
         right4.whenPressed(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
 
         right6.whenPressed(new RotateToTarget(turret));
-       
+        
+
+        Trigger backFeederTrigger = new Trigger(() -> !backFeeder.isBeamBroken() ); 
+        backFeederTrigger.whenActive(
+            new RunCommand(() -> backFeeder.setSpeed(0.60), backFeeder));  //  no ball in back feeder --> run back feeder
+        
+        backFeederTrigger.whenInactive( // there is ball in backfeeder
+        // CHANGE THIS to 0
+            new RunCommand(() -> backFeeder.setSpeed(0.6), backFeeder)); // ball in back feeder --> stop back feeder
+
+
+        // no ball in front or no ball in back OR ball in front NO BALL IN BACK 
+        Trigger firstFeederTrigger = new Trigger(() -> (!frontFeeder.isBeamBroken() && !backFeeder.isBeamBroken()) || 
+        (frontFeeder.isBeamBroken() && !backFeeder.isBeamBroken()) || 
+        (!frontFeeder.isBeamBroken() && backFeeder.isBeamBroken())); 
+
+        /*
+        no ball in front or back --> run front feeder
+        ball in front but not back --> run front feeder
+        ball in back but not front --> run front feeder
+
+        
+        */
+        firstFeederTrigger.whenActive(new RunCommand(() -> frontFeeder.setSpeed(0.6), frontFeeder));  
+
+        // when ball in both feeders --> stop front feeder
+        // CHANGE THIS to 0
+        firstFeederTrigger.whenInactive(new RunCommand(() -> frontFeeder.setSpeed(0.6), frontFeeder));
+
         right7.whenPressed(new ParallelCommandGroup(
             new LoadFeeder(frontFeeder, () -> frontFeeder.isBeamBroken()),
             new LoadFeeder(backFeeder, () -> backFeeder.isBeamBroken() && frontFeeder.isBeamBroken())));

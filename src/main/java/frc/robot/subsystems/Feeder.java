@@ -91,11 +91,12 @@ public class Feeder extends SubsystemBase {
     builder.addDoubleProperty("Color/Confidence", () -> colorSensor.getConfidence(), null);
     builder.addStringProperty("Color/ENUM", () -> colorSensor.getColor().toString(), null);
     builder.addStringProperty("Color/SameAllianceColor", () -> "" + isCorrectColor(), null);
+    builder.addStringProperty("Alliance", () -> allianceColor.toString(), null);
     
     builder.addDoubleProperty("Color/RGB/Red", () -> colorSensor.getDetectedColor().red * 255, null);
     builder.addDoubleProperty("Color/RGB/Green", () -> colorSensor.getDetectedColor().green * 255, null);
     builder.addDoubleProperty("Color/RGB/Blue", () -> colorSensor.getDetectedColor().blue * 255, null);
 
-    builder.addBooleanProperty("breakBeamSensor", () -> isBeamBroken(), null);
+    builder.addBooleanProperty("isBeamBroken", () -> isBeamBroken(), null);
   }
 }
