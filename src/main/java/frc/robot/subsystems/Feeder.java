@@ -27,14 +27,13 @@ public class Feeder extends SubsystemBase {
   private VictorSPX feedWheel;
   private static final double RUN_SPEED = 1.0;
   private REVColor colorSensor;
-  private DriverStation.Alliance allianceColor;
   private DigitalInput breakBeamSensor;
   private int dioPort;
 
   /**
    * Creates a new Feeder.
    */
-  public Feeder(ColorSensorID colorSensorID, DriverStation.Alliance alliance, BreakBeamDIO DIOPort, int motorControllerID, I2CMUX mux) {
+  public Feeder(ColorSensorID colorSensorID, BreakBeamDIO DIOPort, int motorControllerID, I2CMUX mux) {
 
     if (DIOPort == BreakBeamDIO.FRONT) {
       dioPort = 0;
@@ -44,7 +43,6 @@ public class Feeder extends SubsystemBase {
 
     
     breakBeamSensor = new DigitalInput(dioPort); 
-    allianceColor = alliance;
     feedWheel = new VictorSPX(motorControllerID);
     feedWheel.configFactoryDefault();
     feedWheel.setInverted(true);
@@ -54,8 +52,6 @@ public class Feeder extends SubsystemBase {
 
     colorSensor = new REVColor(colorSensorID, mux);
   }
-
-  
 
   public void setSpeed(double speed) {
     feedWheel.set(ControlMode.PercentOutput, speed);
@@ -70,7 +66,7 @@ public class Feeder extends SubsystemBase {
   }
 
   public boolean isCorrectColor() {
-    return colorSensor.getColor() == allianceColor;
+    return colorSensor.getColor() ==  DriverStation.getAlliance();
   }
 
   public boolean isBeamBroken() {
@@ -91,7 +87,6 @@ public class Feeder extends SubsystemBase {
     builder.addDoubleProperty("Color/Confidence", () -> colorSensor.getConfidence(), null);
     builder.addStringProperty("Color/ENUM", () -> colorSensor.getColor().toString(), null);
     builder.addStringProperty("Color/SameAllianceColor", () -> "" + isCorrectColor(), null);
-    builder.addStringProperty("Alliance", () -> allianceColor.toString(), null);
     
     builder.addDoubleProperty("Color/RGB/Red", () -> colorSensor.getDetectedColor().red * 255, null);
     builder.addDoubleProperty("Color/RGB/Green", () -> colorSensor.getDetectedColor().green * 255, null);

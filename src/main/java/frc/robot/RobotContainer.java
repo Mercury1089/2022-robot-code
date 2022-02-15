@@ -101,10 +101,13 @@ public class RobotContainer {
         intakeArticulator = new IntakeArticulator();
         
         I2CMUX mux = new I2CMUX();
-        DriverStation.Alliance allianceColor = DriverStation.getAlliance();
-        frontFeeder = new Feeder(ColorSensorID.FRONT, allianceColor, BreakBeamDIO.FRONT, RobotMap.CAN.FEEDER_F, mux);
-        backFeeder = new Feeder(ColorSensorID.BACK, allianceColor, BreakBeamDIO.BACK, RobotMap.CAN.FEEDER_B, mux);
+
+        frontFeeder = new Feeder(ColorSensorID.FRONT, BreakBeamDIO.FRONT, RobotMap.CAN.FEEDER_F, mux);
+        backFeeder = new Feeder(ColorSensorID.BACK, BreakBeamDIO.BACK, RobotMap.CAN.FEEDER_B, mux);
+
         frontFeeder.setDefaultCommand(new FeederTrigger(frontFeeder, backFeeder));
+
+
         intake = new Intake();
         limelightCamera = new LimelightCamera();
         limelightCamera.getLimelight().setLEDState(LimelightLEDState.OFF);
@@ -167,8 +170,6 @@ public class RobotContainer {
         no ball in front or back --> run front feeder
         ball in front but not back --> run front feeder
         ball in back but not front --> run front feeder
-
-        
         */
         firstFeederTrigger.whenActive(new RunCommand(() -> frontFeeder.setSpeed(0.6), frontFeeder));  
 
