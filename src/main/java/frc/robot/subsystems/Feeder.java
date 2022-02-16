@@ -24,6 +24,24 @@ import frc.robot.sensors.REVColorMux.REVColor.ColorSensorID;
 
 public class Feeder extends SubsystemBase {
   
+  public enum FeedSpeed{
+    STOP(0.0),
+    LOAD(0.60),
+    EJECT(-0.60),
+    SHOOT(1.00);
+
+    public final double speed; //In percent output
+
+        /**
+         * Creates the feeder speed.
+         *
+         * @param speed speed, in ticks
+         */
+        FeedSpeed(double speed) {
+            this.speed = speed;
+        }
+  }
+
   private VictorSPX feedWheel;
   private static final double RUN_SPEED = 1.0;
   private REVColor colorSensor;
@@ -53,20 +71,13 @@ public class Feeder extends SubsystemBase {
     colorSensor = new REVColor(colorSensorID, mux);
   }
 
-  public void setSpeed(double speed) {
-    feedWheel.set(ControlMode.PercentOutput, speed);
-  }
-
-  public void runFeeder() {
-    this.setSpeed(RUN_SPEED);
-  }
-
-  public void stopFeeder() {
-    this.setSpeed(0.0);
+  public void setSpeed(FeedSpeed feedSpeed) {
+    feedWheel.set(ControlMode.PercentOutput, feedSpeed.speed);
   }
 
   public boolean isCorrectColor() {
-    return colorSensor.getColor() ==  DriverStation.getAlliance();
+    return colorSensor.getColor() ==  DriverStation.getAlliance() &&
+    colorSensor.getColor() != DriverStation.Alliance.Invalid;
   }
 
   public boolean isBeamBroken() {
@@ -82,7 +93,7 @@ public class Feeder extends SubsystemBase {
   public void initSendable(SendableBuilder builder) {
     
     builder.setActuator(true); // Only allow setting values when in Test mode
-    builder.setSafeState(() -> setSpeed(0)); // Provide method to make the subsystem safe
+    builder.setSafeState(() -> setSpeed(FeedSpeed.STOP)); // Provide method to make the subsystem safe
     builder.addStringProperty("Color/Detected", () -> colorSensor.getDetectedColor().toString(), null);
     builder.addDoubleProperty("Color/Confidence", () -> colorSensor.getConfidence(), null);
     builder.addStringProperty("Color/ENUM", () -> colorSensor.getColor().toString(), null);
