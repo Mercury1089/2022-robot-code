@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -27,7 +28,7 @@ import frc.robot.commands.drivetrain.DriveWithJoysticks.DriveType;
 import frc.robot.commands.drivetrain.MoveHeadingDerivatives.DriveDistance;
 import frc.robot.commands.elevator.AutomaticElevator;
 import frc.robot.commands.elevator.ManualElevator;
-import frc.robot.commands.feeder.FeederTrigger;
+import frc.robot.commands.feeder.LoadFeederTrigger;
 import frc.robot.commands.feeder.LoadFeeder;
 import frc.robot.commands.intake.RunIntake;
 import frc.robot.commands.limelightCamera.SwitchLEDState;
@@ -44,6 +45,7 @@ import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.DriveTrain.DriveTrainLayout;
 import frc.robot.subsystems.DriveTrain.ShootingStyle;
 import frc.robot.subsystems.Feeder.BreakBeamDIO;
+import frc.robot.subsystems.Feeder.FeedSpeed;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Intake;
@@ -105,9 +107,12 @@ public class RobotContainer {
         I2CMUX mux = new I2CMUX();
 
         frontFeeder = new Feeder(ColorSensorID.FRONT, BreakBeamDIO.FRONT, RobotMap.CAN.FEEDER_F, mux);
+        frontFeeder.setDefaultCommand(new LoadFeederTrigger(frontFeeder, () -> (!frontFeeder.isBeamBroken() && !backFeeder.isBeamBroken()) || 
+        (frontFeeder.isBeamBroken() && !backFeeder.isBeamBroken()) || 
+        (!frontFeeder.isBeamBroken() && backFeeder.isBeamBroken()) ));
+        
         backFeeder = new Feeder(ColorSensorID.BACK, BreakBeamDIO.BACK, RobotMap.CAN.FEEDER_B, mux);
-
-        frontFeeder.setDefaultCommand(new FeederTrigger(frontFeeder, backFeeder));
+        backFeeder.setDefaultCommand(new LoadFeederTrigger(backFeeder, () -> !backFeeder.isBeamBroken()));
 
 
         intake = new Intake();
@@ -155,30 +160,33 @@ public class RobotContainer {
         right6.whenPressed(new RotateToTarget(turret));
         
 
-        Trigger backFeederTrigger = new Trigger(() -> !backFeeder.isBeamBroken() ); 
-        backFeederTrigger.whenActive(
-            new RunCommand(() -> backFeeder.setSpeed(0.60), backFeeder));  //  no ball in back feeder --> run back feeder
+        // Trigger backFeederTrigger = new Trigger(() -> !backFeeder.isBeamBroken() ); 
+        // backFeederTrigger.whenActive(
+        //     new RunCommand(() -> backFeeder.setSpeed(0.60), backFeeder));  //  no ball in back feeder --> run back feeder
         
-        backFeederTrigger.whenInactive( // there is ball in backfeeder
-        // CHANGE THIS to 0
-            new RunCommand(() -> backFeeder.setSpeed(0.6), backFeeder)); // ball in back feeder --> stop back feeder
+        // backFeederTrigger.whenInactive( // there is ball in backfeeder
+        // // CHANGE THIS to 0
+        //     new RunCommand(() -> backFeeder.setSpeed(0.6), backFeeder)); // ball in back feeder --> stop back feeder
 
 
-        // no ball in front or no ball in back OR ball in front NO BALL IN BACK 
-        Trigger firstFeederTrigger = new Trigger(() -> (!frontFeeder.isBeamBroken() && !backFeeder.isBeamBroken()) || 
-        (frontFeeder.isBeamBroken() && !backFeeder.isBeamBroken()) || 
-        (!frontFeeder.isBeamBroken() && backFeeder.isBeamBroken())); 
+        // // no ball in front or no ball in back OR ball in front NO BALL IN BACK 
+        // Trigger firstFeederTrigger = new Trigger(() -> (!frontFeeder.isBeamBroken() && !backFeeder.isBeamBroken()) || 
+        // (frontFeeder.isBeamBroken() && !backFeeder.isBeamBroken()) || 
+        // (!frontFeeder.isBeamBroken() && backFeeder.isBeamBroken())); 
 
-        /*
-        no ball in front or back --> run front feeder
-        ball in front but not back --> run front feeder
-        ball in back but not front --> run front feeder
-        */
-        firstFeederTrigger.whenActive(new RunCommand(() -> frontFeeder.setSpeed(0.6), frontFeeder));  
+        // /*
+        // no ball in front or back --> run front feeder
+        // ball in front but not back --> run front feeder
+        // ball in back but not front --> run front feeder
+        // */
+        // firstFeederTrigger.whenActive(new RunCommand(() -> frontFeeder.setSpeed(0.6), frontFeeder));  
 
-        // when ball in both feeders --> stop front feeder
-        // CHANGE THIS to 0
-        firstFeederTrigger.whenInactive(new RunCommand(() -> frontFeeder.setSpeed(0.6), frontFeeder));
+        // // when ball in both feeders --> stop front feeder
+        // // CHANGE THIS to 0
+        // firstFeederTrigger.whenInactive(new RunCommand(() -> frontFeeder.setSpeed(0.6), frontFeeder));
+
+        Trigger unloadFeeder = new Trigger(() -> !frontFeeder.isCorrectColor());
+        unloadFeeder.whenActive(new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.EJECT), frontFeeder));
 
         right7.whenPressed(new ParallelCommandGroup(
             new LoadFeeder(frontFeeder, () -> frontFeeder.isBeamBroken()),

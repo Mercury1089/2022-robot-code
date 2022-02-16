@@ -4,37 +4,43 @@
 
 package frc.robot.commands.feeder;
 
-import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Feeder.FeedSpeed;
 
-public class LoadFeeder extends CommandBase {
 
-  private Feeder feeder;
-  private Supplier<Boolean> beamIsBroken;
-  private double runSpeed;
-  private double shootSpeed;
-  /** Creates a new RunFeeder. */
-  public LoadFeeder(Feeder feeder, Supplier<Boolean> beamIsBroken) {
-    this.beamIsBroken = beamIsBroken;
+public class LoadFeederTrigger extends CommandBase {
+
+  Feeder feeder;
+  Supplier<Boolean> beamCondition;
+ 
+  /** Creates a new FeederTrigger. */
+  public LoadFeederTrigger(Feeder feeder, Supplier<Boolean> beamCondition) {
+
     this.feeder = feeder;
-    addRequirements(feeder);
-    setName("LoadFeeder");
-    // Use addRequirements() here to declare subsystem dependencies.
-  }
+    this.beamCondition = beamCondition;
+    
+     addRequirements(feeder);
+    }
+
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    this.feeder.setSpeed(FeedSpeed.LOAD);
-  }
+  public void initialize() {}
 
-  // Called every time the scheduler runs while the command is scheduled.
+
+
   @Override
-  public void execute() {}
+  public void execute() {
+
+   if (beamCondition.get()) {
+     feeder.setSpeed(FeedSpeed.LOAD);
+   } else {
+     feeder.setSpeed(FeedSpeed.STOP);
+   }
+  }
 
   // Called once the command ends or is interrupted.
   @Override
@@ -45,6 +51,6 @@ public class LoadFeeder extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return this.beamIsBroken.get();
+    return false;
   }
 }
