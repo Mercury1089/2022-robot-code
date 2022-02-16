@@ -51,12 +51,12 @@ public class REVColor {
     }
     colorMatch = new ColorMatch();
 
-    CONFIDENCE_THRESHOLD = 0.9;
+    CONFIDENCE_THRESHOLD = 0.97;
     setConfidence(CONFIDENCE_THRESHOLD);
 
     // calibrated RGB's
-    targetRed = new Color(0.471, 0.376, 0.149);
-    targetBlue = new Color(0.16, 0.408, 0.424);
+    targetRed = new Color(0.373, 0.451, 0.173);
+    targetBlue = new Color(0.263, 0.478, 0.255);
 
     colorMatch.addColorMatch(targetRed);
     colorMatch.addColorMatch(targetBlue);
