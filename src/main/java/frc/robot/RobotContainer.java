@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -33,6 +34,7 @@ import frc.robot.commands.limelightCamera.SwitchLEDState;
 import frc.robot.commands.shooter.EndFullyAutoAimBot;
 import frc.robot.commands.shooter.FullyAutoAimbot;
 import frc.robot.commands.shooter.RunShooterRPMPID;
+import frc.robot.commands.turret.ScanForTarget;
 import frc.robot.commands.turret.RotateToTarget;
 import frc.robot.sensors.Limelight;
 import frc.robot.sensors.Limelight.LimelightLEDState;
@@ -115,9 +117,10 @@ public class RobotContainer {
         elevator.setDefaultCommand(new ManualElevator(elevator, () -> getGamepadAxis(GAMEPAD_AXIS.leftY)));
 
         turret = new Turret(limelight);
-        turret.setDefaultCommand(new RotateToTarget(turret));
+//        turret.setDefaultCommand(new ConditionalCommand(new ScanForTarget(turret), new RotateToTarget(turret), 
+//        () -> !turret.isTargetAcquired() || (turret.isAtForwardLimit() || turret.isAtReverseLimit())));
 
-        
+       
         shuffleDash = new ShuffleDash();
         //shuffleDash.addPublisher(shooter);
         shuffleDash.addPublisher(driveTrain);

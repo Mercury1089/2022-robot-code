@@ -45,6 +45,12 @@ public class Turret extends SubsystemBase {
     turret.setSensorPhase(false);
     turret.setInverted(false);
 
+    turret.configForwardSoftLimitThreshold(4096*9, RobotMap.CTRE_TIMEOUT);
+    turret.configReverseSoftLimitThreshold(0, RobotMap.CTRE_TIMEOUT);
+    turret.configForwardSoftLimitEnable(true, RobotMap.CTRE_TIMEOUT);
+    turret.configReverseSoftLimitEnable(true, RobotMap.CTRE_TIMEOUT);
+   
+
     turret.configNominalOutputForward(0.02, RobotMap.CTRE_TIMEOUT);
     turret.configNominalOutputReverse(-0.02, RobotMap.CTRE_TIMEOUT);
     turret.configPeakOutputForward(1.0, RobotMap.CTRE_TIMEOUT);
@@ -84,8 +90,13 @@ public class Turret extends SubsystemBase {
   }
 
   public double getAngle() {
-    return getLimelight().getTargetCenterXAngle();
+    return limelight.getTargetCenterXAngle();
   }
+
+  public boolean isTargetAcquired(){
+    return limelight.getTargetAcquired();
+  }
+
 
   
   public double getCustomTickInDegrees() {
@@ -103,10 +114,6 @@ public class Turret extends SubsystemBase {
     return NORMAL_P_VAL;
   }
 
-  public Limelight getLimelight() {
-    return this.limelight;
-  }
-
   public boolean isAligned(){
     return Math.abs(limelight.getTargetCenterXAngle()) <= THRESHOLD_DEGREES;
     //ON_TARGET_THRESHOLD_DEG;
@@ -115,6 +122,14 @@ public class Turret extends SubsystemBase {
   public boolean isReadyToShoot(){
     return isOnTarget();
 }
+
+  public boolean isAtForwardLimit(){
+    return turret.getSensorCollection().isFwdLimitSwitchClosed();
+  }
+
+  public boolean isAtReverseLimit(){
+    return turret.getSensorCollection().isRevLimitSwitchClosed();
+  }
 
   public double getAngleToTarget(){
     return limelight.getTargetCenterXAngle();
@@ -132,8 +147,8 @@ public class Turret extends SubsystemBase {
     builder.addDoubleProperty("Velocity", () -> turret.getSelectedSensorVelocity(), null);
     builder.addDoubleProperty("PID/kP", () -> getPVal(), (x) -> setPVal(x));
 
-    builder.addBooleanProperty("TargetAcquired", () -> getLimelight().getTargetAcquired(), null);
-    builder.addBooleanProperty("LimelightLEDState", () -> getLimelight().getLEDState(), null);
+    builder.addBooleanProperty("TargetAcquired", () -> limelight.getTargetAcquired(), null);
+    builder.addBooleanProperty("LimelightLEDState", () -> limelight.getLEDState(), null);
     builder.addBooleanProperty("IsAligned", () -> isAligned(), null);
     builder.addDoubleProperty("LimelightXAngle", () -> getAngleToTarget(), null);
     builder.addBooleanProperty("isOnTarget", () -> isOnTarget(), null);

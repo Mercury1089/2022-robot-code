@@ -61,8 +61,10 @@ public class RotateToTarget extends CommandBase
     @Override
     public boolean isFinished() {
 
-       return false;
-       
+        return false;
+
+         //!turret.isTargetAcquired() || (turret.isAtForwardLimit() || turret.isAtReverseLimit());
+
     }
 
     // Called once after isFinished returns true
