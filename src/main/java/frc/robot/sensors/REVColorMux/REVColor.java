@@ -36,13 +36,7 @@ public class REVColor {
   public REVColor(ColorSensorID colorSensorIDEnum, I2CMUX mux) {
     this.mux = mux;
 
-    if (colorSensorIDEnum == ColorSensorID.FRONT) {
-      colorSensorID = 0;
-    } else if (colorSensorIDEnum == ColorSensorID.BACK) {
-      colorSensorID = 1;
-    } else {
-      colorSensorID = -1;
-    }
+    colorSensorID = colorSensorIDEnum.id;
     
    
     synchronized(this) {
@@ -109,7 +103,15 @@ public class REVColor {
 
 
   public enum ColorSensorID {
-    FRONT,
-    BACK
+    // enum to set correct enabled bus on MUX
+    FRONT(0),
+    BACK(1);
+
+    public final int id; 
+
+    ColorSensorID(int id) {
+      this.id = id;
+    }
+
   }
 }

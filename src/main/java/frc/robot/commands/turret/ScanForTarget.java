@@ -18,17 +18,19 @@ public class ScanForTarget extends CommandBase {
   /** Creates a new FindTarget. */
   public ScanForTarget(Turret turret) {
     // Use addRequirements() here to declare subsystem dependencies.
+    this.turret = turret;
+
+
     addRequirements(turret);
     setName("ScanForTarget");
 
-    this.turret = turret;
     
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this.encoderAngle = turret.getCustomTickInDegrees();
+    this.encoderAngle = this.turret.getCustomTickInDegrees();
 
     if (this.encoderAngle > 180) {
       direction = TurretDirection.BACK; // depending on limit switch
@@ -45,12 +47,7 @@ public class ScanForTarget extends CommandBase {
   @Override
   public void execute() {
     
-    if (direction == TurretDirection.BACK) {
-      turret.setPosition(0.0);
-
-    } else if (direction == TurretDirection.FORWARD) {
-      turret.setPosition(360.0);
-    }
+    turret.setPosition(direction.turretPosition);
 
     if (turret.isAtForwardLimit()) {
       direction = TurretDirection.BACK;
@@ -71,7 +68,16 @@ public class ScanForTarget extends CommandBase {
   }
 
   public enum TurretDirection {
-    FORWARD,
-    BACK
+    // the position of the turret to rotate to (and current direction of rotation)
+    FORWARD(360.0),
+    BACK(0.0);
+
+    public final double turretPosition;
+
+    TurretDirection(double turretPosition) {
+      this.turretPosition = turretPosition;
+    }
+
+
   }
 }

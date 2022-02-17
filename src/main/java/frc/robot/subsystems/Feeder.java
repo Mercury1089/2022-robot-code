@@ -25,17 +25,17 @@ import frc.robot.sensors.REVColorMux.REVColor.ColorSensorID;
 public class Feeder extends SubsystemBase {
   
   public enum FeedSpeed{
-    STOP(0.0),
-    LOAD(0.60),
-    EJECT(-0.60),
-    SHOOT(1.00);
+    STOP(0.0), // stop running feeder motors
+    LOAD(0.60), // run feeder motors inward
+    EJECT(-0.60), // run feeder motors outward
+    SHOOT(1.00); // run feeder motors full speed inwards
 
-    public final double speed; //In percent output
+    public final double speed; 
 
         /**
          * Creates the feeder speed.
          *
-         * @param speed speed, in ticks
+         * @param speed speed, in PercentOutput
          */
         FeedSpeed(double speed) {
             this.speed = speed;
@@ -53,11 +53,7 @@ public class Feeder extends SubsystemBase {
    */
   public Feeder(ColorSensorID colorSensorID, BreakBeamDIO DIOPort, int motorControllerID, I2CMUX mux) {
 
-    if (DIOPort == BreakBeamDIO.FRONT) {
-      dioPort = 0;
-    } else if (DIOPort == BreakBeamDIO.BACK) {
-      dioPort = 1;
-    }
+    dioPort = DIOPort.dioPort;
 
     
     breakBeamSensor = new DigitalInput(dioPort); 
@@ -85,8 +81,15 @@ public class Feeder extends SubsystemBase {
   }
 
   public enum BreakBeamDIO {
-    FRONT,
-    BACK
+    // Represents DIO Port to initialize break beam sensor to
+    FRONT(0),
+    BACK(1);
+
+    public final int dioPort;
+
+    BreakBeamDIO(int dioPort) {
+      this.dioPort = dioPort;
+    }
   }
 
   @Override

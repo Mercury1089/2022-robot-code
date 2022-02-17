@@ -107,12 +107,17 @@ public class RobotContainer {
         I2CMUX mux = new I2CMUX();
 
         frontFeeder = new Feeder(ColorSensorID.FRONT, BreakBeamDIO.FRONT, RobotMap.CAN.FEEDER_F, mux);
+        /*
+        no ball in front or back --> run frontFeeder
+        ball in front but not back --> run frontFeeder
+        ball in back but not front --> run frontFeeder
+        */
         frontFeeder.setDefaultCommand(new LoadFeederTrigger(frontFeeder, () -> (!frontFeeder.isBeamBroken() && !backFeeder.isBeamBroken()) || 
         (frontFeeder.isBeamBroken() && !backFeeder.isBeamBroken()) || 
         (!frontFeeder.isBeamBroken() && backFeeder.isBeamBroken()) ));
         
         backFeeder = new Feeder(ColorSensorID.BACK, BreakBeamDIO.BACK, RobotMap.CAN.FEEDER_B, mux);
-        backFeeder.setDefaultCommand(new LoadFeederTrigger(backFeeder, () -> !backFeeder.isBeamBroken()));
+        backFeeder.setDefaultCommand(new LoadFeederTrigger(backFeeder, () -> !backFeeder.isBeamBroken())); // no ball in back feeder --> run backFeeder
 
 
         intake = new Intake();
