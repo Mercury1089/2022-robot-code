@@ -16,6 +16,7 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.sensors.REVColorMux.I2CMUX;
 import frc.robot.sensors.REVColorMux.REVColor;
@@ -71,10 +72,42 @@ public class Feeder extends SubsystemBase {
     feedWheel.set(ControlMode.PercentOutput, feedSpeed.speed);
   }
 
+
+
   public boolean isCorrectColor() {
+    // is detected color of ball is same as FMS' alliance color 
+    // (and make sure there's actually a color being picked up)
     return colorSensor.getColor() ==  DriverStation.getAlliance() &&
     colorSensor.getColor() != DriverStation.Alliance.Invalid;
   }
+
+  public BallMatchesAlliance whoseBall() {
+    /*
+    SAME: ball color matches our alliance color
+    DIFFERENT: ball is def opposing alliance ball
+    NONE: there is no ball
+    */
+
+    // get opposite alliance color
+    DriverStation.Alliance oppositeAlliance;
+    
+    if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
+      oppositeAlliance = DriverStation.Alliance.Blue;
+    } else {
+      oppositeAlliance = DriverStation.Alliance.Red;
+    }
+
+    if (isCorrectColor()) {
+      return BallMatchesAlliance.SAME; 
+    } else if (colorSensor.getColor() == oppositeAlliance) {
+      return BallMatchesAlliance.DIFFERENT;
+    } else if (colorSensor.getColor() == DriverStation.Alliance.Invalid) {
+      return BallMatchesAlliance.NONE;
+    }
+    return null;
+  }
+
+
 
   public boolean isBeamBroken() {
     return !breakBeamSensor.get(); 
@@ -90,6 +123,12 @@ public class Feeder extends SubsystemBase {
     BreakBeamDIO(int dioPort) {
       this.dioPort = dioPort;
     }
+  }
+
+  public enum BallMatchesAlliance {
+    SAME,
+    DIFFERENT,
+    NONE
   }
 
   @Override
