@@ -44,6 +44,7 @@ import frc.robot.sensors.REVColorMux.REVColor.ColorSensorID;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.DriveTrain.DriveTrainLayout;
 import frc.robot.subsystems.DriveTrain.ShootingStyle;
+import frc.robot.subsystems.Feeder.BallMatchesAlliance;
 import frc.robot.subsystems.Feeder.BreakBeamDIO;
 import frc.robot.subsystems.Feeder.FeedSpeed;
 import frc.robot.subsystems.Elevator;
@@ -115,6 +116,8 @@ public class RobotContainer {
         frontFeeder.setDefaultCommand(new LoadFeederTrigger(frontFeeder, () -> (!frontFeeder.isBeamBroken() && !backFeeder.isBeamBroken()) || 
         (frontFeeder.isBeamBroken() && !backFeeder.isBeamBroken()) || 
         (!frontFeeder.isBeamBroken() && backFeeder.isBeamBroken()) ));
+
+       
         
         backFeeder = new Feeder(ColorSensorID.BACK, BreakBeamDIO.BACK, RobotMap.CAN.FEEDER_B, mux);
         backFeeder.setDefaultCommand(new LoadFeederTrigger(backFeeder, () -> !backFeeder.isBeamBroken())); // no ball in back feeder --> run backFeeder
@@ -127,7 +130,7 @@ public class RobotContainer {
         elevator.setDefaultCommand(new ManualElevator(elevator, () -> getGamepadAxis(GAMEPAD_AXIS.leftY)));
 
         turret = new Turret(limelight);
-//        turret.setDefaultCommand(new ConditionalCommand(new ScanForTarget(turret), new RotateToTarget(turret), 
+    //  turret.setDefaultCommand(new ConditionalCommand(new ScanForTarget(turret), new RotateToTarget(turret), 
 //        () -> !turret.isTargetAcquired() || (turret.isAtForwardLimit() || turret.isAtReverseLimit())));
 
        
@@ -190,8 +193,14 @@ public class RobotContainer {
         // // CHANGE THIS to 0
         // firstFeederTrigger.whenInactive(new RunCommand(() -> frontFeeder.setSpeed(0.6), frontFeeder));
 
-        Trigger unloadFeeder = new Trigger(() -> !frontFeeder.isCorrectColor());
+        Trigger unloadFeeder = new Trigger(() -> frontFeeder.whoseBall() == BallMatchesAlliance.DIFFERENT);
         unloadFeeder.whenActive(new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.EJECT), frontFeeder));
+        unloadFeeder.whenInactive(new LoadFeederTrigger(frontFeeder, () -> (!frontFeeder.isBeamBroken() && !backFeeder.isBeamBroken()) || 
+        (frontFeeder.isBeamBroken() && !backFeeder.isBeamBroken()) || 
+        (!frontFeeder.isBeamBroken() && backFeeder.isBeamBroken())) );
+        
+        //
+        
 
         right7.whenPressed(new ParallelCommandGroup(
             new LoadFeeder(frontFeeder, () -> frontFeeder.isBeamBroken()),
