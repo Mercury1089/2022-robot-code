@@ -53,8 +53,8 @@ public class Turret extends SubsystemBase {
 
     turret.configNominalOutputForward(0.02, RobotMap.CTRE_TIMEOUT);
     turret.configNominalOutputReverse(-0.02, RobotMap.CTRE_TIMEOUT);
-    turret.configPeakOutputForward(1.0, RobotMap.CTRE_TIMEOUT);
-    turret.configPeakOutputReverse(-1.0, RobotMap.CTRE_TIMEOUT);
+    turret.configPeakOutputForward(0.25, RobotMap.CTRE_TIMEOUT);
+    turret.configPeakOutputReverse(-0.25, RobotMap.CTRE_TIMEOUT);
 
     turret.configAllowableClosedloopError(RobotMap.PID.PRIMARY_PID_LOOP, 0, RobotMap.CTRE_TIMEOUT);
 
