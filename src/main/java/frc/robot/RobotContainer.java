@@ -24,6 +24,7 @@ import frc.robot.commands.feeder.LoadFeeder;
 import frc.robot.commands.feeder.LoadFeederTrigger;
 import frc.robot.commands.intake.RunIntake;
 import frc.robot.commands.limelightCamera.SwitchLEDState;
+import frc.robot.commands.shooter.RunShooterRPM;
 import frc.robot.commands.shooter.RunShooterRPMPID;
 import frc.robot.commands.turret.RotateToTarget;
 import frc.robot.commands.turret.ScanForTarget;
@@ -88,8 +89,9 @@ public class RobotContainer {
         driveTrain = new DriveTrain(DriveTrainLayout.FALCONS); //make sure to switch it back to Falcons
         driveTrain.setDefaultCommand(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
 
-        shooter = new Shooter(ShooterMode.NONE, limelight);
-        shooter.setDefaultCommand(new RunShooterRPMPID(shooter, limelight, ShootingStyle.MANUAL));
+        shooter = new Shooter(ShooterMode.ONE_WHEEL, limelight);
+        shooter.setDefaultCommand(new RunCommand(() -> shooter.stopShooter(), shooter));
+        //shooter.setDefaultCommand(new RunShooterRPMPID(shooter, limelight, ShootingStyle.MANUAL));
         
 
         intake = new Intake();
@@ -158,6 +160,10 @@ public class RobotContainer {
         right4.whenPressed(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
 
         right6.whenPressed(new RotateToTarget(turret));
+
+
+        gamepadA.whenPressed(new RunShooterRPM(shooter));
+        gamepadB.whenPressed(new RunCommand(() -> shooter.stopShooter(), shooter));
         
 
         // Trigger backFeederTrigger = new Trigger(() -> !backFeeder.isBeamBroken() ); 
@@ -199,13 +205,6 @@ public class RobotContainer {
             new LoadFeeder(backFeeder, () -> backFeeder.isBeamBroken() && frontFeeder.isBeamBroken())));
         right10.whenPressed(new DriveDistance(-24.0, driveTrain));
 
-        gamepadA.whenPressed(new AutomaticElevator(elevator, Elevator.ElevatorPosition.BOTTOM));
-        gamepadY.whenPressed(new AutomaticElevator(elevator, Elevator.ElevatorPosition.READY, false));
-        gamepadL3.whenPressed(new ManualElevator(elevator, () -> getGamepadAxis(GAMEPAD_AXIS.leftY)));
-        gamepadStart.and(gamepadBack).whenActive(new ParallelCommandGroup(new SequentialCommandGroup(new InstantCommand(() -> elevator.setLockEngaged(true), elevator),
-                                                                                                     new AutomaticElevator(elevator, Elevator.ElevatorPosition.HANG),
-                                                                                                     new ManualElevator(elevator, () -> getGamepadAxis(GAMEPAD_AXIS.leftY))),
-                                                 new RunCommand(() -> shooter.stopShooter(), shooter))); //lock the elevator
     }
 
     public double getJoystickX(int port) {
