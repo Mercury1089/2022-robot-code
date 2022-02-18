@@ -31,17 +31,12 @@ public class RotateToTarget extends CommandBase
 
     // Called just before this Command runs the first time
     @Override
-    public void initialize() {
-        
-        // turret.getLimelight().setLEDState(LimelightLEDState.ON);
-        
-        
+    public void initialize() {        
         targetHeading = turret.getAngleToTarget();
         currentEncoderPos = turret.getCustomTickInDegrees();
         System.out.println("RotateToTarget initialized with angle " + targetHeading);
 
         turret.setPosition(currentEncoderPos+targetHeading);
-        
     }
     
   
@@ -60,9 +55,7 @@ public class RotateToTarget extends CommandBase
 
     @Override
     public boolean isFinished() {
-
-        return !turret.isTargetAcquired() || (turret.isAtForwardLimit() || turret.isAtReverseLimit());
-
+        return false;
     }
 
     // Called once after isFinished returns true

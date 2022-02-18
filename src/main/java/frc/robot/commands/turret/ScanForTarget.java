@@ -4,8 +4,6 @@
 
 package frc.robot.commands.turret;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Turret;
 
@@ -36,11 +34,7 @@ public class ScanForTarget extends CommandBase {
       direction = TurretDirection.BACK; // depending on limit switch
     } else if (this.encoderAngle < 180) {
       direction = TurretDirection.FORWARD; // depending on limit switch
-    }
-
-  
-
-    
+    }    
   }
 
   // Called every time the scheduler runs while the command is scheduled.
