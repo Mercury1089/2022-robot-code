@@ -41,7 +41,7 @@ public class ScanForTarget extends CommandBase {
   @Override
   public void execute() {
     
-    turret.setPosition(direction.turretPosition);
+    turret.setSpeed(() -> direction.turretPosition);
 
     if (turret.isAtForwardLimit()) {
       direction = TurretDirection.BACK;
@@ -63,8 +63,8 @@ public class ScanForTarget extends CommandBase {
 
   public enum TurretDirection {
     // the position of the turret to rotate to (and current direction of rotation)
-    FORWARD(360.0),
-    BACK(0.0);
+    FORWARD(0.25),
+    BACK(-0.25);
 
     public final double turretPosition;
 

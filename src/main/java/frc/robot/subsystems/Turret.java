@@ -124,12 +124,13 @@ public class Turret extends SubsystemBase {
 }
 
   public boolean isAtForwardLimit(){
-    return turret.getSensorCollection().isFwdLimitSwitchClosed();
+    return this.getCustomTickInDegrees() > 360;
   }
 
   public boolean isAtReverseLimit() {
-    return turret.getSensorCollection().isRevLimitSwitchClosed();
+    return this.getCustomTickInDegrees() < 0;
   }
+
 
   public double getAngleToTarget(){
     return limelight.getTargetCenterXAngle();
