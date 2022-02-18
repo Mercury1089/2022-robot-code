@@ -127,12 +127,18 @@ public class Turret extends SubsystemBase {
     return turret.getSensorCollection().isFwdLimitSwitchClosed();
   }
 
-  public boolean isAtReverseLimit(){
+  public boolean isAtReverseLimit() {
     return turret.getSensorCollection().isRevLimitSwitchClosed();
   }
 
   public double getAngleToTarget(){
     return limelight.getTargetCenterXAngle();
+  }
+
+  public boolean targetIsLost() {
+    // if the target is not aquired or it hits a limit
+    return !isTargetAcquired() || (isAtForwardLimit() || isAtReverseLimit());
+        // turretDefaultCommand.initialize()
   }
 
   @Override
