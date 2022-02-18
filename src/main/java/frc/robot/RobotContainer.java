@@ -130,8 +130,10 @@ public class RobotContainer {
         elevator.setDefaultCommand(new ManualElevator(elevator, () -> getGamepadAxis(GAMEPAD_AXIS.leftY)));
 
         turret = new Turret(limelight);
-    //  turret.setDefaultCommand(new ConditionalCommand(new ScanForTarget(turret), new RotateToTarget(turret), 
-//        () -> !turret.isTargetAcquired() || (turret.isAtForwardLimit() || turret.isAtReverseLimit())));
+        Command turretDefaultCommand = new ConditionalCommand(new ScanForTarget(turret), new RotateToTarget(turret), 
+        () -> !turret.isTargetAcquired() || (turret.isAtForwardLimit() || turret.isAtReverseLimit()));
+        turretDefaultCommand.initialize();  /// THIS IS A HACK TO FIX A BUG IN WPILIB
+        turret.setDefaultCommand(turretDefaultCommand);
 
        
         shuffleDash = new ShuffleDash();

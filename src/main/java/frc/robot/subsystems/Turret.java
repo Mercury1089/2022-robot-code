@@ -14,6 +14,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.CAN;
@@ -28,7 +29,6 @@ public class Turret extends SubsystemBase {
   public static final double THRESHOLD_DEGREES = 3.0;
   private static double NORMAL_P_VAL = 0.11;
   private double positionInput;
-  
 
   /** Creates a new Turret. */
   public Turret(Limelight limelight) {
@@ -53,8 +53,8 @@ public class Turret extends SubsystemBase {
 
     turret.configNominalOutputForward(0.02, RobotMap.CTRE_TIMEOUT);
     turret.configNominalOutputReverse(-0.02, RobotMap.CTRE_TIMEOUT);
-    turret.configPeakOutputForward(1.0, RobotMap.CTRE_TIMEOUT);
-    turret.configPeakOutputReverse(-1.0, RobotMap.CTRE_TIMEOUT);
+    turret.configPeakOutputForward(0.25, RobotMap.CTRE_TIMEOUT);
+    turret.configPeakOutputReverse(-0.25, RobotMap.CTRE_TIMEOUT);
 
     turret.configAllowableClosedloopError(RobotMap.PID.PRIMARY_PID_LOOP, 0, RobotMap.CTRE_TIMEOUT);
 
@@ -152,11 +152,15 @@ public class Turret extends SubsystemBase {
     builder.addBooleanProperty("IsAligned", () -> isAligned(), null);
     builder.addDoubleProperty("LimelightXAngle", () -> getAngleToTarget(), null);
     builder.addBooleanProperty("isOnTarget", () -> isOnTarget(), null);
+    builder.addStringProperty("hitForwardLimit", () -> isAtForwardLimit() + "", null);
+    builder.addStringProperty("hitReverseLimit", () -> isAtReverseLimit() + "", null);
+
     //builder.addDoubleProperty(key, getter, setter);
     
   }
 
     // Called repeatedly when this Command is scheduled to run
+
 
 
 }
