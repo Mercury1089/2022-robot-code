@@ -151,6 +151,7 @@ public class Turret extends SubsystemBase {
                         () -> MercMath.encoderTicksToDegrees(turret.getClosedLoopTarget()/9),
                         (x) -> setPosition(x));
     builder.addDoubleProperty("EncoderDegrees", () -> getCustomTickInDegrees(), null);
+    builder.addDoubleProperty("DistanceToTarget", () -> limelight.getDistanceToTarget(), null);
     builder.addDoubleProperty("Velocity", () -> turret.getSelectedSensorVelocity(), null);
     builder.addDoubleProperty("PID/kP", () -> getPVal(), (x) -> setPVal(x));
 
