@@ -474,7 +474,7 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
         SmartDashboard.putNumber(getName() + "/Left RPM", MercMath.ticksPerTenthToRevsPerMinute(getLeftEncVelocityInTicksPerTenth()));
         SmartDashboard.putNumber(getName() + "/Right RPM", MercMath.ticksPerTenthToRevsPerMinute(getRightEncVelocityInTicksPerTenth()));
         //Angle From Pigeon
-        //SmartDashboard.putNumber(getName() + "/Yaw", getPigeonYaw());
+        SmartDashboard.putNumber(getName() + "/Yaw", getPigeonYaw());
 
         
         //Publish Current Command

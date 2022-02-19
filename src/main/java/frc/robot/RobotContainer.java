@@ -126,10 +126,6 @@ public class RobotContainer {
 
         Trigger rotateTargetTrigger = new Trigger(() -> !turret.targetIsLost());
         rotateTargetTrigger.whileActiveContinuous(new RotateToTarget(turret));
-       //Command turretDefaultCommand = new ConditionalCommand(new ScanForTarget(turret), new RotateToTarget(turret), 
-       // () -> !turret.isTargetAcquired() || (turret.isAtForwardLimit() || turret.isAtReverseLimit()));
-       // turretDefaultCommand.initialize();  /// THIS IS A HACK TO FIX A BUG IN WPILIB
-       // turret.setDefaultCommand(turretDefaultCommand);
 
        
         shuffleDash = new ShuffleDash();
@@ -207,7 +203,7 @@ public class RobotContainer {
         right7.whenPressed(new ParallelCommandGroup(
             new LoadFeeder(frontFeeder, () -> frontFeeder.isBeamBroken()),
             new LoadFeeder(backFeeder, () -> backFeeder.isBeamBroken() && frontFeeder.isBeamBroken())));
-        right10.whenPressed(new DriveDistance(-24.0, driveTrain));
+        right10.whenPressed(new DriveDistance(-240.0, driveTrain));
 
     }
 
@@ -249,7 +245,7 @@ public class RobotContainer {
     }
 
     public void updateDash() {
-        //shuffleDash.updateDash();
+        shuffleDash.updateDash();
     }
 
     private void initializeJoystickButtons() {

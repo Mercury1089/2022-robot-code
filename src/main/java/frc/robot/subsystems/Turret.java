@@ -29,6 +29,7 @@ public class Turret extends SubsystemBase {
   public static final double THRESHOLD_DEGREES = 3.0;
   private static double NORMAL_P_VAL = 0.11;
   private double positionInput;
+  private double gearRatio = 9.0;
 
   /** Creates a new Turret. */
   public Turret(Limelight limelight) {
@@ -45,7 +46,7 @@ public class Turret extends SubsystemBase {
     turret.setSensorPhase(false);
     turret.setInverted(false);
 
-    turret.configForwardSoftLimitThreshold(4096*9, RobotMap.CTRE_TIMEOUT);
+    turret.configForwardSoftLimitThreshold(4096*gearRatio, RobotMap.CTRE_TIMEOUT);
     turret.configReverseSoftLimitThreshold(0, RobotMap.CTRE_TIMEOUT);
     turret.configForwardSoftLimitEnable(true, RobotMap.CTRE_TIMEOUT);
     turret.configReverseSoftLimitEnable(true, RobotMap.CTRE_TIMEOUT);
@@ -77,12 +78,12 @@ public class Turret extends SubsystemBase {
   public void setPosition(double pos) {
     // pos is in degrees
     double ticks = MercMath.degreesToEncoderTicks(pos);
-    ticks *= 9; // 9:1 gear ratio
+    ticks *= gearRatio; // 9:1 gear ratio
     turret.set(ControlMode.Position, ticks);
   }
 
   public double getAngleError() {
-    return MercMath.encoderTicksToDegrees(turret.getClosedLoopError()/9);
+    return MercMath.encoderTicksToDegrees(turret.getClosedLoopError()/gearRatio);
   }
 
   public boolean isOnTarget() {
@@ -100,7 +101,7 @@ public class Turret extends SubsystemBase {
 
   
   public double getCustomTickInDegrees() {
-    double ticks = turret.getSelectedSensorPosition(0) / 9;
+    double ticks = turret.getSelectedSensorPosition(0) / gearRatio;
     double degs = MercMath.encoderTicksToDegrees(ticks);
     return degs;
   }
@@ -148,7 +149,7 @@ public class Turret extends SubsystemBase {
     builder.setActuator(true); // Only allow setting values when in Test mode
     builder.addDoubleProperty("Encoder", () -> turret.getSelectedSensorPosition(0), null);
     builder.addDoubleProperty("Position",
-                        () -> MercMath.encoderTicksToDegrees(turret.getClosedLoopTarget()/9),
+                        () -> MercMath.encoderTicksToDegrees(turret.getClosedLoopTarget()/gearRatio),
                         (x) -> setPosition(x));
     builder.addDoubleProperty("EncoderDegrees", () -> getCustomTickInDegrees(), null);
     builder.addDoubleProperty("DistanceToTarget", () -> limelight.getDistanceToTarget(), null);
