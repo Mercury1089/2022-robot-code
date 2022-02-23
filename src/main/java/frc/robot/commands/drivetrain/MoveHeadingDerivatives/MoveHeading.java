@@ -9,14 +9,13 @@ package frc.robot.commands.drivetrain.MoveHeadingDerivatives;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
-import frc.robot.util.MercMath;
 
 public class MoveHeading extends CommandBase {
     protected final int CLOSED_LOOP_TIME_MS = 1;
     protected int onTargetMinCount;
     protected int checkThreshold = 50;
 
-    protected double distance, targetHeading;
+    protected double distance, heading, targetDistance, targetHeading;
     protected int onTargetCount, initialCheckCount, resetCounter;
 
     protected boolean reset;
@@ -34,76 +33,47 @@ public class MoveHeading extends CommandBase {
         setName("MoveHeading");
         this.driveTrain = driveTrain;
 
-        onTargetMinCount = 4; // 100 millis
+        onTargetMinCount = 10; // 200 millis
 
         this.distance = distance;
-        this.targetHeading = heading;
+        this.heading = heading;
+        targetDistance = this.distance;
+        targetHeading = this.heading;
     }
     // Called just before this Command runs the first time
     @Override
     public void initialize() {
-        this.driveTrain.stop();
-        this.driveTrain.resetEncoders();
-
         onTargetCount = 0;
         initialCheckCount = 0;
 
         this.driveTrain.configPIDSlots(DriveTrain.DRIVE_PID_SLOT, DriveTrain.DRIVE_SMOOTH_MOTION_SLOT);
+        targetDistance = distance + this.driveTrain.getRightEncPositionInFeet() * 12; // feet --> inches
+        targetHeading = heading + this.driveTrain.getPigeonYawInDegrees();
 
-        this.driveTrain.resetPigeonYaw();
-
-        reset = driveTrain.getPigeonYaw() == 0.0 && 
-                driveTrain.getLeftEncPositionInTicks() == 0.0 && 
-                driveTrain.getRightEncPositionInTicks() == 0.0;
-        resetCounter = 0;
+        driveTrain.moveHeading(targetDistance, targetHeading);
     }
 
     // Called repeatedly when this Command is scheduled to run
     @Override
-    public void execute() {
-        /* Configured for MotionMagic on Quad Encoders and Auxiliary PID on Pigeon */
-        if(!reset){
-            if (resetCounter % 5 == 0) {
-                driveTrain.resetEncoders();
-                driveTrain.resetPigeonYaw();
-            }
-            resetCounter++;
-            reset = driveTrain.getPigeonYaw() == 0.0 && 
-                    driveTrain.getLeftEncPositionInTicks() == 0.0 && 
-                    driveTrain.getRightEncPositionInTicks() == 0.0;
-        } else {
-            driveTrain.moveHeading(distance, targetHeading);
-        }
-    }
+    public void execute() {}
 
     // Make this return true when this Command no longer needs to run execute()
     @Override
     public boolean isFinished() {
-        if (initialCheckCount < checkThreshold) {
-            initialCheckCount++;
-            return false;
-        }
-        boolean isFinished = false;
+      
 
-        if (driveTrain.isOnTarget()) {
+        if (driveTrain.isOnTarget()) {  
             onTargetCount++;
         } else {
-            if (onTargetCount > 0)
-                onTargetCount = 0;
-        }
-
-        if (onTargetCount > onTargetMinCount) {
-            isFinished = true;
             onTargetCount = 0;
         }
 
-        return isFinished;
+        return onTargetCount > onTargetMinCount && this.targetDistance == this.driveTrain.distanceTargetInTicks() && this.targetHeading == this.driveTrain.headingTargetInYaws();
     }
 
     // Called once after isFinished returns true
     @Override
     public void end(boolean interrupted) {
         this.driveTrain.stop();
-        this.driveTrain.configVoltage(DriveTrain.NOMINAL_OUT, DriveTrain.PEAK_OUT);
     }
 }

@@ -47,8 +47,8 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
         REMOTE_DEVICE_0 = 0,
         REMOTE_DEVICE_1 = 1;
     public static final int
-        PRIMARY_LOOP = 0,
-        AUXILIARY_LOOP = 1;
+        DISTANCE_LOOP = 0,
+        YAW_LOOP = 1;
     public static final double 
         MAX_SPEED = 1,
         MIN_SPEED = -1;
@@ -183,7 +183,7 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
     private void configureFeedbackSensors(int framePeriodMs, int pigeonFramePeriodMs) {
         /* Configure left's encoder as left's selected sensor */
         if (layout == DriveTrainLayout.TALONS_VICTORS){
-            leaderLeft.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, DriveTrain.PRIMARY_LOOP, RobotMap.CTRE_TIMEOUT);
+            leaderLeft.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, DriveTrain.DISTANCE_LOOP, RobotMap.CTRE_TIMEOUT);
 
             /* Configure the Remote Talon's selected sensor as a remote sensor for the right Talon */
             leaderRight.configRemoteFeedbackFilter(leaderLeft.getDeviceID(), RemoteSensorSource.TalonSRX_SelectedSensor, DriveTrain.REMOTE_DEVICE_0, RobotMap.CTRE_TIMEOUT);
@@ -191,9 +191,9 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
             leaderRight.configSensorTerm(SensorTerm.Sum0, FeedbackDevice.RemoteSensor0, RobotMap.CTRE_TIMEOUT);
             leaderRight.configSensorTerm(SensorTerm.Sum1, FeedbackDevice.CTRE_MagEncoder_Relative);
             /* Configure Sum [Sum of both QuadEncoders] to be used for Primary PID Index */
-            leaderRight.configSelectedFeedbackSensor(FeedbackDevice.SensorSum, DriveTrain.PRIMARY_LOOP, RobotMap.CTRE_TIMEOUT);
+            leaderRight.configSelectedFeedbackSensor(FeedbackDevice.SensorSum, DriveTrain.DISTANCE_LOOP, RobotMap.CTRE_TIMEOUT);
             /* Scale Feedback by 0.5 to half the sum of Distance */
-            leaderRight.configSelectedFeedbackCoefficient(0.5, DriveTrain.PRIMARY_LOOP, RobotMap.CTRE_TIMEOUT);
+            leaderRight.configSelectedFeedbackCoefficient(0.5, DriveTrain.DISTANCE_LOOP, RobotMap.CTRE_TIMEOUT);
 
         } else {
             /* Set up a Sum signal from both CANCoders on leaderLeft */
@@ -202,18 +202,18 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
             leaderLeft.configSensorTerm(SensorTerm.Sum0, FeedbackDevice.RemoteSensor0);
             leaderLeft.configSensorTerm(SensorTerm.Sum1, FeedbackDevice.RemoteSensor1);
             /* Configure the sensor sum as the selected sensor for leaderLeft with a coefficient of 0.5 (average) */
-            leaderLeft.configSelectedFeedbackSensor(FeedbackDevice.SensorSum, DriveTrain.PRIMARY_LOOP, RobotMap.CTRE_TIMEOUT);
-            leaderLeft.configSelectedFeedbackCoefficient(0.5, DriveTrain.PRIMARY_LOOP, RobotMap.CTRE_TIMEOUT);
+            leaderLeft.configSelectedFeedbackSensor(FeedbackDevice.SensorSum, DriveTrain.DISTANCE_LOOP, RobotMap.CTRE_TIMEOUT);
+            leaderLeft.configSelectedFeedbackCoefficient(0.5, DriveTrain.DISTANCE_LOOP, RobotMap.CTRE_TIMEOUT);
             /* Configure the selected sensor on leaderLeft (the avg.) as the remote sensor 0 for leaderRight */
             leaderRight.configRemoteFeedbackFilter(leaderLeft.getDeviceID(), RemoteSensorSource.TalonFX_SelectedSensor, DriveTrain.REMOTE_DEVICE_0);
-            leaderRight.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0, DriveTrain.PRIMARY_LOOP, RobotMap.CTRE_TIMEOUT);
+            leaderRight.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0, DriveTrain.DISTANCE_LOOP, RobotMap.CTRE_TIMEOUT);
         }
         /* Configure the Pigeon IMU to the other remote slot available on the right Talon */
         leaderRight.configRemoteFeedbackFilter(podgeboi.getDeviceID(), RemoteSensorSource.Pigeon_Yaw, DriveTrain.REMOTE_DEVICE_1);
         /* Configure Remote 1 [Pigeon IMU's Yaw] to be used for Auxiliary PID Index */
-        leaderRight.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor1, DriveTrain.AUXILIARY_LOOP, RobotMap.CTRE_TIMEOUT);
+        leaderRight.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor1, DriveTrain.YAW_LOOP, RobotMap.CTRE_TIMEOUT);
         /* Scale the Feedback Sensor using a coefficient */
-        leaderRight.configSelectedFeedbackCoefficient(1, DriveTrain.AUXILIARY_LOOP, RobotMap.CTRE_TIMEOUT);
+        leaderRight.configSelectedFeedbackCoefficient(1, DriveTrain.YAW_LOOP, RobotMap.CTRE_TIMEOUT);
 
         /* Motion Magic Configurations */
         leaderRight.configMotionAcceleration(1000);
@@ -236,10 +236,10 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
 
     public void configPIDSlots(int primaryPIDSlot, int auxiliaryPIDSlot) {
         if (primaryPIDSlot >= 0) {
-            leaderRight.selectProfileSlot(primaryPIDSlot, DriveTrain.PRIMARY_LOOP);
+            leaderRight.selectProfileSlot(primaryPIDSlot, DriveTrain.DISTANCE_LOOP);
         }
         if (auxiliaryPIDSlot >= 0) {
-            leaderRight.selectProfileSlot(auxiliaryPIDSlot, DriveTrain.AUXILIARY_LOOP);
+            leaderRight.selectProfileSlot(auxiliaryPIDSlot, DriveTrain.YAW_LOOP);
         }
     }
 
@@ -378,7 +378,7 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
      * @return the error in encoder units
      */
     public double getDistanceError() {
-        return MercMath.encoderTicksToInches(leaderRight.getClosedLoopError(PRIMARY_LOOP));
+        return MercMath.encoderTicksToInches(leaderRight.getClosedLoopError(DISTANCE_LOOP));
     }
 
     /**
@@ -386,18 +386,30 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
      * @return the error in degrees
      */
     public double getAngleError() {
-        return MercMath.pigeonUnitsToDegrees(leaderLeft.getClosedLoopError(AUXILIARY_LOOP));
+        return MercMath.pigeonUnitsToDegrees(leaderRight.getClosedLoopError(YAW_LOOP));
     }
 
     public boolean isOnTarget() {
         return (Math.abs(getDistanceError()) < DISTANCE_THRESHOLD_INCHES &&
                 Math.abs(getAngleError()) < ANGLE_THRESHOLD_DEG);
     }
+
+    public double distanceTargetInTicks() {
+        return leaderRight.getClosedLoopTarget(DISTANCE_LOOP);
+    }
+
+    public double headingTargetInYaws() {
+        return leaderRight.getClosedLoopTarget(YAW_LOOP);
+    }
+
+
     
     public double getPigeonYaw() {
-        double[] currYawPitchRoll = new double[3];
-        podgeboi.getYawPitchRoll(currYawPitchRoll);
-        return currYawPitchRoll[0];
+        return leaderRight.getSelectedSensorPosition(YAW_LOOP);
+    }
+
+    public double getPigeonYawInDegrees() {
+        return MercMath.pigeonUnitsToDegrees(getPigeonYaw());
     }
 
     public void resetPigeonYaw() {

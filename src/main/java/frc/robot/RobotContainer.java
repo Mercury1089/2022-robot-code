@@ -18,6 +18,7 @@ import frc.robot.RobotMap.JOYSTICK_BUTTONS;
 import frc.robot.commands.drivetrain.DriveWithJoysticks;
 import frc.robot.commands.drivetrain.DriveWithJoysticks.DriveType;
 import frc.robot.commands.drivetrain.MoveHeadingDerivatives.DriveDistance;
+import frc.robot.commands.drivetrain.MoveHeadingDerivatives.MoveHeading;
 import frc.robot.commands.elevator.AutomaticElevator;
 import frc.robot.commands.elevator.ManualElevator;
 import frc.robot.commands.feeder.LoadFeeder;
@@ -149,6 +150,8 @@ public class RobotContainer {
                                                    new RunCommand(() -> intake.setRollerSpeed(-0.7 * intake.INTAKE_SPEED), intake)));
                                 
         left4.toggleWhenPressed(new RunShooterRPMPID(shooter, limelight, ShootingStyle.LOWER_PORT));
+
+        
         left6.whenPressed(new SwitchLEDState(limelightCamera));
 
         left7.whenPressed(new RunCommand(() -> turret.setPosition(-4096.0), turret));
@@ -196,14 +199,9 @@ public class RobotContainer {
         unloadFeeder.whenInactive(new LoadFeederTrigger(frontFeeder, () -> (!frontFeeder.isBeamBroken() && !backFeeder.isBeamBroken()) || 
         (frontFeeder.isBeamBroken() && !backFeeder.isBeamBroken()) || 
         (!frontFeeder.isBeamBroken() && backFeeder.isBeamBroken())) );
-        
-        //
-        
 
-        right7.whenPressed(new ParallelCommandGroup(
-            new LoadFeeder(frontFeeder, () -> frontFeeder.isBeamBroken()),
-            new LoadFeeder(backFeeder, () -> backFeeder.isBeamBroken() && frontFeeder.isBeamBroken())));
-        right10.whenPressed(new DriveDistance(-240.0, driveTrain));
+        right7.whenPressed(new MoveHeading(120, 0, driveTrain));
+        right10.whenPressed(new DriveDistance(120, driveTrain));
 
     }
 
