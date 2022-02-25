@@ -25,7 +25,6 @@ public class MoveOnTrajectory extends CommandBase {
   private DriveTrain driveTrain;
   private List<TrajectoryPoint> trajectoryPoints;
   private String pathName;
-  private MercMotionProfile profile;
   private BufferedTrajectoryPointStream buffer;
 
   public MoveOnTrajectory(String path, DriveTrain driveTrain) throws FileNotFoundException{
@@ -35,18 +34,6 @@ public class MoveOnTrajectory extends CommandBase {
     pathName = path;
     this.driveTrain = driveTrain;
     trajectoryPoints = MercPathLoader.loadPath(pathName);
-    buffer = new BufferedTrajectoryPointStream();
-  }
-
-  public MoveOnTrajectory(MercMotionProfile profile, DriveTrain driveTrain) throws FileNotFoundException {
-    this.profile = profile;
-    this.driveTrain = driveTrain;
-    this.pathName = this.profile.getName();
-    
-    addRequirements(driveTrain);
-    setName("MoveOn " + pathName + "Path");
-  
-    trajectoryPoints = profile.getTrajectoryPoints();
     buffer = new BufferedTrajectoryPointStream();
   }
 

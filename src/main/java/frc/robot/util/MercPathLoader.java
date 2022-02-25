@@ -24,11 +24,11 @@ import com.ctre.phoenix.motion.TrajectoryPoint;
  * Add your docs here.
  */
 public class MercPathLoader {
-    private static final String BASE_PATH_LOCATION = "/home/lvuser/deploy/trajectories/PathWeaver/output/";
+    private static final String BASE_PATH_LOCATION = "/home/lvuser/deploy/trajectories/output/";
     /**
      * @param pathName name + wpilib.json
      */
-    public static List<TrajectoryPoint> loadPath(String pathName, double angleOffset, boolean lastTrajectory) {
+    public static List<TrajectoryPoint> loadPath(String pathName, boolean lastTrajectory) {
         List<TrajectoryPoint> trajectoryPoints = new ArrayList<TrajectoryPoint>();
         List<Trajectory.State> trajectoryStates;
         Trajectory trajectory = null;
@@ -132,7 +132,7 @@ public class MercPathLoader {
     }
 
     public static List<TrajectoryPoint> loadPath(String pathName) {
-        return loadPath(pathName, 0, true);
+        return loadPath(pathName, true);
     }
 
     public static String getBasePathLocation() {
