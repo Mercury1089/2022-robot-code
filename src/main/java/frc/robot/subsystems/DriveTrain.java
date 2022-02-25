@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix.motion.BufferedTrajectoryPointStream;
+import com.ctre.phoenix.motion.TrajectoryPoint;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -506,6 +507,23 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
         builder.addDoubleProperty("getAngleTarget", () -> getAngleTarget(), null);
 
 
+    }
+
+    public void updateTrajectoryPoint(TrajectoryPoint point, TrajectoryPoint newPoint, double currHeading, double currPos) {
+
+        //update newPoint to attributes of point
+        // change auxPos and pos by adding by current pos
+
+        newPoint.timeDur = point.timeDur;
+        newPoint.velocity = point.velocity;
+        newPoint.zeroPos = point.zeroPos;
+        newPoint.profileSlotSelect0 = point.profileSlotSelect0;
+        newPoint.profileSlotSelect1 = point.profileSlotSelect1;
+        newPoint.useAuxPID = point.useAuxPID;
+        newPoint.isLastPoint = point.isLastPoint;
+
+        newPoint.auxiliaryPos = point.auxiliaryPos + currHeading;
+        newPoint.position = point.position + currPos;
     }
 
     @Override

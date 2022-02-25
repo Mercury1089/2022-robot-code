@@ -1,0 +1,19 @@
+{
+  "LiveWindow": {
+    "DriveTrain": {
+      "open": true
+    },
+    "open": true
+  },
+  "NetworkTables Settings": {
+    "mode": "Client",
+    "serverTeam": "10.10.89.2"
+  },
+  "SmartDashboard": {
+    "DriveTrain": {
+      "open": true
+    },
+    "open": true
+  },
+  "connections": true
+}
