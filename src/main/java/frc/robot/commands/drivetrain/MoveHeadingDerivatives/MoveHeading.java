@@ -61,6 +61,7 @@ public class MoveHeading extends CommandBase {
     @Override
     public boolean isFinished() {
       
+        
 
         if (driveTrain.isOnTarget()) {  
             onTargetCount++;
@@ -68,7 +69,8 @@ public class MoveHeading extends CommandBase {
             onTargetCount = 0;
         }
 
-        return onTargetCount > onTargetMinCount && this.targetDistance == this.driveTrain.distanceTargetInTicks() && this.targetHeading == this.driveTrain.headingTargetInYaws();
+        return onTargetCount > onTargetMinCount;
+
     }
 
     // Called once after isFinished returns true

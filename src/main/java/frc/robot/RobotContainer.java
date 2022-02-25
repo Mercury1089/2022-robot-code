@@ -207,8 +207,7 @@ public class RobotContainer {
         (!frontFeeder.isBeamBroken() && backFeeder.isBeamBroken())) );
 
         Trigger rotateTargetTrigger = new Trigger(() -> !turret.targetIsLost());
-        rotateTargetTri
-        gger.whileActiveContinuous(new RotateToTarget(turret));
+        rotateTargetTrigger.whileActiveContinuous(new RotateToTarget(turret));
 
     }
 

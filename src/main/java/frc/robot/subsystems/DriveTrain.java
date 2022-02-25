@@ -20,6 +20,7 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -375,10 +376,10 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
 
     /**
      * Get the current distance error for closed loop driving
-     * @return the error in encoder units
+     * @return the error in inches
      */
     public double getDistanceError() {
-        return MercMath.encoderTicksToInches(leaderRight.getClosedLoopError(DISTANCE_LOOP));
+        return MercMath.encoderTicksToInches(leaderRight.getClosedLoopTarget(DISTANCE_LOOP) - leaderRight.getActiveTrajectoryPosition(DISTANCE_LOOP));
     }
 
     /**
@@ -386,7 +387,7 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
      * @return the error in degrees
      */
     public double getAngleError() {
-        return MercMath.pigeonUnitsToDegrees(leaderRight.getClosedLoopError(YAW_LOOP));
+        return MercMath.pigeonUnitsToDegrees(leaderRight.getClosedLoopTarget(YAW_LOOP) - leaderRight.getActiveTrajectoryPosition(YAW_LOOP));
     }
 
     public boolean isOnTarget() {
@@ -394,12 +395,12 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
                 Math.abs(getAngleError()) < ANGLE_THRESHOLD_DEG);
     }
 
-    public double distanceTargetInTicks() {
-        return leaderRight.getClosedLoopTarget(DISTANCE_LOOP);
+    public double getDistanceTarget() {
+        return MercMath.encoderTicksToInches(leaderRight.getClosedLoopTarget(DISTANCE_LOOP));
     }
 
-    public double headingTargetInYaws() {
-        return leaderRight.getClosedLoopTarget(YAW_LOOP);
+    public double getAngleTarget() {
+        return MercMath.pigeonUnitsToDegrees(leaderRight.getClosedLoopTarget(YAW_LOOP));
     }
 
 
@@ -491,6 +492,19 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
         
         //Publish Current Command
         SmartDashboard.putString(getName() + "/Command", getCurrentCommand() != null ? getCurrentCommand().getName() : "None");
+
+    }
+
+        
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        
+        builder.setActuator(true); // Only allow setting values when in Test mode
+        builder.addDoubleProperty("ActiveTrajectoryPosition", () -> leaderRight.getActiveTrajectoryPosition(), null);
+
+        builder.addDoubleProperty("getDistanceTarget", ()-> getDistanceTarget(), null);
+        builder.addDoubleProperty("getAngleTarget", () -> getAngleTarget(), null);
+
 
     }
 
