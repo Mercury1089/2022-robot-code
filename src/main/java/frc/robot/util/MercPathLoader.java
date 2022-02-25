@@ -28,7 +28,7 @@ public class MercPathLoader {
     /**
      * @param pathName name + wpilib.json
      */
-    public static List<TrajectoryPoint> loadPath(String pathName, boolean lastTrajectory) {
+    public static List<TrajectoryPoint> loadPath(String pathName, double angleOffset, boolean lastTrajectory) {
         List<TrajectoryPoint> trajectoryPoints = new ArrayList<TrajectoryPoint>();
         List<Trajectory.State> trajectoryStates;
         Trajectory trajectory = null;
@@ -132,7 +132,7 @@ public class MercPathLoader {
     }
 
     public static List<TrajectoryPoint> loadPath(String pathName) {
-        return loadPath(pathName, true);
+        return loadPath(pathName, 0, true);
     }
 
     public static String getBasePathLocation() {
