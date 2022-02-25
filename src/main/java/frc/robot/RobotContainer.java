@@ -125,8 +125,7 @@ public class RobotContainer {
         turret = new Turret(limelight);
         turret.setDefaultCommand(new ScanForTarget(turret));
 
-        Trigger rotateTargetTrigger = new Trigger(() -> !turret.targetIsLost());
-        rotateTargetTrigger.whileActiveContinuous(new RotateToTarget(turret));
+       
 
        
         shuffleDash = new ShuffleDash();
@@ -194,14 +193,22 @@ public class RobotContainer {
         // // CHANGE THIS to 0
         // firstFeederTrigger.whenInactive(new RunCommand(() -> frontFeeder.setSpeed(0.6), frontFeeder));
 
+        
+
+        right7.whenPressed(new MoveHeading(120, 0, driveTrain));
+        right8.whenPressed(new MoveHeading(-120, 0, driveTrain));
+        right9.whenPressed(new MoveHeading(120, 90, driveTrain));
+        right10.whenPressed(new DriveDistance(120, driveTrain));
+
         Trigger unloadFeeder = new Trigger(() -> frontFeeder.whoseBall() == BallMatchesAlliance.DIFFERENT);
         unloadFeeder.whenActive(new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.EJECT), frontFeeder));
         unloadFeeder.whenInactive(new LoadFeederTrigger(frontFeeder, () -> (!frontFeeder.isBeamBroken() && !backFeeder.isBeamBroken()) || 
         (frontFeeder.isBeamBroken() && !backFeeder.isBeamBroken()) || 
         (!frontFeeder.isBeamBroken() && backFeeder.isBeamBroken())) );
 
-        right7.whenPressed(new MoveHeading(120, 0, driveTrain));
-        right10.whenPressed(new DriveDistance(120, driveTrain));
+        Trigger rotateTargetTrigger = new Trigger(() -> !turret.targetIsLost());
+        rotateTargetTri
+        gger.whileActiveContinuous(new RotateToTarget(turret));
 
     }
 
