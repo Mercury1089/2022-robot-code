@@ -16,6 +16,7 @@ import com.ctre.phoenix.motion.TrajectoryPoint;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
+import frc.robot.util.MercMath;
 import frc.robot.util.MercMotionProfile;
 import frc.robot.util.MercPathLoader;
 
@@ -65,6 +66,20 @@ public class MoveOnTrajectory extends CommandBase {
     int minTime = 0;
     for(TrajectoryPoint point : trajectoryPoints) {
       minTime = Math.min(point.timeDur, minTime);
+
+      double encoderTicks = MercMath.inchesToEncoderTicks(this.driveTrain.getDistanceTarget());
+      double auxPos = MercMath.degreesToPigeonUnits(this.driveTrain.getAngleTarget());
+      TrajectoryPoint newPoint = new TrajectoryPoint();
+      newPoint.timeDur = point.timeDur;
+      newPoint.velocity = point.velocity;
+      newPoint.auxiliaryPos = point.auxiliaryPos + auxPos;
+      newPoint.position = point.position + encoderTicks;
+      newPoint.zeroPos = point.zeroPos;
+      newPoint.profileSlotSelect0 = point.profileSlotSelect0;
+      newPoint.profileSlotSelect1 = point.profileSlotSelect1;
+      newPoint.useAuxPID = point.useAuxPID;
+      newPoint.isLastPoint = point.isLastPoint;
+
       buffer.Write(point);
     }
     driveTrain.moveOnTrajectory(buffer, minTime);
