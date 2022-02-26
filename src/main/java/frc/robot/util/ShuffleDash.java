@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import frc.robot.RobotContainer;
 import frc.robot.util.interfaces.IMercPIDTunable;
 import frc.robot.util.interfaces.IMercShuffleBoardPublisher;
 
@@ -43,8 +43,11 @@ public class ShuffleDash {
     private SendableChooser<TunablePIDSlot> tunablePIDChooser;
     private String positionColor;
     private Notifier shuffleDashUpdater;
+    private RobotContainer robotContainer;
+    private Autons oldAuton = Autons.NOTHING;
 
-    public ShuffleDash() {
+    public ShuffleDash(RobotContainer robotContainer) {
+        this.robotContainer = robotContainer;
 
         SmartDashboard.putString("Position Control Color", getPositionControlColor());
 
@@ -57,9 +60,6 @@ public class ShuffleDash {
         autonPositionChooser.addOption("4 oClock", StartingPosition.FOUR_OCLOCK);
         
         SmartDashboard.putData("Auton Position", autonPositionChooser);
-
-        updateAutonChooser();
-
         publishers = new ArrayList<IMercShuffleBoardPublisher>();
 
         tunablePIDChooser = new SendableChooser<TunablePIDSlot>();
@@ -73,7 +73,7 @@ public class ShuffleDash {
 
         shuffleDashUpdater = new Notifier(this::updateDash);
         shuffleDashUpdater.startPeriodic(UPDATE_PERIOD_SECONDS);
-    }
+        }
 
     public void addPublisher(IMercShuffleBoardPublisher publisher) {
         publishers.add(publisher);
@@ -116,11 +116,15 @@ public class ShuffleDash {
     }
 
     public StartingPosition getStartingPosition() {
-        return autonPositionChooser.getSelected() == null ? StartingPosition.NULL : autonPositionChooser.getSelected();
+        return autonPositionChooser == null ?
+            StartingPosition.NULL :
+            autonPositionChooser.getSelected() == null ? StartingPosition.NULL : autonPositionChooser.getSelected();
     }
 
     public Autons getAuton() {
-        return autonChooser.getSelected();
+        return autonChooser == null ?
+            Autons.NOTHING :
+            autonChooser.getSelected();
     }
 
     public void updateAutonChooser() {
@@ -148,11 +152,18 @@ public class ShuffleDash {
                     break;
             }
             oldPosition = startingPosition;
+
         }
 
         SmartDashboard.putData("Choose Auton", autonChooser);
         //SmartDashboard.putString("Auton Chosen", autonChooser.getSelected() == null ? "Nothing" : autonChooser.getSelected();
         SmartDashboard.putString("Auton Chosen", autonChooser.getSelected() == null ? "Nothing" : autonChooser.getSelected().toString());
+
+        Autons auton = getAuton();
+        if (auton != oldAuton){
+            robotContainer.initializeAutonCommand();
+            oldAuton = auton;
+        }
     }
 
     public String getPositionControlColor() {

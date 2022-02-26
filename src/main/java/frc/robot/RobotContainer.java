@@ -81,7 +81,7 @@ public class RobotContainer {
 
     private Limelight limelight;
     
-    private CommandGroupBase autonCommand = null;
+    private Command autonCommand = null;
 
     public RobotContainer() {
         leftJoystick = new Joystick(DS_USB.LEFT_STICK);
@@ -128,10 +128,9 @@ public class RobotContainer {
         turret = new Turret(limelight);
         turret.setDefaultCommand(new ScanForTarget(turret));
 
-       
 
+        shuffleDash = new ShuffleDash(this);
        
-        shuffleDash = new ShuffleDash();
         //shuffleDash.addPublisher(shooter);
         shuffleDash.addPublisher(driveTrain);
         //shuffleDash.addPublisher(spinner);
@@ -303,10 +302,25 @@ public class RobotContainer {
     }
     
     public void initializeAutonCommand() {
-        if(autonCommand == null)
-            autonCommand = new SequentialCommandGroup(
-                new DriveDistance(-24.0, driveTrain)
-            );
+        ShuffleDash.Autons auton = shuffleDash.getAuton();
+        if (auton == null) return;
+        switch (shuffleDash.getAuton()){
+            case NOTHING:
+                autonCommand = null;
+                break;
+            case TAXI:
+                autonCommand = new DriveDistance(72.0, driveTrain);
+                break;
+            case ONE_CARGO:
+                autonCommand = new ParallelCommandGroup(
+                    new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
+                    new RunIntake(intake),
+                    new DriveDistance(72.0, driveTrain));
+                break;
+            default:
+                autonCommand = new DriveDistance(72.0, driveTrain);
+                break;   
+        }
     }
 
     public Command getAutonCommand(){

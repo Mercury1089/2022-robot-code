@@ -22,8 +22,6 @@ public class Robot extends TimedRobot {
 
     public static boolean isInTestMode = false;
 
-    private Command autonCommand;
-
     /**
      * This function is run when the robot is first started up and should be used
      * for any initialization code.
@@ -33,8 +31,6 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().enable();
 
         robotContainer = new RobotContainer();
-        robotContainer.initializeAutonCommand();
-        this.autonCommand = robotContainer.getAutonCommand();
     }
 
     @Override
@@ -54,6 +50,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        Command autonCommand = robotContainer.getAutonCommand();
+        
         (new SetLEDState(robotContainer.getLimelightCamera(), LimelightLEDState.ON)).schedule();
         if (autonCommand != null){
             autonCommand.schedule();
