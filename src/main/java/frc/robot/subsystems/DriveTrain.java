@@ -56,7 +56,7 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
         MIN_SPEED = -1;
     public static final double
         GEAR_RATIO = 1,
-        MAX_RPM = 610,
+        MAX_RPM = 600,
         WHEEL_DIAMETER_INCHES = 6.0;
     public static final double
         DISTANCE_THRESHOLD_INCHES = 1.0,
@@ -569,24 +569,18 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
         switch (slot) {
             case DRIVE_PID_SLOT:
                 driveGains = gains;
-                configPID(leaderRight, DRIVE_PID_SLOT, driveGains);
-                configPID(leaderLeft, DRIVE_PID_SLOT, driveGains);
                 break;
             case DRIVE_SMOOTH_MOTION_SLOT:
                 smoothGains = gains;
-                configPID(leaderRight, DRIVE_SMOOTH_MOTION_SLOT, smoothGains);
-                configPID(leaderLeft, DRIVE_SMOOTH_MOTION_SLOT, smoothGains);
                 break;
             case DRIVE_MOTION_PROFILE_SLOT:
                 motionProfileGains = gains;
-                configPID(leaderRight, DRIVE_MOTION_PROFILE_SLOT, motionProfileGains);
-                configPID(leaderLeft, DRIVE_MOTION_PROFILE_SLOT, motionProfileGains);
                 break;
             case DRIVE_SMOOTH_TURN_SLOT:
                 turnGains = gains;
-                configPID(leaderRight, DRIVE_SMOOTH_TURN_SLOT, turnGains);
-                configPID(leaderLeft, DRIVE_SMOOTH_TURN_SLOT, turnGains);
                 break;
         }
+        configPID(leaderRight, slot, gains);
+        configPID(leaderLeft, slot, gains);
     }
 }

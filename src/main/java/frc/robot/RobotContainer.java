@@ -162,8 +162,8 @@ public class RobotContainer {
 
         left10.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeDisabled(), intakeArticulator), new RunIntake(intake)));
         try {
-           // left11.whenPressed(new MoveOnTrajectory("Taxi-OneCargo", driveTrain));
-            right11.whenPressed(new MoveOnTrajectory("Taxi-TwoCargo", driveTrain));
+            left11.whenPressed(new MoveOnTrajectory("Taxi-OneCargo", driveTrain));
+            right11.whenPressed(new MoveOnTrajectory("TestCircle", driveTrain));
         } catch (FileNotFoundException ex) {
         }
         
