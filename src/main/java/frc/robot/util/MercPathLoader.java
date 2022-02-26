@@ -108,6 +108,7 @@ public class MercPathLoader {
                 //Append point to point
                 trajectoryPoints.add(point);
                 
+                /*
                 System.out.println("time: " + time + 
                                    " velocity: " + MercMath.inchesPerSecondToRevsPerMinute(state.velocityMetersPerSecond) + 
                                    " degrees: " + state.poseMeters.getRotation().getDegrees() +
@@ -119,6 +120,7 @@ public class MercPathLoader {
                                    " point.auxiliaryPos: " + point.auxiliaryPos +
                                    " point.position: " + point.position
                 );
+                */
             }
 
             trajectoryPoints.get(trajectoryPoints.size() - 1).isLastPoint = lastTrajectory;
