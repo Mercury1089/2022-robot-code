@@ -46,8 +46,6 @@ public class MoveOnTrajectory extends CommandBase {
 
     // Reconfigure driveTrain settings
     driveTrain.configPIDSlots(DriveTrain.DRIVE_MOTION_PROFILE_SLOT, DriveTrain.DRIVE_SMOOTH_MOTION_SLOT);
-    driveTrain.resetPigeonYaw();
-    driveTrain.resetEncoders();
     buffer.Clear();
 
     int minTime = 0;
@@ -57,7 +55,7 @@ public class MoveOnTrajectory extends CommandBase {
 
       double encoderTicks = MercMath.inchesToEncoderTicks(this.driveTrain.getDistanceTarget());
       double auxPos = MercMath.degreesToPigeonUnits(this.driveTrain.getAngleTarget());
-       this.driveTrain.updateTrajectoryPoint(point, newPoint, encoderTicks, auxPos);
+      this.driveTrain.updateTrajectoryPoint(point, newPoint, encoderTicks, auxPos);
 
       buffer.Write(newPoint); 
     }

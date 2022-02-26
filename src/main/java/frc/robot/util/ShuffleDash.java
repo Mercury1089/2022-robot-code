@@ -52,6 +52,9 @@ public class ShuffleDash {
 
         autonPositionChooser = new SendableChooser<>();
         autonPositionChooser.addOption("Any Position", StartingPosition.ANY_POSITION);
+        autonPositionChooser.addOption("Noon", StartingPosition.NOON);
+        autonPositionChooser.addOption("2 oClock", StartingPosition.TWO_OCLOCK);
+        autonPositionChooser.addOption("4 oClock", StartingPosition.FOUR_OCLOCK);
         
         SmartDashboard.putData("Auton Position", autonPositionChooser);
 
@@ -129,12 +132,22 @@ public class ShuffleDash {
         if(startingPosition != oldPosition) {
             //autonChooser = new SendableChooser<String>();
             autonChooser = new SendableChooser<Autons>();
+
+            autonChooser.addOption("No Option", Autons.NOTHING);
+            autonChooser.addOption("Taxi", Autons.TAXI);
+
             switch(startingPosition) {
-                default:
-                    //autonChooser.addOption("No Option", "No Option");
-                    autonChooser.addOption("No Option", Autons.NOTHING);
-                    oldPosition = StartingPosition.NULL;
+                case ANY_POSITION:
+                    break;
+                case NOON:
+                    autonChooser.addOption("One Cargo", Autons.ONE_CARGO);
+                    break;
+                case TWO_OCLOCK:
+                    break;
+                case FOUR_OCLOCK:
+                    break;
             }
+            oldPosition = startingPosition;
         }
 
         SmartDashboard.putData("Choose Auton", autonChooser);
@@ -162,10 +175,15 @@ public class ShuffleDash {
 
     public enum StartingPosition {
         NULL,
-        ANY_POSITION
+        ANY_POSITION,
+        NOON,
+        TWO_OCLOCK,
+        FOUR_OCLOCK
     }
 
     public enum Autons {
-        NOTHING
+        NOTHING,
+        TAXI,
+        ONE_CARGO
     }
 }
