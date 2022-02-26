@@ -44,7 +44,7 @@ public class MercPathLoader {
             trajectoryStates = trajectory.getStates();
             Trajectory.State prevState = null;
             int prevTime = 0;
-            double prevHeading = 0;
+            double prevHeading = 0, headingOffset = 0;
             double pos = 0.0;
             for(Trajectory.State state : trajectoryStates) {
                 TrajectoryPoint point = new TrajectoryPoint();
@@ -77,8 +77,14 @@ public class MercPathLoader {
                 }
                 prevState = state;
 
+                if (point.zeroPos) {
+                    // Our trajectories assume an initial heading of 0 degrees
+                    // Offset all points based on the heading of the first point
+                    headingOffset = state.poseMeters.getRotation().getDegrees();
+                }
                 // Calculate heading delta based on absolute heading from path trajectory
-                heading = state.poseMeters.getRotation().getDegrees() + angleOffset;
+                heading = state.poseMeters.getRotation().getDegrees() - headingOffset;
+                heading += angleOffset;
                 if (heading > 90 && heading <= 180 && prevHeading < -90 && prevHeading > -180) {
                     headingDelta = heading - prevHeading - 360;
                 } else if (heading > -180 && heading < -90 && prevHeading <= 180 && prevHeading > 90) {
