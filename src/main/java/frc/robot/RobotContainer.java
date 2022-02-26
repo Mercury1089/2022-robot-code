@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.io.FileNotFoundException;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
@@ -16,6 +18,7 @@ import frc.robot.RobotMap.GAMEPAD_BUTTONS;
 import frc.robot.RobotMap.JOYSTICK_ADJUSTMENTS;
 import frc.robot.RobotMap.JOYSTICK_BUTTONS;
 import frc.robot.commands.drivetrain.DriveWithJoysticks;
+import frc.robot.commands.drivetrain.MoveOnTrajectory;
 import frc.robot.commands.drivetrain.DriveWithJoysticks.DriveType;
 import frc.robot.commands.drivetrain.MoveHeadingDerivatives.DriveDistance;
 import frc.robot.commands.drivetrain.MoveHeadingDerivatives.MoveHeading;
@@ -158,6 +161,12 @@ public class RobotContainer {
         left9.whenPressed(new RunCommand(() -> turret.setPosition(4096.0), turret));
 
         left10.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeDisabled(), intakeArticulator), new RunIntake(intake)));
+        try {
+           // left11.whenPressed(new MoveOnTrajectory("Taxi-OneCargo", driveTrain));
+            right11.whenPressed(new MoveOnTrajectory("Taxi-TwoCargo", driveTrain));
+        } catch (FileNotFoundException ex) {
+        }
+        
 
         right4.whenPressed(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
 
@@ -194,11 +203,12 @@ public class RobotContainer {
         // firstFeederTrigger.whenInactive(new RunCommand(() -> frontFeeder.setSpeed(0.6), frontFeeder));
 
         
-
+        
         right7.whenPressed(new MoveHeading(120, 0, driveTrain));
         right8.whenPressed(new MoveHeading(-120, 0, driveTrain));
         right9.whenPressed(new MoveHeading(120, 90, driveTrain));
         right10.whenPressed(new DriveDistance(120, driveTrain));
+        
 
         Trigger unloadFeeder = new Trigger(() -> frontFeeder.whoseBall() == BallMatchesAlliance.DIFFERENT);
         unloadFeeder.whenActive(new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.EJECT), frontFeeder));

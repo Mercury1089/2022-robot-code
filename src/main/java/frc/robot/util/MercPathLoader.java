@@ -44,11 +44,11 @@ public class MercPathLoader {
             trajectoryStates = trajectory.getStates();
             Trajectory.State prevState = null;
             int prevTime = 0;
-            double prevHeading = 0, headingOffset = 0;
+            double prevHeading = 0.0, heading = 0.0;
             double pos = 0.0;
             for(Trajectory.State state : trajectoryStates) {
                 TrajectoryPoint point = new TrajectoryPoint();
-                double headingDelta, heading, velocity;
+                double newHeading, velocity;
                 int time;
 
                 //Time
@@ -77,32 +77,27 @@ public class MercPathLoader {
                 }
                 prevState = state;
 
-                if (point.zeroPos) {
-                    // Our trajectories assume an initial heading of 0 degrees
-                    // Offset all points based on the heading of the first point
-                    headingOffset = state.poseMeters.getRotation().getDegrees();
-                }
                 // Calculate heading delta based on absolute heading from path trajectory
-                heading = state.poseMeters.getRotation().getDegrees() - headingOffset;
-                heading += angleOffset;
-                if (heading > 90 && heading <= 180 && prevHeading < -90 && prevHeading > -180) {
-                    headingDelta = heading - prevHeading - 360;
-                } else if (heading > -180 && heading < -90 && prevHeading <= 180 && prevHeading > 90) {
-                    headingDelta = heading - prevHeading + 360;
+                newHeading = state.poseMeters.getRotation().getDegrees();
+                if (point.zeroPos) {
+                    prevHeading = newHeading;
+                    heading = angleOffset;
                 } else {
-                    headingDelta = heading - prevHeading;
+                    double headingDelta;
+                    if (newHeading > 90 && newHeading <= 180 && prevHeading < -90 && prevHeading > -180) {
+                        headingDelta = newHeading - prevHeading - 360;
+                    } else if (newHeading > -180 && newHeading < -90 && prevHeading <= 180 && prevHeading > 90) {
+                        headingDelta = newHeading - prevHeading + 360;
+                    } else {
+                        headingDelta = newHeading - prevHeading;
+                    }
+                    prevHeading = newHeading;
+                    heading += headingDelta;
                 }
-                prevHeading = heading;
 
-                if (trajectoryPoints.size() == 0) {
-                    // First point - delta is heading
-                    point.auxiliaryPos = MercMath.degreesToPigeonUnits(heading);
-                } else {
-                    // Apply delta to previous pos
-                    point.auxiliaryPos = 
-                        trajectoryPoints.get(trajectoryPoints.size() - 1).auxiliaryPos +
-                        MercMath.degreesToPigeonUnits(headingDelta);
-                }
+
+                // Apply the offset immediately before adding the point
+                point.auxiliaryPos = MercMath.degreesToPigeonUnits(heading);
 
                 //PID Profile
                 point.profileSlotSelect0 = DriveTrain.DRIVE_MOTION_PROFILE_SLOT;
@@ -112,16 +107,10 @@ public class MercPathLoader {
                 point.isLastPoint = false;
                 //Append point to point
                 trajectoryPoints.add(point);
-                /*
-                    System.out.println(pathName + 
-                                       " time: " + time + 
-                                       " radians: " + state.poseMeters.getRotation().getRadians() + 
-                                       " degrees: " + state.poseMeters.getRotation().getDegrees() +
-                                       " heading: " + MercMath.pigeonUnitsToDegrees(point.auxiliaryPos) 
-                    );*/
-                /*
+                
                 System.out.println("time: " + time + 
                                    " velocity: " + MercMath.inchesPerSecondToRevsPerMinute(state.velocityMetersPerSecond) + 
+                                   " degrees: " + state.poseMeters.getRotation().getDegrees() +
                                    " heading: " + heading +
                                    " pos: " + pos +
                                    " TicksPerTenth Values " + MercMath.revsPerMinuteToTicksPerTenth(MercMath.inchesPerSecondToRevsPerMinute(state.velocityMetersPerSecond)) +
@@ -129,7 +118,7 @@ public class MercPathLoader {
                                    " point.velocity: " + point.velocity + 
                                    " point.auxiliaryPos: " + point.auxiliaryPos +
                                    " point.position: " + point.position
-                );*/
+                );
             }
 
             trajectoryPoints.get(trajectoryPoints.size() - 1).isLastPoint = lastTrajectory;
