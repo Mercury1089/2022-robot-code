@@ -2,6 +2,8 @@ package frc.robot;
 
 import java.io.FileNotFoundException;
 
+import com.fasterxml.jackson.annotation.ObjectIdGenerator.IdKey;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
@@ -26,8 +28,10 @@ import frc.robot.commands.elevator.AutomaticElevator;
 import frc.robot.commands.elevator.ManualElevator;
 import frc.robot.commands.feeder.LoadFeeder;
 import frc.robot.commands.feeder.LoadFeederTrigger;
+import frc.robot.commands.feeder.ShootBall;
 import frc.robot.commands.intake.RunIntake;
 import frc.robot.commands.limelightCamera.SwitchLEDState;
+import frc.robot.commands.shooter.CalculateTargetRPM;
 import frc.robot.commands.shooter.RunShooterRPM;
 import frc.robot.commands.shooter.RunShooterRPMPID;
 import frc.robot.commands.turret.RotateToTarget;
@@ -90,12 +94,15 @@ public class RobotContainer {
 
         limelight = new Limelight();
 
+        turret = new Turret(limelight);
+        turret.setDefaultCommand(new ScanForTarget(turret));
+
         driveTrain = new DriveTrain(DriveTrainLayout.FALCONS); //make sure to switch it back to Falcons
         driveTrain.setDefaultCommand(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
 
         shooter = new Shooter(ShooterMode.ONE_WHEEL, limelight);
+        //shooter.setDefaultCommand(new CalculateTargetRPM(shooter, turret));
         shooter.setDefaultCommand(new RunCommand(() -> shooter.stopShooter(), shooter));
-        //shooter.setDefaultCommand(new RunShooterRPMPID(shooter, limelight, ShootingStyle.MANUAL));
         
 
         intake = new Intake();
@@ -125,8 +132,7 @@ public class RobotContainer {
         elevator = new Elevator();
         elevator.setDefaultCommand(new ManualElevator(elevator, () -> getGamepadAxis(GAMEPAD_AXIS.leftY)));
 
-        turret = new Turret(limelight);
-        turret.setDefaultCommand(new ScanForTarget(turret));
+        
 
 
         shuffleDash = new ShuffleDash(this);
@@ -208,6 +214,11 @@ public class RobotContainer {
         right9.whenPressed(new MoveHeading(120, 90, driveTrain));
         right10.whenPressed(new DriveDistance(120, driveTrain));
         
+        /*
+        no ball in front or back --> run frontFeeder
+        ball in front but not back --> run frontFeeder
+        ball in back but not front --> run frontFeeder
+        */
 
         Trigger unloadFeeder = new Trigger(() -> frontFeeder.whoseBall() == BallMatchesAlliance.DIFFERENT);
         unloadFeeder.whenActive(new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.EJECT), frontFeeder));
@@ -217,6 +228,17 @@ public class RobotContainer {
 
         Trigger rotateTargetTrigger = new Trigger(() -> !turret.targetIsLost());
         rotateTargetTrigger.whileActiveContinuous(new RotateToTarget(turret));
+
+        /*
+        turret is on target AND
+        shooter is at target RPM AND
+        ball in back feeder
+        --> shoot the ball
+        */
+
+        Trigger shootBall = new Trigger(() -> turret.isOnTarget() && shooter.isReadyToShoot() && backFeeder.isBeamBroken());
+        shootBall.whileActiveContinuous(new ShootBall(backFeeder));
+        
 
     }
 

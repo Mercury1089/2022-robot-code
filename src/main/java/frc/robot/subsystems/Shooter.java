@@ -114,7 +114,7 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
   }
 
   public boolean isReadyToShoot(){
-    return atTargetRpm();
+    return atTargetRPM();
   }
 
   public double getTargetRPM() {
@@ -137,6 +137,8 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
     //return getRunRPM();
   }
 
+  
+
   public void setShootingStyle(ShootingStyle shootingStyle) {
     this.shootingStyle = shootingStyle;
   }
@@ -150,11 +152,12 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
     targetRPM = rpm;
   }
 
-  public void updateTargetRPMCenter(double distance) {
+  public double updateTargetRPMCenter(double distance) {
     targetRPM = -2.93032197e-09*Math.pow(distance, 6) + 3.21815380e-06*Math.pow(distance, 5) - 1.40572567e-03*Math.pow(distance, 4) + 3.06747428e-01*Math.pow(distance, 3) - 3.38724423e+01*Math.pow(distance, 2) + 1.60699276e+03*distance - 9.44326999e+03;
+    return targetRPM;
   }
 
-  public boolean atTargetRpm() {
+  public boolean atTargetRPM() {
     return Math.abs(getRPM() - getTargetRPM()) <= 0.01 * getTargetRPM();
   }
 
@@ -205,7 +208,7 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
     //SmartDashboard.putNumber(getName() + "/PIDGains/D", velocityGains.kD);
     //SmartDashboard.putNumber(getName() + "/PIDGains/F", velocityGains.kF);
 
-    SmartDashboard.putBoolean(getName() + "/AtTargetRPM", atTargetRpm());
+    SmartDashboard.putBoolean(getName() + "/AtTargetRPM", atTargetRPM());
     SmartDashboard.putNumber(getName() + "/TargetRPM", targetRPM);
     //SmartDashboard.putNumber("Hypothetical Distance", getHyotheticalDistance());
     //SmartDashboard.putNumber("Hypothetical RPM", getTargetRPMFromHypothetical());

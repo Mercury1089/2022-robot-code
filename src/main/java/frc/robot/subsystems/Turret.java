@@ -137,6 +137,10 @@ public class Turret extends SubsystemBase {
     return limelight.getTargetCenterXAngle();
   }
 
+  public double getDistanceToTarget() {
+    return limelight.getDistanceToTarget();
+  }
+
   public boolean targetIsLost() {
     // if the target is not aquired or it hits a limit
     return !isTargetAcquired() || (isAtForwardLimit() || isAtReverseLimit());
