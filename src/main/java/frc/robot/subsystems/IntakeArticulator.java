@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -70,5 +71,14 @@ public class IntakeArticulator extends SubsystemBase implements IMercShuffleBoar
   public void publishValues() {
     SmartDashboard.putBoolean(getName() + "/FwdLimit", intakeArticulator.getSensorCollection().isFwdLimitSwitchClosed());
     SmartDashboard.putBoolean(getName() + "/RevLimit", intakeArticulator.getSensorCollection().isRevLimitSwitchClosed());
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    
+    builder.setActuator(true); // Only allow setting values when in Test mode
+    
+
+    builder.addStringProperty("intakePosition", () -> getIntakePosition().toString(), null);
   }
 }

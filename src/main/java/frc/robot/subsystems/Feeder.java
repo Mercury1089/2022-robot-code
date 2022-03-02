@@ -60,7 +60,7 @@ public class Feeder extends SubsystemBase {
     breakBeamSensor = new DigitalInput(dioPort); 
     feedWheel = new VictorSPX(motorControllerID);
     feedWheel.configFactoryDefault();
-    feedWheel.setInverted(true);
+    feedWheel.setInverted(false);
     feedWheel.setNeutralMode(NeutralMode.Brake);
     setName("Feeder " + DIOPort.toString());
     
