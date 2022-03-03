@@ -13,6 +13,7 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -42,6 +43,8 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
 
   private Limelight limelight;
   private ShootingStyle shootingStyle;
+
+  DigitalInput breakBeamSensor;
 
   public enum ShooterMode {
     ONE_WHEEL, NONE
@@ -77,6 +80,8 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
     shootingStyle = ShootingStyle.AUTOMATIC;
 
     setPIDGain(SHOOTER_PID_SLOTS.VELOCITY_GAINS.getValue(), velocityGains);
+
+    this.breakBeamSensor = new DigitalInput(3); 
   }
 
   @Override
@@ -200,6 +205,11 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
     return mode;
   }
 
+  public boolean hasBall() {
+    // if the shooter has a ball (if beam is broken)
+    return !breakBeamSensor.get();
+  }
+
   public void publishValues() {
     SmartDashboard.putNumber(getName() + "/RPM", getRPM());
     
@@ -236,6 +246,8 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
     }
   }
 
+  
+
   @Override
   public int[] getSlots() {
     return new int[] { 0 };
@@ -253,5 +265,7 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
     public int getValue() {
       return this.value;
     }
+
+    
   }
 }

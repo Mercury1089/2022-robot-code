@@ -2,8 +2,6 @@ package frc.robot;
 
 import java.io.FileNotFoundException;
 
-import com.fasterxml.jackson.annotation.ObjectIdGenerator.IdKey;
-
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
@@ -260,7 +258,7 @@ public class RobotContainer {
         */
 
         Trigger shootBall = new Trigger(() -> turret.isOnTarget() && shooter.isReadyToShoot() && backFeeder.isBeamBroken());
-        shootBall.whileActiveContinuous(new ShootBall(backFeeder));
+        shootBall.whileActiveContinuous(new ShootBall(backFeeder, shooter));
         
 
     }
@@ -357,10 +355,21 @@ public class RobotContainer {
                 autonCommand = new DriveDistance(72.0, driveTrain);
                 break;
             case ONE_CARGO:
+                try {
                 autonCommand = new ParallelCommandGroup(
                     new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
                     new RunIntake(intake),
+                    new MoveOnTrajectory("Taxi-OneCargo", driveTrain),
                     new DriveDistance(72.0, driveTrain));
+                } catch (FileNotFoundException err) {}
+                break;
+            case TWO_CARGO:
+                try {
+                    autonCommand = new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
+                    new RunIntake(intake),
+                    new MoveOnTrajectory("Taxi-TwpCargo", driveTrain),
+                    new DriveDistance(72.0, driveTrain));
+                } catch (FileNotFoundException err) {}
                 break;
             default:
                 autonCommand = new DriveDistance(72.0, driveTrain);
