@@ -147,6 +147,7 @@ public class ShuffleDash {
                     autonChooser.addOption("One Cargo", Autons.ONE_CARGO);
                     break;
                 case TWO_OCLOCK:
+                    autonChooser.addOption("Two Cargo", Autons.TWO_CARGO);
                     break;
                 case FOUR_OCLOCK:
                     break;
@@ -195,6 +196,7 @@ public class ShuffleDash {
     public enum Autons {
         NOTHING,
         TAXI,
-        ONE_CARGO
+        ONE_CARGO,
+        TWO_CARGO
     }
 }
