@@ -14,29 +14,34 @@ import frc.robot.subsystems.Turret;
 public class RotateToTarget extends CommandBase 
 {
 
-    private int reTargetCount = 0;
     private Turret turret;
     private double targetHeading;
     private double currentEncoderPos;
+    private double OFFSET = 0;
     
 
     public RotateToTarget(Turret turret) {
+        this(turret, 0);
+    
+    }
+
+    public RotateToTarget(Turret turret, double offset) {
+        OFFSET = offset;
         setName("RotateToTarget");
         addRequirements(turret);
-
         this.turret = turret;
-    
     }
     
 
     // Called just before this Command runs the first time
     @Override
     public void initialize() {        
-        targetHeading = turret.getAngleToTarget();
-        currentEncoderPos = turret.getCustomTickInDegrees();
+        targetHeading = turret.getAngleToTarget(); // limelight's centerX angle
+        currentEncoderPos = turret.getCustomTickInDegrees(); // turret's current rotation 
         System.out.println("RotateToTarget initialized with angle " + targetHeading);
 
-        turret.setPosition(currentEncoderPos+targetHeading);
+        double finalPos = currentEncoderPos + targetHeading + OFFSET;
+        turret.setPosition(finalPos);
     }
     
   
@@ -48,7 +53,9 @@ public class RotateToTarget extends CommandBase
         if (newHeading != targetHeading) {
             targetHeading = newHeading;
             currentEncoderPos = turret.getCustomTickInDegrees();
-            turret.setPosition(currentEncoderPos+targetHeading);
+            
+            double finalPos = currentEncoderPos + targetHeading + OFFSET;
+            turret.setPosition(finalPos);
         }
     }
 

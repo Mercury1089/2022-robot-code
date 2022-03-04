@@ -169,6 +169,8 @@ public class RobotContainer {
                                 
         left4.toggleWhenPressed(new RunShooterRPMPID(shooter, limelight));
 
+
+
         
         left6.whenPressed(new SwitchLEDState(limelightCamera));
 
@@ -179,14 +181,13 @@ public class RobotContainer {
         left10.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeDisabled(), intakeArticulator), new RunIntake(intake)));
         try {
             left11.whenPressed(new MoveOnTrajectory("Taxi-OneCargo", driveTrain));
-            right11.whenPressed(new MoveOnTrajectory("TestCircle", driveTrain));
         } catch (FileNotFoundException ex) {
         }
         
 
         right4.whenPressed(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
 
-        right6.whenPressed(new RotateToTarget(turret));
+        right6.whenPressed(new RotateToTarget(turret, 15));
 
 
         // gamepadX.whenPressed(new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.SHOOT), frontFeeder));
