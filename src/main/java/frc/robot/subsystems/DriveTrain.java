@@ -80,17 +80,10 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
     private PigeonIMU podgeboi;
 
     private DriveTrainLayout layout;
-    private ShootingStyle shootingStyle;
 
     public enum DriveType {
         TANK,
         ARCADE
-    }
-
-    public enum ShootingStyle{
-        AUTOMATIC,
-        MANUAL,
-        LOWER_PORT
     }
 
     /**
@@ -105,8 +98,6 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
         super();
         setName("DriveTrain");
         this.layout = layout;
-        
-        shootingStyle = ShootingStyle.AUTOMATIC;
 
         // Initialize the motor controllers and (if applicable) the encoders
         switch (layout) {
@@ -285,14 +276,6 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
         leaderRight.setNeutralMode(neutralMode);
         followerLeft.setNeutralMode(neutralMode);
         followerRight.setNeutralMode(neutralMode);
-    }
-
-    public void setShootingLocation(ShootingStyle shootingStyle){
-        this.shootingStyle = shootingStyle;
-    }
-
-    public ShootingStyle getShootingStyle(){
-        return shootingStyle;
     }
 
     public void resetEncoders() {

@@ -13,16 +13,11 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel;
 
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 import frc.robot.RobotMap.CAN;
 import frc.robot.sensors.Limelight;
-import frc.robot.subsystems.DriveTrain.ShootingStyle;
 import frc.robot.util.PIDGain;
 import frc.robot.util.interfaces.IMercPIDTunable;
 import frc.robot.util.interfaces.IMercShuffleBoardPublisher;
@@ -35,16 +30,13 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
 
   private CANSparkMax shooterLeft, shooterRight;
 
-  private double currentSpeed;
   private double targetRPM;
 
   private ShooterMode mode;
-
+  
   private PIDGain velocityGains;
 
   private Limelight limelight;
-  private ShootingStyle shootingStyle;
-
 
   DigitalInput breakBeamSensor;
 
@@ -76,46 +68,20 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
 
 
     SmartDashboard.putNumber(getName() + "/SetRPM", 0.0);
-    setRunSpeed(0.0);
+
+    stopShooter();
     targetRPM = 0.0;
     velocityGains = new PIDGain(1e-5, 2e-7, 1e-5, 0);
     
     this.limelight = limelight;
-    shootingStyle = ShootingStyle.AUTOMATIC;
-
+  
     setPIDGain(SHOOTER_PID_SLOTS.VELOCITY_GAINS.getValue(), velocityGains);
 
     this.breakBeamSensor = new DigitalInput(3); 
   }
 
-  @Override
-  public void periodic() {
-
-  }
-
-  public void setSpeed(double speed) {
-    this.currentSpeed = speed;
-
-    if (shooterLeft != null && shooterRight != null) {
-      shooterLeft.setIdleMode(IdleMode.kCoast);
-      shooterRight.setIdleMode(IdleMode.kCoast);
-  
-      shooterLeft.set(speed);        
-    }
-  }
-
   public void stopShooter() {
     shooterLeft.stopMotor();
-  }
-
-  public void increaseSpeed() {
-    currentSpeed += 0.05;
-    this.setSpeed(currentSpeed);
-  }
-
-  public void decreaseSpeed() {
-    currentSpeed -= 0.05;
-    this.setSpeed(currentSpeed);
   }
 
   public double getRPM() {
@@ -128,33 +94,9 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
 
   public double getTargetRPM() {
     double distance = limelight.calcDistFromVert();
-    switch(shootingStyle) {
-      case AUTOMATIC:
-        updateTargetRPMCenter(distance);
-        break;
-      case MANUAL:
-        targetRPM = STEADY_RPM;
-        break;
-      case LOWER_PORT:
-        targetRPM = LOW_RPM;
-        break;
-      default:
-        targetRPM = STEADY_RPM;
-        break;
-    }
+    updateTargetRPMCenter(distance);
     return targetRPM < MAX_RPM && targetRPM > MIN_RPM ? targetRPM : STEADY_RPM;
     //return getRunRPM();
-  }
-
-  
-
-  public void setShootingStyle(ShootingStyle shootingStyle) {
-    this.shootingStyle = shootingStyle;
-  }
-
-  public double getTargetRPMFromHypothetical() {
-    double distance = getHyotheticalDistance();
-    return -2.93032197e-09*Math.pow(distance, 6) + 3.21815380e-06*Math.pow(distance, 5) - 1.40572567e-03*Math.pow(distance, 4) + 3.06747428e-01*Math.pow(distance, 3) - 3.38724423e+01*Math.pow(distance, 2) + 1.60699276e+03*distance - 9.44326999e+03;
   }
 
   public void setTargetRPM(double rpm) {
@@ -170,28 +112,9 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
     return Math.abs(getRPM() - getTargetRPM()) <= 0.01 * getTargetRPM();
   }
 
-  public Command getDefaultCommand() {
-    return CommandScheduler.getInstance().getDefaultCommand(this);
-  }
-
-  public void setDefaultCommand(Command command) {
-    CommandScheduler.getInstance().setDefaultCommand(this, command);
-  }
-
-  public void setRunSpeed(double runSpeed) {
-    SmartDashboard.putNumber(getName() + "/RunSpeed", 0.0);
-  }
-
-  public double getRunSpeed() {
-    return SmartDashboard.getNumber(getName() + "/RunSpeed", 0.0);
-  }
-
   public void setVelocity(double rpm) {
     if (shooterLeft != null && shooterRight != null)
     {
-      // Ensures shooter is in coast mode
-      shooterLeft.setIdleMode(IdleMode.kCoast);
-      shooterRight.setIdleMode(IdleMode.kCoast);
       // Sets RPM
       shooterLeft.getPIDController().setReference(rpm, ControlType.kVelocity);
     }
@@ -199,14 +122,6 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
 
   public double getRunRPM() {
     return SmartDashboard.getNumber(getName() + "/SetRPM", 0.0);
-  }
-
-  public double getHyotheticalDistance() {
-    return SmartDashboard.getNumber("Hypothetical Distance", 0.0);
-  }
-
-  public ShooterMode getMode() {
-    return mode;
   }
 
   public boolean hasBall() {

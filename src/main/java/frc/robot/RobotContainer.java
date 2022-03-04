@@ -40,7 +40,6 @@ import frc.robot.sensors.REVColorMux.I2CMUX;
 import frc.robot.sensors.REVColorMux.REVColor.ColorSensorID;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.DriveTrain.DriveTrainLayout;
-import frc.robot.subsystems.DriveTrain.ShootingStyle;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Feeder.BallMatchesAlliance;
@@ -168,7 +167,7 @@ public class RobotContainer {
         left3.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator), 
                                                    new RunCommand(() -> intake.setRollerSpeed(-0.7 * intake.INTAKE_SPEED), intake)));
                                 
-        left4.toggleWhenPressed(new RunShooterRPMPID(shooter, limelight, ShootingStyle.LOWER_PORT));
+        left4.toggleWhenPressed(new RunShooterRPMPID(shooter, limelight));
 
         
         left6.whenPressed(new SwitchLEDState(limelightCamera));

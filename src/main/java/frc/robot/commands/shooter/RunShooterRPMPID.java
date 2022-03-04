@@ -10,7 +10,6 @@ package frc.robot.commands.shooter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.sensors.Limelight;
 import frc.robot.sensors.Limelight.LimelightLEDState;
-import frc.robot.subsystems.DriveTrain.ShootingStyle;
 import frc.robot.subsystems.Shooter;
 
 public class RunShooterRPMPID extends CommandBase {
@@ -18,27 +17,16 @@ public class RunShooterRPMPID extends CommandBase {
   private Shooter shooter;
   private Limelight limelight;
 
-  private ShootingStyle shootingStyle;
-  private boolean manualShooting;
-  private boolean lowerPortShooting;
-
   /**
    * Creates a new RunShooter.
    */
-  public RunShooterRPMPID(Shooter shooter, Limelight limelight, ShootingStyle shootingStyle) {
+  public RunShooterRPMPID(Shooter shooter, Limelight limelight) {
     addRequirements(shooter);
     setName("RunShooterRPMPID");
     this.shooter = shooter;
     this.limelight = limelight;
-    this.shootingStyle = shootingStyle;
-    manualShooting = shootingStyle == ShootingStyle.MANUAL;
-    lowerPortShooting = shootingStyle == ShootingStyle.LOWER_PORT;
   }
-  
-  public RunShooterRPMPID(Shooter shooter, Limelight limelight) {
-    this(shooter, limelight, ShootingStyle.AUTOMATIC);
-  }
-  
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
@@ -48,13 +36,6 @@ public class RunShooterRPMPID extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setShootingStyle(shootingStyle);
-    if(!limelight.getTargetAcquired())
-      shootingStyle = ShootingStyle.MANUAL;
-    else if(!manualShooting)
-      shootingStyle = ShootingStyle.AUTOMATIC;
-    if(lowerPortShooting)
-        shootingStyle = ShootingStyle.LOWER_PORT;
     shooter.setVelocity(Math.abs(shooter.getTargetRPM()));
   }
 

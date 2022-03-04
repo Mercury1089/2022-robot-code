@@ -31,13 +31,13 @@ public class RunShooterRPM extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    this.shooter.setVelocity(Math.abs(shooter.getRunRPM()));
+    shooter.setVelocity(Math.abs(shooter.getRunRPM()));
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    this.shooter.setSpeed(0.0);
+    shooter.stopShooter();
   }
 
   // Returns true when the command should end.
