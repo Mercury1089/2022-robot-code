@@ -414,6 +414,14 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
         return MercMath.pigeonUnitsToDegrees(getPigeonYaw());
     }
 
+    public double getPositionInTicks() {
+        return leaderRight.getSelectedSensorPosition(DISTANCE_LOOP);
+    }
+
+    public double getPositionInInches() {
+        return MercMath.encoderTicksToInches(getPositionInTicks());
+    }
+
     public void resetPigeonYaw() {
         podgeboi.setYaw(0);
     }
@@ -509,11 +517,11 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
 
     }
 
-    public void updateTrajectoryPoint(TrajectoryPoint point, TrajectoryPoint newPoint, double currHeading, double currPos) {
+    public TrajectoryPoint updateTrajectoryPoint(TrajectoryPoint point, double currHeading, double currPos) {
 
         //update newPoint to attributes of point
         // change auxPos and pos by adding by current pos
-
+        TrajectoryPoint newPoint = new TrajectoryPoint();
         newPoint.timeDur = point.timeDur;
         newPoint.velocity = point.velocity;
         newPoint.zeroPos = point.zeroPos;
@@ -524,6 +532,8 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
 
         newPoint.auxiliaryPos = point.auxiliaryPos + currHeading;
         newPoint.position = point.position + currPos;
+
+        return newPoint;
     }
 
     @Override

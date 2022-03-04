@@ -49,16 +49,19 @@ public class MoveOnTrajectory extends CommandBase {
     buffer.Clear();
 
     int minTime = 0;
-    TrajectoryPoint newPoint = new TrajectoryPoint(); // a new TrajPoint that we can reuse (buffer reads attributes instead of passing reference)
+    double currentPosition = this.driveTrain.getPositionInTicks();
+    double currentYaw = this.driveTrain.getPigeonYaw();
+    
+
     for(TrajectoryPoint point : trajectoryPoints) {
       minTime = Math.min(point.timeDur, minTime);
 
-      double encoderTicks = MercMath.inchesToEncoderTicks(this.driveTrain.getDistanceTarget());
-      double auxPos = MercMath.degreesToPigeonUnits(this.driveTrain.getAngleTarget());
-      this.driveTrain.updateTrajectoryPoint(point, newPoint, encoderTicks, auxPos);
+      TrajectoryPoint newPoint = this.driveTrain.updateTrajectoryPoint(point, currentYaw, currentPosition);
 
       buffer.Write(newPoint); 
     }
+    
+    // driveTrain.resetPigeonYaw();
     driveTrain.moveOnTrajectory(buffer, minTime);
   }
 

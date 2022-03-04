@@ -189,6 +189,7 @@ public class RobotContainer {
 
         right6.whenPressed(new RotateToTarget(turret));
 
+
         // gamepadX.whenPressed(new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.SHOOT), frontFeeder));
         // gamepadY.whenPressed(new RunCommand(() -> backFeeder.setSpeed(FeedSpeed.SHOOT), backFeeder));
 
@@ -352,23 +353,27 @@ public class RobotContainer {
                 autonCommand = null;
                 break;
             case TAXI:
-                autonCommand = new DriveDistance(72.0, driveTrain);
+                autonCommand = new DriveDistance(90.0, driveTrain);
                 break;
             case ONE_CARGO:
                 try {
                 autonCommand = new ParallelCommandGroup(
                     new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
                     new RunIntake(intake),
-                    new MoveOnTrajectory("Taxi-OneCargo", driveTrain),
-                    new DriveDistance(72.0, driveTrain));
-                } catch (FileNotFoundException err) {}
+                    new MoveOnTrajectory("Taxi-OneCargo", driveTrain));
+                 } catch (FileNotFoundException err) {}
+
+                // autonCommand = new ParallelCommandGroup(
+                //     new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
+                //     new RunIntake(intake),
+                //     new MoveHeading(90.0, 45, driveTrain));
                 break;
             case TWO_CARGO:
                 try {
                     autonCommand = new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
                     new RunIntake(intake),
-                    new MoveOnTrajectory("Taxi-TwpCargo", driveTrain),
-                    new DriveDistance(72.0, driveTrain));
+                    new MoveOnTrajectory("Taxi-TwoCargo", driveTrain));
+                   // new DriveDistance(72.0, driveTrain));
                 } catch (FileNotFoundException err) {}
                 break;
             default:

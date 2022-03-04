@@ -13,6 +13,7 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -44,6 +45,7 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
   private Limelight limelight;
   private ShootingStyle shootingStyle;
 
+
   DigitalInput breakBeamSensor;
 
   public enum ShooterMode {
@@ -53,6 +55,8 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
   public Shooter(ShooterMode mode, Limelight limelight) {
     setName("Shooter");
     this.mode = mode;
+
+
 
     if (mode == ShooterMode.ONE_WHEEL) {
       shooterLeft = new CANSparkMax(CAN.SHOOTER_LEFT, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -210,6 +214,8 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
     return !breakBeamSensor.get();
   }
 
+ 
+
   public void publishValues() {
     SmartDashboard.putNumber(getName() + "/RPM", getRPM());
     
@@ -245,6 +251,8 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
       configPID(shooterLeft, SHOOTER_PID_SLOTS.VELOCITY_GAINS.getValue(), this.velocityGains);
     }
   }
+
+ 
 
   
 
