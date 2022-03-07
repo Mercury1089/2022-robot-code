@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -29,6 +30,8 @@ public class IntakeArticulator extends SubsystemBase implements IMercShuffleBoar
   public IntakeArticulator() {
     super();
     intakeArticulator = new TalonSRX(CAN.INTAKE_ARTICULATOR);
+    intakeArticulator.configFactoryDefault();
+    intakeArticulator.setNeutralMode(NeutralMode.Brake);
     intakeArticulator.setInverted(true);
     intakePosition = IntakePosition.IN;
   }
