@@ -29,6 +29,7 @@ public class ShootBall extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    this.backFeeder.setIsShooting(true);
     this.backFeeder.setSpeed(FeedSpeed.SHOOT);
   }
 
@@ -40,11 +41,12 @@ public class ShootBall extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     this.backFeeder.setSpeed(FeedSpeed.STOP);
+    this.backFeeder.setIsShooting(false);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return !(this.shooter.hasBall() || this.backFeeder.isBeamBroken());
+    return !this.shooter.hasBall() && !this.backFeeder.hasBall();
   }
 }

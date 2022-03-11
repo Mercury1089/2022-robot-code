@@ -21,25 +21,18 @@ import frc.robot.RobotMap.CAN;
 import frc.robot.sensors.Limelight;
 import frc.robot.util.PIDGain;
 import frc.robot.util.interfaces.IMercPIDTunable;
-import frc.robot.util.interfaces.IMercShuffleBoardPublisher;
 
-public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher, IMercPIDTunable {
-  // private IMercMotorController flywheel;
+public class Shooter extends SubsystemBase implements IMercPIDTunable {
 
   public static final double NOMINAL_OUT = 0.0, PEAK_OUT = 1.0;
-  public static final double MIN_RPM = 3700.0, MAX_RPM = 5000.0, STEADY_RPM = 4000.0, LOW_RPM = 1000.0;
+  public static final double MAX_RPM = 5000.0, STEADY_RPM = 4000.0, LOW_RPM = 1000.0, NULL_RPM = -1.0;
+  public static final double MIN_DISTANCE = 8.0;
 
   private CANSparkMax shooterLeft, shooterRight;
-
-  private double targetRPM;
-
-  private ShooterMode mode;
-  
+  private double targetVelocity;
   private PIDGain velocityGains;
-
   private Limelight limelight;
-
-  DigitalInput breakBeamSensor;
+  private DigitalInput breakBeamSensor;
 
   public enum ShooterMode {
     ONE_WHEEL, NONE
@@ -47,9 +40,6 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
 
   public Shooter(ShooterMode mode, Limelight limelight) {
     setName("Shooter");
-    this.mode = mode;
-
-
 
     if (mode == ShooterMode.ONE_WHEEL) {
       shooterLeft = new CANSparkMax(CAN.SHOOTER_LEFT, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -71,7 +61,7 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
     SmartDashboard.putNumber(getName() + "/SetRPM", 0.0);
 
     stopShooter();
-    targetRPM = 0.0;
+    targetVelocity = 0.0;
     velocityGains = new PIDGain(1e-5, 2e-7, 1e-5, 0);
     
     this.limelight = limelight;
@@ -85,44 +75,53 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
     shooterLeft.stopMotor();
   }
 
-  public double getRPM() {
+  /**
+   * Get the current velocity of the shooter
+   * @return the velocity in RPM
+   */
+  public double getVelocity() {
     return shooterLeft != null ? shooterLeft.getEncoder().getVelocity() : 0.0;
   }
 
-  public boolean isReadyToShoot(){
-    return atTargetRPM();
+  /**
+   * Get the target velocity for the shooter based on a distance
+   * using the distance to RPM equation.
+   * @param distance distance to the target as provided by the limelight
+   * @return calculated velocity based on distance
+   */
+  private double getVelocityFromDistance(double distance) {
+    return (2932 * Math.exp(0.0246 * distance));
   }
 
-  public double getTargetRPM() {
+  /**
+   * Get the velocity required to shoot into the target
+   * @return velocity required or NULL_RPM if velocity is invalid
+   */
+  public double getVelocityToTarget() {
     double distance = limelight.getDistanceToTarget();
-    updateTargetRPMCenter(distance);
-    return targetRPM < MAX_RPM && targetRPM > MIN_RPM ? targetRPM : STEADY_RPM;
-    //return getRunRPM();
+    return distance >= MIN_DISTANCE ? getVelocityFromDistance(distance) : NULL_RPM;
   }
 
-  public void setTargetRPM(double rpm) {
-    targetRPM = rpm;
+  /**
+   * Check if the shooter is running at the requested target velocity
+   * @return true if at target velocity, false otherwise
+   */
+  public boolean isAtTargetVelocity() {
+    return Math.abs(getVelocity() - targetVelocity) <= 0.01 * targetVelocity;
   }
 
-  public double updateTargetRPMCenter(double distance) {
-    targetRPM = 2932 * Math.exp(0.0246*distance);
-    //targetRPM = -2.93032197e-09*Math.pow(distance, 6) + 3.21815380e-06*Math.pow(distance, 5) - 1.40572567e-03*Math.pow(distance, 4) + 3.06747428e-01*Math.pow(distance, 3) - 3.38724423e+01*Math.pow(distance, 2) + 1.60699276e+03*distance - 9.44326999e+03;
-    return targetRPM;
-  }
-
-  public boolean atTargetRPM() {
-    return Math.abs(getRPM() - getTargetRPM()) <= 0.01 * getTargetRPM();
-  }
-
-  public void setVelocity(double rpm) {
+  public void setVelocity(double velocity) {
     if (shooterLeft != null && shooterRight != null)
     {
-      // Sets RPM
-      shooterLeft.getPIDController().setReference(rpm, ControlType.kVelocity);
+      // Record the target velocity for atTargetRPM()
+      targetVelocity = velocity;
+      // If the target velocity is outside the valid range, run at steady rate.
+      double setVelocity = velocity != NULL_RPM && velocity <= MAX_RPM ? velocity : STEADY_RPM;
+      shooterLeft.getPIDController().setReference(setVelocity, ControlType.kVelocity);
     }
   }
 
-  public double getRunRPM() {
+  public double getSmartDashboardRPM() {
     return SmartDashboard.getNumber(getName() + "/SetRPM", 0.0);
   }
 
@@ -131,36 +130,14 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
     return !breakBeamSensor.get();
   }
 
-  public void shootNow() {
-    updateTargetRPMCenter(limelight.getDistanceToTarget());
-    setVelocity(targetRPM);
-  }
-
- 
-
-  public void publishValues() {
-    SmartDashboard.putNumber(getName() + "/RPM", getRPM());
-    
-    //SmartDashboard.putNumber(getName() + "/PIDGains/P", velocityGains.kP);
-    //SmartDashboard.putNumber(getName() + "/PIDGains/I", velocityGains.kI);
-    //SmartDashboard.putNumber(getName() + "/PIDGains/D", velocityGains.kD);
-    //SmartDashboard.putNumber(getName() + "/PIDGains/F", velocityGains.kF);
-
-    SmartDashboard.putBoolean(getName() + "/AtTargetRPM", atTargetRPM());
-    SmartDashboard.putNumber(getName() + "/TargetRPM", targetRPM);
-    //SmartDashboard.putNumber("Hypothetical Distance", getHyotheticalDistance());
-    //SmartDashboard.putNumber("Hypothetical RPM", getTargetRPMFromHypothetical());
-  }
-
-  
   @Override
   public void initSendable(SendableBuilder builder) {
     
     builder.setActuator(true); // Only allow setting values when in Test mode
-    builder.addStringProperty("ShooterHasBall", () -> hasBall() + "", null);
-
-    //builder.addDoubleProperty(key, getter, setter);
-    
+    builder.addBooleanProperty("ShooterHasBall", () -> hasBall(), null);
+    builder.addDoubleProperty("CurrentRPM", () -> getVelocity(), null);
+    builder.addDoubleProperty("TargetRPM", () -> targetVelocity, null);
+    builder.addBooleanProperty("AtTargetRPM", () -> isAtTargetVelocity(), null);
   }
 
   @Override
@@ -184,12 +161,6 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
       configPID(shooterLeft, SHOOTER_PID_SLOTS.VELOCITY_GAINS.getValue(), this.velocityGains);
     }
   }
-
-
-
- 
-
-  
 
   @Override
   public int[] getSlots() {

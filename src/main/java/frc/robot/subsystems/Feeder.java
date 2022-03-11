@@ -44,10 +44,10 @@ public class Feeder extends SubsystemBase {
   }
 
   private VictorSPX feedWheel;
-  private static final double RUN_SPEED = 1.0;
   private REVColor colorSensor;
   private DigitalInput breakBeamSensor;
   private int dioPort;
+  private boolean isShooting;
 
   /**
    * Creates a new Feeder.
@@ -66,13 +66,12 @@ public class Feeder extends SubsystemBase {
     
 
     colorSensor = new REVColor(colorSensorID, mux);
+    isShooting = false;
   }
 
   public void setSpeed(FeedSpeed feedSpeed) {
     feedWheel.set(ControlMode.PercentOutput, feedSpeed.speed);
   }
-
-
 
   public boolean isCorrectColor() {
     // is detected color of ball is same as FMS' alliance color 
@@ -107,9 +106,7 @@ public class Feeder extends SubsystemBase {
     return null;
   }
 
-
-
-  public boolean isBeamBroken() {
+  public boolean hasBall() {
     return !breakBeamSensor.get(); 
   }
 
@@ -131,11 +128,21 @@ public class Feeder extends SubsystemBase {
     NONE
   }
 
+  public void setIsShooting(boolean isShooting) {
+    this.isShooting = isShooting;
+  }
+
+  public boolean isShooting() {
+    return isShooting;
+  }
+
   @Override
   public void initSendable(SendableBuilder builder) {
     
     builder.setActuator(true); // Only allow setting values when in Test mode
     builder.setSafeState(() -> setSpeed(FeedSpeed.STOP)); // Provide method to make the subsystem safe
+
+    /*
     builder.addStringProperty("Color/Detected", () -> colorSensor.getDetectedColor().toString(), null);
     builder.addDoubleProperty("Color/Confidence", () -> colorSensor.getConfidence(), null);
     builder.addStringProperty("Color/ENUM", () -> colorSensor.getColor().toString(), null);
@@ -145,7 +152,7 @@ public class Feeder extends SubsystemBase {
     builder.addDoubleProperty("Color/RGB/Red", () -> colorSensor.getDetectedColor().red * 255, null);
     builder.addDoubleProperty("Color/RGB/Green", () -> colorSensor.getDetectedColor().green * 255, null);
     builder.addDoubleProperty("Color/RGB/Blue", () -> colorSensor.getDetectedColor().blue * 255, null);
-
-    builder.addBooleanProperty("isBeamBroken", () -> isBeamBroken(), null);
+    */
+    builder.addBooleanProperty("hasBall", () -> hasBall(), null);
   }
 }

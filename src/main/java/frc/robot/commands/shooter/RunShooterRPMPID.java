@@ -36,7 +36,7 @@ public class RunShooterRPMPID extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setVelocity(Math.abs(shooter.getTargetRPM()));
+    shooter.setVelocity(Math.abs(shooter.getVelocityToTarget()));
   }
 
   // Called once the command ends or is interrupted.

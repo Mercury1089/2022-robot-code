@@ -111,12 +111,16 @@ public class RobotContainer {
         // (!frontFeeder.isBeamBroken() && backFeeder.isBeamBroken()) ));
 
         /*
-        ball in front and no ball in back OR
-        front feeder empty and IntakePosition.OUT
+        back feeder not shooting AND 
+            (ball in front AND no ball in back OR
+            front feeder empty AND IntakePosition.OUT)
         */
         frontFeeder.setDefaultCommand(new LoadFeederTrigger(frontFeeder, () ->
-        (frontFeeder.isBeamBroken() && !backFeeder.isBeamBroken()) ||
-        (!frontFeeder.isBeamBroken() && intakeArticulator.getIntakePosition() == IntakePosition.OUT)));
+                !backFeeder.isShooting() && (
+                    (frontFeeder.hasBall() && !backFeeder.hasBall()) ||
+                    (!frontFeeder.hasBall() && intakeArticulator.getIntakePosition() == IntakePosition.OUT)
+                )
+        ));
         // frontFeeder.setDefaultCommand(new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.STOP), frontFeeder));
        
         /*
@@ -125,8 +129,10 @@ public class RobotContainer {
         --> run the back feeder
         */
         backFeeder = new Feeder(ColorSensorID.BACK, BreakBeamDIO.BACK, RobotMap.CAN.FEEDER_B, mux);
-        backFeeder.setDefaultCommand(new LoadFeederTrigger(backFeeder, () -> !backFeeder.isBeamBroken() 
-        && (intakeArticulator.getIntakePosition() == IntakePosition.OUT || frontFeeder.isBeamBroken())));
+        backFeeder.setDefaultCommand(new LoadFeederTrigger(backFeeder, () ->
+                !backFeeder.hasBall() &&
+                (intakeArticulator.getIntakePosition() == IntakePosition.OUT || frontFeeder.hasBall()
+        )));
         // backFeeder.setDefaultCommand(new RunCommand(() -> backFeeder.setSpeed(FeedSpeed.STOP), backFeeder));
 
         intake = new Intake();
@@ -139,11 +145,8 @@ public class RobotContainer {
 
 
         shuffleDash = new ShuffleDash(this);
-       
-        shuffleDash.addPublisher(shooter);
+
         shuffleDash.addPublisher(driveTrain);
-        //shuffleDash.addPublisher(spinner);
-        //shuffleDash.addPublisher(intake);
         //shuffleDash.addPublisher(limelightCamera);
         //shuffleDash.addPublisher(intakeArticulator);
         //shuffleDash.addPIDTunable(shooter, "Shooter");
@@ -188,8 +191,11 @@ public class RobotContainer {
         right11.whenPressed(new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.EJECT), frontFeeder));
 
 
-        //gamepadA.whenPressed(new RunShooterRPM(shooter));
-        gamepadA.whenPressed(new RunCommand(() -> shooter.shootNow(), shooter));
+        // Use the following to set velocity from SmartDash
+        // gamepadA.whenPressed(new RunCommand(() -> shooter.setVelocity(shooter.getSmartDashboardRPM()), shooter));
+
+        // Use the following to set velocity based on target distance
+        gamepadA.whenPressed(new RunCommand(() -> shooter.setVelocity(shooter.getVelocityToTarget()), shooter));
         gamepadB.whenPressed(new RunCommand(() -> shooter.stopShooter(), shooter));
 
         gamepadLT.whenPressed(new ShootBall(backFeeder, shooter));
