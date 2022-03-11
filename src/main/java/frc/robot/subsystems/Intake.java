@@ -14,10 +14,27 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotMap.CAN;
-import frc.robot.util.interfaces.IMercShuffleBoardPublisher;
 
-public class Intake extends SubsystemBase implements IMercShuffleBoardPublisher {
-  private final VictorSPX intakeRoller, agitator;
+public class Intake extends SubsystemBase {
+
+  public enum IntakeSpeed{
+    STOP(0.0), // stop running intake roller
+    INTAKE(1.0), // run intake roller inward
+    EJECT(-0.70); // run intake roller outward
+
+    public final double speed; 
+
+        /**
+         * Creates the intake speed.
+         *
+         * @param speed speed, in PercentOutput
+         */
+        IntakeSpeed(double speed) {
+            this.speed = speed;
+        }
+  }
+
+  private final VictorSPX intakeRoller;
   public final double INTAKE_SPEED, AGITATOR_SPEED;
   public final boolean IS_CLOCKWISE;
   /**
@@ -33,47 +50,16 @@ public class Intake extends SubsystemBase implements IMercShuffleBoardPublisher 
     setName("Intake");
     
     intakeRoller = new VictorSPX(CAN.INTAKE_ROLLER);
+    intakeRoller.configFactoryDefault();
+    intakeRoller.setNeutralMode(NeutralMode.Brake);
     intakeRoller.setInverted(true);
-    agitator = new VictorSPX(CAN.AGITATOR);
-    agitator.setInverted(IS_CLOCKWISE);
-    agitator.setNeutralMode(NeutralMode.Brake);
   }
 
-  public void setRollerSpeed(double speed) {
-    intakeRoller.set(ControlMode.PercentOutput, speed);
-  }
-
-  public void runIntakeRoller(double velocityProportion) {
-    setRollerSpeed(INTAKE_SPEED * velocityProportion);
-  }
-
-  public void runIntakeRoller() {
-    setRollerSpeed(INTAKE_SPEED);
-  }
-
-  public void stopIntakeRoller() {
-    setRollerSpeed(0.0);
-  }
-
-  public void runAgitator() {
-    agitator.set(ControlMode.PercentOutput, AGITATOR_SPEED);
-  }
-
-  public void stopAgitator() {
-    agitator.set(ControlMode.PercentOutput, 0.0);
+  public void setSpeed(IntakeSpeed intakeSpeed) {
+    intakeRoller.set(ControlMode.PercentOutput, intakeSpeed.speed);
   }
 
   public boolean getIsClockwise() {
     return IS_CLOCKWISE;
-  }
-
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
-
-  @Override
-  public void publishValues() {
-    
   }
 }

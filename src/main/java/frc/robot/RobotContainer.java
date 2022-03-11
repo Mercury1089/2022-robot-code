@@ -4,12 +4,8 @@ import java.io.FileNotFoundException;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandGroupBase;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotMap.DS_USB;
@@ -18,22 +14,16 @@ import frc.robot.RobotMap.GAMEPAD_BUTTONS;
 import frc.robot.RobotMap.JOYSTICK_ADJUSTMENTS;
 import frc.robot.RobotMap.JOYSTICK_BUTTONS;
 import frc.robot.commands.drivetrain.DriveWithJoysticks;
-import frc.robot.commands.drivetrain.MoveOnTrajectory;
 import frc.robot.commands.drivetrain.DriveWithJoysticks.DriveType;
+import frc.robot.commands.drivetrain.MoveOnTrajectory;
 import frc.robot.commands.drivetrain.MoveHeadingDerivatives.DriveDistance;
 import frc.robot.commands.drivetrain.MoveHeadingDerivatives.MoveHeading;
-import frc.robot.commands.elevator.AutomaticElevator;
 import frc.robot.commands.elevator.ManualElevator;
-import frc.robot.commands.feeder.LoadFeeder;
 import frc.robot.commands.feeder.LoadFeederTrigger;
 import frc.robot.commands.feeder.ShootBall;
-import frc.robot.commands.intake.RunIntake;
 import frc.robot.commands.limelightCamera.SwitchLEDState;
-import frc.robot.commands.shooter.CalculateTargetRPM;
-import frc.robot.commands.shooter.RunShooterRPM;
 import frc.robot.commands.shooter.RunShooterRPMPID;
 import frc.robot.commands.turret.RotateToTarget;
-import frc.robot.commands.turret.ScanForTarget;
 import frc.robot.sensors.Limelight;
 import frc.robot.sensors.Limelight.LimelightLEDState;
 import frc.robot.sensors.REVColorMux.I2CMUX;
@@ -45,9 +35,10 @@ import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Feeder.BallMatchesAlliance;
 import frc.robot.subsystems.Feeder.BreakBeamDIO;
 import frc.robot.subsystems.Feeder.FeedSpeed;
-import frc.robot.subsystems.IntakeArticulator.IntakePosition;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Intake.IntakeSpeed;
 import frc.robot.subsystems.IntakeArticulator;
+import frc.robot.subsystems.IntakeArticulator.IntakePosition;
 import frc.robot.subsystems.LimelightCamera;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Shooter.ShooterMode;
@@ -162,11 +153,12 @@ public class RobotContainer {
 
         //driver controls
         //toggle intake in and out
-        left1.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator), new RunIntake(intake))); 
-        left2.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intake.stopIntakeRoller(), intake), 
+        left1.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
+                                                   new RunCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE), intake)));
+        left2.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intake.setSpeed(IntakeSpeed.STOP), intake), 
                                                    new RunCommand(() -> intakeArticulator.setIntakeIn(), intakeArticulator)));
         left3.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator), 
-                                                   new RunCommand(() -> intake.setRollerSpeed(-0.7 * intake.INTAKE_SPEED), intake)));
+                                                   new RunCommand(() -> intake.setSpeed(IntakeSpeed.EJECT), intake)));
                                 
         left4.toggleWhenPressed(new RunShooterRPMPID(shooter, limelight));
 
@@ -178,13 +170,6 @@ public class RobotContainer {
         left7.whenPressed(new RunCommand(() -> turret.setPosition(-4096.0), turret));
         left8.whenPressed(new RunCommand(() -> turret.setPosition(0.0), turret));
         left9.whenPressed(new RunCommand(() -> turret.setPosition(4096.0), turret));
-
-        left10.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeDisabled(), intakeArticulator), new RunIntake(intake)));
-        try {
-            left11.whenPressed(new MoveOnTrajectory("Taxi-OneCargo", driveTrain));
-        } catch (FileNotFoundException ex) {
-        }
-        
 
         right4.whenPressed(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
 
@@ -365,7 +350,7 @@ public class RobotContainer {
                 try {
                 autonCommand = new ParallelCommandGroup(
                     new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
-                    new RunIntake(intake),
+                    new RunCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
                     new MoveOnTrajectory("Taxi-OneCargo", driveTrain));
                  } catch (FileNotFoundException err) {}
 
@@ -377,7 +362,7 @@ public class RobotContainer {
             case TWO_CARGO:
                 try {
                     autonCommand = new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
-                    new RunIntake(intake),
+                    new RunCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
                     new MoveOnTrajectory("Taxi-TwoCargo", driveTrain));
                    // new DriveDistance(72.0, driveTrain));
                 } catch (FileNotFoundException err) {}
