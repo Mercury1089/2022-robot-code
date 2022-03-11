@@ -94,7 +94,7 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
   }
 
   public double getTargetRPM() {
-    double distance = limelight.calcDistFromVert();
+    double distance = limelight.getDistanceToTarget();
     updateTargetRPMCenter(distance);
     return targetRPM < MAX_RPM && targetRPM > MIN_RPM ? targetRPM : STEADY_RPM;
     //return getRunRPM();
@@ -105,7 +105,8 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
   }
 
   public double updateTargetRPMCenter(double distance) {
-    targetRPM = -2.93032197e-09*Math.pow(distance, 6) + 3.21815380e-06*Math.pow(distance, 5) - 1.40572567e-03*Math.pow(distance, 4) + 3.06747428e-01*Math.pow(distance, 3) - 3.38724423e+01*Math.pow(distance, 2) + 1.60699276e+03*distance - 9.44326999e+03;
+    targetRPM = 2932 * Math.exp(0.0246*distance);
+    //targetRPM = -2.93032197e-09*Math.pow(distance, 6) + 3.21815380e-06*Math.pow(distance, 5) - 1.40572567e-03*Math.pow(distance, 4) + 3.06747428e-01*Math.pow(distance, 3) - 3.38724423e+01*Math.pow(distance, 2) + 1.60699276e+03*distance - 9.44326999e+03;
     return targetRPM;
   }
 
@@ -128,6 +129,11 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
   public boolean hasBall() {
     // if the shooter has a ball (if beam is broken)
     return !breakBeamSensor.get();
+  }
+
+  public void shootNow() {
+    updateTargetRPMCenter(limelight.getDistanceToTarget());
+    setVelocity(targetRPM);
   }
 
  
