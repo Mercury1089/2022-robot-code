@@ -161,7 +161,8 @@ public class Limelight implements TableEntryListener {
     public double getDistanceToTarget(){
         //10.7 + -0.513x + 0.0128x^2
 
-        return (0.0128 * Math.pow(this.targetCenterYAngle, 2.0)) + (-0.513 * this.targetCenterYAngle) + 10.7;
+        //return (0.0128 * Math.pow(this.targetCenterYAngle, 2.0)) + (-0.513 * this.targetCenterYAngle) + 10.7;
+        return (12.6 * Math.exp(0.0483 * this.targetCenterYAngle));
     }
 
     /**

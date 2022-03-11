@@ -13,6 +13,7 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -77,7 +78,7 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
   
     setPIDGain(SHOOTER_PID_SLOTS.VELOCITY_GAINS.getValue(), velocityGains);
 
-    this.breakBeamSensor = new DigitalInput(3); 
+    this.breakBeamSensor = new DigitalInput(2); 
   }
 
   public void stopShooter() {
@@ -145,6 +146,17 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
     //SmartDashboard.putNumber("Hypothetical RPM", getTargetRPMFromHypothetical());
   }
 
+  
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    
+    builder.setActuator(true); // Only allow setting values when in Test mode
+    builder.addStringProperty("ShooterHasBall", () -> hasBall() + "", null);
+
+    //builder.addDoubleProperty(key, getter, setter);
+    
+  }
+
   @Override
   public PIDGain getPIDGain(int slot) {
     return this.velocityGains;
@@ -166,6 +178,8 @@ public class Shooter extends SubsystemBase implements IMercShuffleBoardPublisher
       configPID(shooterLeft, SHOOTER_PID_SLOTS.VELOCITY_GAINS.getValue(), this.velocityGains);
     }
   }
+
+
 
  
 

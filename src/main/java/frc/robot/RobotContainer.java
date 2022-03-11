@@ -93,7 +93,8 @@ public class RobotContainer {
         limelight = new Limelight();
 
         turret = new Turret(limelight);
-        turret.setDefaultCommand(new ScanForTarget(turret));
+        // turret.setDefaultCommand(new ScanForTarget(turret));
+        turret.setDefaultCommand(new RunCommand(() -> turret.setSpeed(() -> getGamepadAxis(GAMEPAD_AXIS.leftX)), turret));
 
         driveTrain = new DriveTrain(DriveTrainLayout.FALCONS); //make sure to switch it back to Falcons
         driveTrain.setDefaultCommand(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
@@ -204,6 +205,10 @@ public class RobotContainer {
 
         gamepadA.whenPressed(new RunShooterRPM(shooter));
         gamepadB.whenPressed(new RunCommand(() -> shooter.stopShooter(), shooter));
+
+        gamepadLT.whenPressed(new ShootBall(backFeeder, shooter));
+
+        
         
 
         // Trigger backFeederTrigger = new Trigger(() -> !backFeeder.isBeamBroken() ); 
@@ -248,8 +253,8 @@ public class RobotContainer {
         unloadFeeder.whileActiveContinuous(new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.EJECT), frontFeeder));
         
 
-        Trigger rotateTargetTrigger = new Trigger(() -> !turret.targetIsLost());
-        rotateTargetTrigger.whileActiveContinuous(new RotateToTarget(turret));
+        // Trigger rotateTargetTrigger = new Trigger(() -> !turret.targetIsLost());
+        // rotateTargetTrigger.whileActiveContinuous(new RotateToTarget(turret));
 
         /*
         turret is on target AND
@@ -258,8 +263,8 @@ public class RobotContainer {
         --> shoot the ball
         */
 
-        Trigger shootBall = new Trigger(() -> turret.isOnTarget() && shooter.isReadyToShoot() && backFeeder.isBeamBroken());
-        shootBall.whileActiveContinuous(new ShootBall(backFeeder, shooter));
+        // Trigger shootBall = new Trigger(() -> turret.isOnTarget() && shooter.isReadyToShoot() && backFeeder.isBeamBroken());
+        // shootBall.whileActiveContinuous(new ShootBall(backFeeder, shooter));
         
 
     }
