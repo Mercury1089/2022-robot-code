@@ -203,7 +203,8 @@ public class RobotContainer {
         right11.whenPressed(new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.EJECT), frontFeeder));
 
 
-        gamepadA.whenPressed(new RunShooterRPM(shooter));
+        //gamepadA.whenPressed(new RunShooterRPM(shooter));
+        gamepadA.whenPressed(new RunCommand(() -> shooter.shootNow(), shooter));
         gamepadB.whenPressed(new RunCommand(() -> shooter.stopShooter(), shooter));
 
         gamepadLT.whenPressed(new ShootBall(backFeeder, shooter));

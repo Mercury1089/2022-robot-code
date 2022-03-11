@@ -60,21 +60,23 @@ public class REVColor {
   }
 
   public DriverStation.Alliance getColor() {
-    detectedColor = getRawColor();
-    try {
-      ColorMatchResult match = colorMatch.matchColor(detectedColor);
-      confidence = match.confidence;
 
-      if (match.color == targetRed) {
-        return DriverStation.Alliance.Red;
-      } else if (match.color == targetBlue) {
-        return DriverStation.Alliance.Blue;
-      }
-      return DriverStation.Alliance.Invalid;
+    return DriverStation.Alliance.Invalid;
+    // detectedColor = getRawColor();
+    // try {
+    //   ColorMatchResult match = colorMatch.matchColor(detectedColor);
+    //   confidence = match.confidence;
 
-    } catch (Exception nullPointerException) {
-      return DriverStation.Alliance.Invalid;
-    }
+    //   if (match.color == targetRed) {
+    //     return DriverStation.Alliance.Red;
+    //   } else if (match.color == targetBlue) {
+    //     return DriverStation.Alliance.Blue;
+    //   }
+    //   return DriverStation.Alliance.Invalid;
+
+    // } catch (Exception nullPointerException) {
+    //   return DriverStation.Alliance.Invalid;
+    // }
   }
 
 
