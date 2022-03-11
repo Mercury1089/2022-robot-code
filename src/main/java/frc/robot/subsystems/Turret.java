@@ -16,6 +16,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.CAN;
 import frc.robot.sensors.Limelight;
@@ -29,7 +30,8 @@ public class Turret extends SubsystemBase {
   public static final double THRESHOLD_DEGREES = 3.0;
   private static double NORMAL_P_VAL = 0.11;
   private double positionInput;
-  private double gearRatio = 9.0;
+  public final double GEAR_RATIO = 7.5;
+  public final double UPPER_LIMIT = 370.0, LOWER_LIMIT = 0.0;
 
   /** Creates a new Turret. */
   public Turret(Limelight limelight) {
@@ -39,23 +41,26 @@ public class Turret extends SubsystemBase {
     turret = new TalonSRX(CAN.TURRET);
 
     turret.configFactoryDefault();
+    turret.setSelectedSensorPosition(0, RobotMap.PID.PRIMARY_PID_LOOP, RobotMap.CTRE_TIMEOUT);
+
+
     setName("Turret");
 
     turret.configNeutralDeadband(0.01);
     turret.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, RobotMap.PID.PRIMARY_PID_LOOP, RobotMap.CTRE_TIMEOUT);
-    turret.setSensorPhase(false);
+    turret.setSensorPhase(true);
     turret.setInverted(false);
 
-    turret.configForwardSoftLimitThreshold(4096*gearRatio, RobotMap.CTRE_TIMEOUT);
-    turret.configReverseSoftLimitThreshold(0, RobotMap.CTRE_TIMEOUT);
+    turret.configForwardSoftLimitThreshold(MercMath.degreesToEncoderTicks(UPPER_LIMIT)*GEAR_RATIO, RobotMap.CTRE_TIMEOUT);
+    turret.configReverseSoftLimitThreshold(MercMath.degreesToEncoderTicks(LOWER_LIMIT), RobotMap.CTRE_TIMEOUT);
     turret.configForwardSoftLimitEnable(true, RobotMap.CTRE_TIMEOUT);
     turret.configReverseSoftLimitEnable(true, RobotMap.CTRE_TIMEOUT);
    
 
     turret.configNominalOutputForward(0.02, RobotMap.CTRE_TIMEOUT);
     turret.configNominalOutputReverse(-0.02, RobotMap.CTRE_TIMEOUT);
-    turret.configPeakOutputForward(0.25, RobotMap.CTRE_TIMEOUT);
-    turret.configPeakOutputReverse(-0.25, RobotMap.CTRE_TIMEOUT);
+    turret.configPeakOutputForward(1.0, RobotMap.CTRE_TIMEOUT);
+    turret.configPeakOutputReverse(-1.0, RobotMap.CTRE_TIMEOUT);
 
     turret.configAllowableClosedloopError(RobotMap.PID.PRIMARY_PID_LOOP, 0, RobotMap.CTRE_TIMEOUT);
 
@@ -64,10 +69,10 @@ public class Turret extends SubsystemBase {
     turret.config_kD(RobotMap.PID.PRIMARY_PID_LOOP, 0.0, RobotMap.CTRE_TIMEOUT);
     turret.config_kF(RobotMap.PID.PRIMARY_PID_LOOP, 0.0, RobotMap.CTRE_TIMEOUT);
 
-    int absolutePosition = turret.getSensorCollection().getPulseWidthPosition();
-    absolutePosition &= 0xFFF;
+    // int absolutePosition = turret.getSensorCollection().getPulseWidthPosition();
+    // absolutePosition &= 0xFFF;
 
-    turret.setSelectedSensorPosition(absolutePosition, RobotMap.PID.PRIMARY_PID_LOOP, RobotMap.CTRE_TIMEOUT);
+    // turret.setSelectedSensorPosition(absolutePosition, RobotMap.PID.PRIMARY_PID_LOOP, RobotMap.CTRE_TIMEOUT);
 
   }
 
@@ -78,12 +83,12 @@ public class Turret extends SubsystemBase {
   public void setPosition(double pos) {
     // pos is in degrees
     double ticks = MercMath.degreesToEncoderTicks(pos);
-    ticks *= gearRatio; // 9:1 gear ratio
+    ticks *= GEAR_RATIO; // 9:1 gear ratio
     turret.set(ControlMode.Position, ticks);
   }
 
   public double getAngleError() {
-    return MercMath.encoderTicksToDegrees(turret.getClosedLoopError()/gearRatio);
+    return MercMath.encoderTicksToDegrees(turret.getClosedLoopError()/GEAR_RATIO);
   }
 
   public boolean isOnTarget() {
@@ -101,7 +106,7 @@ public class Turret extends SubsystemBase {
 
   
   public double getCustomTickInDegrees() {
-    double ticks = turret.getSelectedSensorPosition(0) / gearRatio;
+    double ticks = turret.getSelectedSensorPosition(0) / GEAR_RATIO;
     double degs = MercMath.encoderTicksToDegrees(ticks);
     return degs;
   }
@@ -125,16 +130,16 @@ public class Turret extends SubsystemBase {
 }
 
   public boolean isAtForwardLimit(){
-    return this.getCustomTickInDegrees() > 360;
+    return this.getCustomTickInDegrees() > UPPER_LIMIT;
   }
 
   public boolean isAtReverseLimit() {
-    return this.getCustomTickInDegrees() < 0;
+    return this.getCustomTickInDegrees() < LOWER_LIMIT;
   }
 
 
   public double getAngleToTarget(){
-    return limelight.getTargetCenterXAngle();
+    return -limelight.getTargetCenterXAngle();
   }
 
   public double getDistanceToTarget() {
@@ -153,7 +158,7 @@ public class Turret extends SubsystemBase {
     builder.setActuator(true); // Only allow setting values when in Test mode
     builder.addDoubleProperty("Encoder", () -> turret.getSelectedSensorPosition(0), null);
     builder.addDoubleProperty("Position",
-                        () -> MercMath.encoderTicksToDegrees(turret.getClosedLoopTarget()/gearRatio),
+                        () -> MercMath.encoderTicksToDegrees(turret.getClosedLoopTarget()/GEAR_RATIO),
                         (x) -> setPosition(x));
     builder.addDoubleProperty("EncoderDegrees", () -> getCustomTickInDegrees(), null);
     builder.addDoubleProperty("DistanceToTarget", () -> limelight.getDistanceToTarget(), null);

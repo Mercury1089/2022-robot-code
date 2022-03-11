@@ -24,6 +24,7 @@ import frc.robot.commands.feeder.ShootBall;
 import frc.robot.commands.limelightCamera.SwitchLEDState;
 import frc.robot.commands.shooter.RunShooterRPMPID;
 import frc.robot.commands.turret.RotateToTarget;
+import frc.robot.commands.turret.ScanForTarget;
 import frc.robot.sensors.Limelight;
 import frc.robot.sensors.Limelight.LimelightLEDState;
 import frc.robot.sensors.REVColorMux.I2CMUX;
@@ -84,8 +85,8 @@ public class RobotContainer {
         limelight = new Limelight();
 
         turret = new Turret(limelight);
-        // turret.setDefaultCommand(new ScanForTarget(turret));
-        turret.setDefaultCommand(new RunCommand(() -> turret.setSpeed(() -> getGamepadAxis(GAMEPAD_AXIS.leftX)), turret));
+        turret.setDefaultCommand(new ScanForTarget(turret));
+       //  turret.setDefaultCommand(new RunCommand(() -> turret.setSpeed(() -> getGamepadAxis(GAMEPAD_AXIS.leftX)*0.5), turret));
 
         driveTrain = new DriveTrain(DriveTrainLayout.FALCONS); //make sure to switch it back to Falcons
         driveTrain.setDefaultCommand(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
@@ -121,7 +122,6 @@ public class RobotContainer {
                     (!frontFeeder.hasBall() && intakeArticulator.getIntakePosition() == IntakePosition.OUT)
                 )
         ));
-        // frontFeeder.setDefaultCommand(new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.STOP), frontFeeder));
        
         /*
         no ball in back AND
@@ -245,8 +245,8 @@ public class RobotContainer {
         unloadFeeder.whileActiveContinuous(new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.EJECT), frontFeeder));
         
 
-        // Trigger rotateTargetTrigger = new Trigger(() -> !turret.targetIsLost());
-        // rotateTargetTrigger.whileActiveContinuous(new RotateToTarget(turret));
+        Trigger rotateTargetTrigger = new Trigger(() -> !turret.targetIsLost());
+        rotateTargetTrigger.whileActiveContinuous(new RotateToTarget(turret));
 
         /*
         turret is on target AND

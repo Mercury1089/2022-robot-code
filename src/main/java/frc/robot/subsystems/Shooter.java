@@ -72,6 +72,7 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
   }
 
   public void stopShooter() {
+    targetVelocity = 0.0;
     shooterLeft.stopMotor();
   }
 
