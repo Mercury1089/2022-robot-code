@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.sensors.Limelight;
 import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.IntakeArticulator;
@@ -26,7 +25,6 @@ public class AutonSelector extends InstantCommand {
   CommandGroupBase autonCommand;
 
   DriveTrain driveTrain;
-  Elevator elevator;
   Feeder feeder;
   Intake intake;
   IntakeArticulator intakeArticulator;
@@ -35,7 +33,7 @@ public class AutonSelector extends InstantCommand {
   Shooter shooter;
 
   public AutonSelector(ShuffleDash shuffleDash, CommandGroupBase autonCommand, DriveTrain driveTrain, 
-    Elevator elevator, Feeder feeder, 
+    Feeder feeder, 
     Intake intake, IntakeArticulator intakeArticulator, Limelight limeLight, 
     Shooter shooter) {
 
@@ -45,7 +43,6 @@ public class AutonSelector extends InstantCommand {
     this.autonCommand = autonCommand;
 
     this.driveTrain = driveTrain;
-    this.elevator = elevator;
     this.feeder = feeder;
     this.intake = intake;
     this.intakeArticulator = intakeArticulator;

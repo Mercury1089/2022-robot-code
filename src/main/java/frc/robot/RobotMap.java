@@ -13,7 +13,6 @@ public class RobotMap {
                 SHOOTER_LEFT = 8,
                 SHOOTER_RIGHT = 9,
                 PIGEON = 10,
-                ELEVATOR = 11,
                 SPINNER = 12,
                 AGITATOR = 14,
                 CANCODER_ML = 1,

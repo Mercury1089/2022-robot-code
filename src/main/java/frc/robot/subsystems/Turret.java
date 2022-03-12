@@ -26,6 +26,7 @@ public class Turret extends SubsystemBase {
   
   private TalonSRX turret;
   private Limelight limelight;
+  private boolean isTargeting;
   private static final int MAX_TURRET_RPM = 250;
   public static final double THRESHOLD_DEGREES = 3.0;
   private static double NORMAL_P_VAL = 0.11;
@@ -36,6 +37,8 @@ public class Turret extends SubsystemBase {
   /** Creates a new Turret. */
   public Turret(Limelight limelight) {
     super();
+
+    this.isTargeting = false;
 
     this.limelight = limelight;
     turret = new TalonSRX(CAN.TURRET);
@@ -92,6 +95,7 @@ public class Turret extends SubsystemBase {
   }
 
   public boolean isOnTarget() {
+
     return (Math.abs(getAngleError()) < Turret.THRESHOLD_DEGREES);
   }
 
@@ -126,7 +130,7 @@ public class Turret extends SubsystemBase {
   }
 
   public boolean isReadyToShoot(){
-    return isOnTarget();
+    return this.isTargeting && isOnTarget();
 }
 
   public boolean isAtForwardLimit(){
@@ -152,14 +156,19 @@ public class Turret extends SubsystemBase {
         // turretDefaultCommand.initialize()
   }
 
+  public void setIsTargeting(boolean targeting) {
+    this.isTargeting = targeting;
+  }
+
+  public boolean getIsTargeting() {
+    return this.isTargeting;
+  }
+
   @Override
   public void initSendable(SendableBuilder builder) {
     
     builder.setActuator(true); // Only allow setting values when in Test mode
     builder.addDoubleProperty("Encoder", () -> turret.getSelectedSensorPosition(0), null);
-    builder.addDoubleProperty("Position",
-                        () -> MercMath.encoderTicksToDegrees(turret.getClosedLoopTarget()/GEAR_RATIO),
-                        (x) -> setPosition(x));
     builder.addDoubleProperty("EncoderDegrees", () -> getCustomTickInDegrees(), null);
     builder.addDoubleProperty("DistanceToTarget", () -> limelight.getDistanceToTarget(), null);
     builder.addDoubleProperty("Velocity", () -> turret.getSelectedSensorVelocity(), null);

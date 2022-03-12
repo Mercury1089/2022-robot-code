@@ -40,7 +40,11 @@ public class RotateToTarget extends CommandBase
         currentEncoderPos = turret.getCustomTickInDegrees(); // turret's current rotation 
         System.out.println("RotateToTarget initialized with angle " + targetHeading);
 
+        
+
         double finalPos = currentEncoderPos + targetHeading + OFFSET;
+
+        turret.setIsTargeting(true);
         turret.setPosition(finalPos);
     }
     
@@ -68,6 +72,7 @@ public class RotateToTarget extends CommandBase
     // Called once after isFinished returns true
     @Override
     public void end(boolean interrupted) {
+        turret.setIsTargeting(false);
 
     }
 }

@@ -38,7 +38,7 @@ import frc.robot.util.interfaces.IMercShuffleBoardPublisher;
  * This contains the {@link DriveAssist} needed to driveAssist manually
  * using the motor controllers.
  */
-public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublisher, IMercPIDTunable {
+public class DriveTrain extends SubsystemBase implements IMercPIDTunable {
 
     public static final int
         DRIVE_PID_SLOT = 0,
@@ -459,45 +459,14 @@ public class DriveTrain extends SubsystemBase implements IMercShuffleBoardPublis
         FALCONS
     }
 
-    //Publish values to ShuffleBoard
-    public void publishValues() {
-        //Drive direction
-        //SmartDashboard.putString(getName() + "/Direction", getDirection().name());
-        //Encoder positions
-        //SmartDashboard.putNumber(getName() + "/Left Encoder (feet)", getLeftEncPositionInFeet());
-        //SmartDashboard.putNumber(getName() + "/Right Encoder (feet)", getRightEncPositionInFeet());
-        //SmartDashboard.putNumber(getName() + "/Left Encoder (ticks)", getLeftEncPositionInTicks());
-        //SmartDashboard.putNumber(getName() + "/Right Encoder (ticks)", getRightEncPositionInTicks());
-        //SmartDashboard.putNumber(getName() + "/Right Closed Loop Error (ticks)", leaderRight.getClosedLoopError());
-        //Selected Sensor Position
-        //SmartDashboard.putNumber(getName() + "/PID0 Sensor primary left", ((MercTalonSRX)leaderLeft).get().getSelectedSensorPosition(PRIMARY_LOOP));
-        //SmartDashboard.putNumber(getName() + "/PID0 Sensor auxiliary left", ((MercTalonSRX)leaderLeft).get().getSelectedSensorPosition(AUXILIARY_LOOP));
-
-        //SmartDashboard.putNumber(getName() + "/PID0 Sensor right", ((MercTalonSRX)leaderRight).get().getSelectedSensorPosition(PRIMARY_LOOP));
-        //SmartDashboard.putNumber(getName() + "/PID1 Sensor", ((MercTalonSRX)leaderRight).get().getSelectedSensorPosition(AUXILIARY_LOOP));
-        //Wheel RPM
-        SmartDashboard.putNumber(getName() + "/Left RPM", MercMath.ticksPerTenthToRevsPerMinute(getLeftEncVelocityInTicksPerTenth()));
-        SmartDashboard.putNumber(getName() + "/Right RPM", MercMath.ticksPerTenthToRevsPerMinute(getRightEncVelocityInTicksPerTenth()));
-        //Angle From Pigeon
-        SmartDashboard.putNumber(getName() + "/Yaw", getPigeonYaw());
-
-        
-        //Publish Current Command
-        SmartDashboard.putString(getName() + "/Command", getCurrentCommand() != null ? getCurrentCommand().getName() : "None");
-
-    }
-
-        
+       
     @Override
     public void initSendable(SendableBuilder builder) {
-        
+
         builder.setActuator(true); // Only allow setting values when in Test mode
-        builder.addDoubleProperty("ActiveTrajectoryPosition", () -> leaderRight.getActiveTrajectoryPosition(), null);
-
-        builder.addDoubleProperty("getDistanceTarget", ()-> getDistanceTarget(), null);
-        builder.addDoubleProperty("getAngleTarget", () -> getAngleTarget(), null);
-
-
+        builder.addDoubleProperty("Left RPM", () -> MercMath.ticksPerTenthToRevsPerMinute(getLeftEncVelocityInTicksPerTenth()), null);
+        builder.addDoubleProperty("Left RPM", () -> MercMath.ticksPerTenthToRevsPerMinute(getRightEncVelocityInTicksPerTenth()), null);
+        builder.addDoubleProperty("Yaw", () -> getPigeonYaw(), null);
     }
 
     public TrajectoryPoint updateTrajectoryPoint(TrajectoryPoint point, double currHeading, double currPos) {
