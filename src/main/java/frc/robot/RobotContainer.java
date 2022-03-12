@@ -23,6 +23,7 @@ import frc.robot.commands.feeder.LoadFeederTrigger;
 import frc.robot.commands.feeder.ShootBall;
 import frc.robot.commands.limelightCamera.SwitchLEDState;
 import frc.robot.commands.shooter.RunShooterRPMPID;
+import frc.robot.commands.turret.ResetTurretPosition;
 import frc.robot.commands.turret.RotateToTarget;
 import frc.robot.commands.turret.ScanForTarget;
 import frc.robot.sensors.Limelight;
@@ -161,6 +162,7 @@ public class RobotContainer {
         left6.whenPressed(new SwitchLEDState(limelightCamera));
 
         right2.whenPressed(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
+        right10.whenPressed(new ResetTurretPosition(turret));
 
 
 
@@ -180,7 +182,11 @@ public class RobotContainer {
 
         gamepadLB.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator), 
                                                    new RunCommand(() -> intake.setSpeed(IntakeSpeed.EJECT), intake), 
-                                                   new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.EJECT), frontFeeder)));
+                                                   new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.EJECT), frontFeeder),
+                                                   new RunCommand(() -> backFeeder.setSpeed(FeedSpeed.EJECT), backFeeder)));
+
+        gamepadRB.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intake.setSpeed(IntakeSpeed.STOP), intake), 
+        new RunCommand(() -> intakeArticulator.setIntakeIn(), intakeArticulator)));
 
         gamepadBack.whenPressed(new RunCommand(() -> turret.setSpeed(() -> getGamepadAxis(GAMEPAD_AXIS.leftX)*0.5), turret));
 
@@ -236,7 +242,7 @@ public class RobotContainer {
         --> shoot the ball
         */
 
-        Trigger shootBall = new Trigger(() -> turret.isReadyToShoot() && shooter.isAtTargetVelocity() && backFeeder.hasBall());
+        Trigger shootBall = new Trigger(() -> turret.isReadyToShoot() && shooter.isAtTargetVelocity() && backFeeder.hasBall() && driveTrain.isSafeShootingSpeed());
         shootBall.whileActiveContinuous(new ShootBall(backFeeder, shooter));
         
 

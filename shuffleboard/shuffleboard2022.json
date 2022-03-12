@@ -11,7 +11,7 @@
         "vgap": 16.0,
         "titleType": 0,
         "tiles": {
-          "6,0": {
+          "3,0": {
             "size": [
               5,
               5
@@ -30,78 +30,81 @@
               "imageHeight": 0
             }
           },
-          "11,2": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/Shooter/AtTargetRPM",
-              "_title": "/SmartDashboard/Shooter/AtTargetRPM",
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
-            }
-          },
-          "11,1": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/DriveTrain/IsAligned",
-              "_title": "/SmartDashboard/DriveTrain/IsAligned",
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
-            }
-          },
           "11,0": {
             "size": [
               2,
               1
             ],
             "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/DriveTrain/IsAligned",
-              "_title": "/SmartDashboard/DriveTrain/IsAligned",
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Auton Chosen",
+              "_title": "SmartDashboard/Auton Chosen"
             }
           },
-          "4,1": {
+          "9,0": {
             "size": [
               2,
               1
             ],
             "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/DriveTrain/LimelightLEDState",
-              "_title": "/SmartDashboard/DriveTrain/LimelightLEDState",
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Choose Auton",
+              "_title": "SmartDashboard/Choose Auton"
             }
           },
-          "1,0": {
+          "10,1": {
             "size": [
-              3,
-              2
+              2,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Auton Position",
+              "_title": "SmartDashboard/Auton Position"
+            }
+          },
+          "12,2": {
+            "size": [
+              1,
+              1
             ],
             "content": {
               "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Shooter/RPM",
-              "_title": "/SmartDashboard/Shooter/RPM"
+              "_source0": "network_table:///LiveWindow/Turret/EncoderDegrees",
+              "_title": "LiveWindow/Turret/EncoderDegrees"
             }
           },
-          "1,2": {
+          "10,3": {
             "size": [
-              3,
-              2
+              1,
+              1
             ],
             "content": {
               "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Shooter/TargetRPM",
-              "_title": "SmartDashboard/Shooter/TargetRPM"
+              "_source0": "network_table:///LiveWindow/DriveTrain/Avg RPM",
+              "_title": "LiveWindow/DriveTrain/Avg RPM"
+            }
+          },
+          "11,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///LiveWindow/DriveTrain/Left RPM",
+              "_title": "LiveWindow/DriveTrain/Left RPM"
+            }
+          },
+          "9,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///LiveWindow/DriveTrain/Right RPM",
+              "_title": "LiveWindow/DriveTrain/Right RPM"
             }
           }
         }
@@ -109,9 +112,9 @@
     }
   ],
   "windowGeometry": {
-    "x": -124.0,
-    "y": 55.0,
-    "width": 1620.0,
-    "height": 920.0
+    "x": -8.0,
+    "y": -8.0,
+    "width": 1936.0,
+    "height": 1056.0
   }
 }

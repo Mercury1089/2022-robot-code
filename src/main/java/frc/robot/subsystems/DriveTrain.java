@@ -70,6 +70,7 @@ public class DriveTrain extends SubsystemBase implements IMercPIDTunable {
  
     public static final int MOTOR_CONTROLLER_STATUS_FRAME_PERIOD_MS = 20;
     public static final int PIGEON_STATUS_FRAME_PERIOD_MS = 5;
+    public final double SAFE_SHOOT_RPM = 400.0;
 
     private PIDGain driveGains, smoothGains, motionProfileGains, turnGains;
 
@@ -434,6 +435,15 @@ public class DriveTrain extends SubsystemBase implements IMercPIDTunable {
             return encLeft.getVelocity() / 10;
     }
 
+    public double getVelocityInRevsPerMinute() {
+        double avg = (Math.abs(getLeftEncVelocityInTicksPerTenth()) + Math.abs(getRightEncVelocityInTicksPerTenth())) / 2.0;
+        return MercMath.ticksPerTenthToRevsPerMinute(avg);
+    }
+
+    public boolean isSafeShootingSpeed() {
+        return getVelocityInRevsPerMinute() < SAFE_SHOOT_RPM;
+    }
+
     public double getRightEncVelocityInTicksPerTenth() {
         if (layout == DriveTrainLayout.TALONS_VICTORS)
             return leaderRight.getSelectedSensorVelocity(0);
@@ -465,8 +475,9 @@ public class DriveTrain extends SubsystemBase implements IMercPIDTunable {
 
         builder.setActuator(true); // Only allow setting values when in Test mode
         builder.addDoubleProperty("Left RPM", () -> MercMath.ticksPerTenthToRevsPerMinute(getLeftEncVelocityInTicksPerTenth()), null);
-        builder.addDoubleProperty("Left RPM", () -> MercMath.ticksPerTenthToRevsPerMinute(getRightEncVelocityInTicksPerTenth()), null);
+        builder.addDoubleProperty("Right RPM", () -> MercMath.ticksPerTenthToRevsPerMinute(getRightEncVelocityInTicksPerTenth()), null);
         builder.addDoubleProperty("Yaw", () -> getPigeonYaw(), null);
+        builder.addDoubleProperty("Avg RPM", () -> getVelocityInRevsPerMinute(), null);
     }
 
     public TrajectoryPoint updateTrajectoryPoint(TrajectoryPoint point, double currHeading, double currPos) {
