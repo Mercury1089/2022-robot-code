@@ -1,11 +1,9 @@
 package frc.robot.util;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotContainer;
@@ -21,8 +19,6 @@ public class ShuffleDash {
     private static final String PID_TUNER_F = "PIDTuner/kF";
     private static final String PID_TUNER_MAX_OUTPUT = "PIDTuner/maxOutput";
 
-    private static final double UPDATE_PERIOD_SECONDS = 0.200; // Update every 200ms
-
     private class TunablePIDSlot {
         public IMercPIDTunable tunable;
         public int slot;
@@ -35,14 +31,12 @@ public class ShuffleDash {
 
     private TunablePIDSlot tunableSlot = null;
 
-    private NetworkTableInstance ntInstance;
     private SendableChooser<StartingPosition> autonPositionChooser;
     private SendableChooser<Autons> autonChooser;
     private StartingPosition oldPosition = StartingPosition.NULL;
     private List<IMercShuffleBoardPublisher> publishers;
     private SendableChooser<TunablePIDSlot> tunablePIDChooser;
     private String positionColor;
-    private Notifier shuffleDashUpdater;
     private RobotContainer robotContainer;
     private Autons oldAuton = Autons.NOTHING;
 
@@ -50,8 +44,6 @@ public class ShuffleDash {
         this.robotContainer = robotContainer;
 
         SmartDashboard.putString("Position Control Color", getPositionControlColor());
-
-        ntInstance = NetworkTableInstance.getDefault();
 
         autonPositionChooser = new SendableChooser<>();
         autonPositionChooser.addOption("Any Position", StartingPosition.ANY_POSITION);
@@ -70,10 +62,7 @@ public class ShuffleDash {
         SmartDashboard.putNumber(PID_TUNER_D, 0.0);
         SmartDashboard.putNumber(PID_TUNER_F, 0.0);
         SmartDashboard.putNumber(PID_TUNER_MAX_OUTPUT, 0.0);
-
-        shuffleDashUpdater = new Notifier(this::updateDash);
-        shuffleDashUpdater.startPeriodic(UPDATE_PERIOD_SECONDS);
-        }
+    }
 
     public void addPublisher(IMercShuffleBoardPublisher publisher) {
         publishers.add(publisher);

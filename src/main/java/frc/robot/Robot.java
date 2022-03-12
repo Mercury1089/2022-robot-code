@@ -29,18 +29,17 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         CommandScheduler.getInstance().enable();
-
         robotContainer = new RobotContainer();
     }
 
     @Override
     public void robotPeriodic() {
-        robotContainer.updateDash();
         CommandScheduler.getInstance().run();
     }
 
     @Override
     public void disabledInit() {
+        robotContainer.updateAutonChooser();
         (new SetLEDState(robotContainer.getLimelightCamera(), LimelightLEDState.OFF)).schedule();
     }
 

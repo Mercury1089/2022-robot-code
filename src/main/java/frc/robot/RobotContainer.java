@@ -138,10 +138,6 @@ public class RobotContainer {
         limelightCamera = new LimelightCamera();
         limelightCamera.getLimelight().setLEDState(LimelightLEDState.OFF);
 
-
-        
-
-
         shuffleDash = new ShuffleDash(this);
     
         initializeJoystickButtons();
@@ -285,8 +281,8 @@ public class RobotContainer {
         return ((axis % 2 != 0 && axis != 3) ? -1.0 : 1.0) * gamepad.getRawAxis(axis);
     }
 
-    public void updateDash() {
-        shuffleDash.updateDash();
+    public void updateAutonChooser() {
+        shuffleDash.updateAutonChooser();
     }
 
     private void initializeJoystickButtons() {
