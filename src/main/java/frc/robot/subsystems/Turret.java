@@ -164,6 +164,10 @@ public class Turret extends SubsystemBase {
     return this.isTargeting;
   }
 
+  public void resetTurretPos() {
+    turret.setSelectedSensorPosition(0, RobotMap.PID.PRIMARY_PID_LOOP, RobotMap.CTRE_TIMEOUT);
+  }
+
   @Override
   public void initSendable(SendableBuilder builder) {
     

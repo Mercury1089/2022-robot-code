@@ -331,14 +331,14 @@ public class RobotContainer {
                 autonCommand = null;
                 break;
             case TAXI:
-                autonCommand = new DriveDistance(90.0, driveTrain);
+                autonCommand = new DriveDistance(60.0, driveTrain);
                 break;
             case ONE_CARGO:
                 
                 autonCommand = new ParallelCommandGroup(
                     new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
                     new RunCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
-                    new DriveDistance(90.0, driveTrain));
+                    new DriveDistance(60.0, driveTrain));
                 
 
                 // autonCommand = new ParallelCommandGroup(
