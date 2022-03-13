@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotMap.DS_USB;
@@ -22,6 +23,7 @@ import frc.robot.commands.drivetrain.MoveHeadingDerivatives.MoveHeading;
 import frc.robot.commands.feeder.LoadFeederTrigger;
 import frc.robot.commands.feeder.ShootBall;
 import frc.robot.commands.limelightCamera.SwitchLEDState;
+import frc.robot.commands.shooter.CheckRobotEmpty;
 import frc.robot.commands.shooter.RunShooterRPMPID;
 import frc.robot.commands.turret.ResetTurretPosition;
 import frc.robot.commands.turret.RotateToTarget;
@@ -341,7 +343,6 @@ public class RobotContainer {
                     new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
                     new RunCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
                     new DriveDistance(60.0, driveTrain));
-                
 
                 // autonCommand = new ParallelCommandGroup(
                 //     new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
@@ -349,13 +350,18 @@ public class RobotContainer {
                 //     new MoveHeading(90.0, 45, driveTrain));
                 break;
             case TWO_CARGO:
-                try {
-                    autonCommand = new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
-                    new RunCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
-                    new MoveOnTrajectory("Taxi-TwoCargo", driveTrain));
-                   // new DriveDistance(72.0, driveTrain));
-                } catch (FileNotFoundException err) {}
-                break;
+                autonCommand = new SequentialCommandGroup( 
+                    new ParallelCommandGroup(
+                        new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
+                        new RunCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
+                        new DriveDistance(60.0, driveTrain)),
+                    
+                    new CheckRobotEmpty(frontFeeder, backFeeder, shooter),
+
+                    new MoveHeading(0, -12.7, driveTrain),
+                    new DriveDistance(145.0, driveTrain),
+                    new DriveDistance(-100, driveTrain)
+                    );
             default:
                 autonCommand = new DriveDistance(72.0, driveTrain);
                 break;   

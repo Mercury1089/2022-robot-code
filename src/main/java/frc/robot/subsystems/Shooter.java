@@ -140,6 +140,17 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
     
   }
 
+  public WithinShooterBounds insideShooterBounds() {
+    double distance = limelight.getDistanceToTarget();
+    if (distance > MAX_DISTANCE) {
+      return WithinShooterBounds.TOO_FAR;
+    } else if (distance < MIN_DISTANCE) {
+      return WithinShooterBounds.TOO_CLOSE;
+    } else {
+      return WithinShooterBounds.WITHIN_RANGE;
+    }
+  }
+
   public void setAutoShootEnable(boolean autoShoot) {
     this.autoShootEnable = autoShoot;
   }
@@ -156,6 +167,7 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
     builder.addDoubleProperty("CurrentRPM", () -> getVelocity(), null);
     builder.addDoubleProperty("TargetRPM", () -> targetVelocity, null);
     builder.addBooleanProperty("AtTargetRPM", () -> isAtTargetVelocity(), null);
+    builder.addStringProperty("Within Target", () -> insideShooterBounds().toString(), null);
   }
 
   @Override
@@ -178,6 +190,12 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
       configPID(shooterLeft, SHOOTER_PID_SLOTS.VELOCITY_GAINS.getValue(), this.velocityGains);
       configPID(shooterLeft, SHOOTER_PID_SLOTS.VELOCITY_GAINS.getValue(), this.velocityGains);
     }
+  }
+
+  public enum WithinShooterBounds {
+    WITHIN_RANGE,
+    TOO_FAR,
+    TOO_CLOSE
   }
 
   @Override

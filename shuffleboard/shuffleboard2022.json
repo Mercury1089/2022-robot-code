@@ -11,10 +11,10 @@
         "vgap": 16.0,
         "titleType": 0,
         "tiles": {
-          "3,0": {
+          "5,0": {
             "size": [
-              5,
-              5
+              4,
+              4
             ],
             "content": {
               "_type": "Camera Stream",
@@ -63,9 +63,9 @@
               "_title": "SmartDashboard/Auton Position"
             }
           },
-          "12,2": {
+          "10,2": {
             "size": [
-              1,
+              2,
               1
             ],
             "content": {
@@ -74,37 +74,80 @@
               "_title": "/LiveWindow/Turret/EncoderDegrees"
             }
           },
-          "10,3": {
+          "3,1": {
             "size": [
-              1,
+              2,
               1
             ],
             "content": {
               "_type": "Text View",
-              "_source0": "network_table:///LiveWindow/DriveTrain/Avg RPM",
-              "_title": "/LiveWindow/DriveTrain/Avg RPM"
+              "_source0": "network_table:///LiveWindow/Shooter/Within Target",
+              "_title": "LiveWindow/Shooter/Within Target"
             }
           },
-          "11,3": {
+          "3,0": {
             "size": [
-              1,
+              2,
               1
             ],
             "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///LiveWindow/DriveTrain/Left RPM",
-              "_title": "/LiveWindow/DriveTrain/Left RPM"
+              "_type": "Boolean Box",
+              "_source0": "network_table:///LiveWindow/Turret/isOnTarget",
+              "_title": "LiveWindow/Turret/isOnTarget",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
             }
           },
-          "9,3": {
+          "3,2": {
             "size": [
-              1,
+              2,
               1
             ],
             "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///LiveWindow/DriveTrain/Right RPM",
-              "_title": "/LiveWindow/DriveTrain/Right RPM"
+              "_type": "Boolean Box",
+              "_source0": "network_table:///LiveWindow/Shooter/AtTargetRPM",
+              "_title": "LiveWindow/Shooter/AtTargetRPM",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "7,4": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///LiveWindow/Feeder/Feeder BACK/hasBall",
+              "_title": "LiveWindow/Feeder/Feeder BACK/hasBall",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "5,4": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///LiveWindow/Feeder/Feeder FRONT/hasBall",
+              "_title": "LiveWindow/Feeder/Feeder FRONT/hasBall",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "1,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///LiveWindow/Turret/TargetAcquired",
+              "_title": "LiveWindow/Turret/TargetAcquired",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
             }
           }
         }

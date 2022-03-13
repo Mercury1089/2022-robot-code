@@ -134,6 +134,7 @@ public class ShuffleDash {
                     break;
                 case NOON:
                     autonChooser.addOption("One Cargo", Autons.ONE_CARGO);
+                    autonChooser.addOption("Two Cargo", Autons.TWO_CARGO);
                     break;
                 case TWO_OCLOCK:
                     autonChooser.addOption("Two Cargo", Autons.TWO_CARGO);
