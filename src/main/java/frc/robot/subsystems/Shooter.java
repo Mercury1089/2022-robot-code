@@ -95,7 +95,7 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
    * @return calculated velocity based on distance
    */
   private double getVelocityFromDistance(double distance) {
-    return 50.0 + (2932.0 * Math.exp(0.0246 * distance));
+    return 100.0 + (2932.0 * Math.exp(0.0246 * distance));
   }
 
   /**
