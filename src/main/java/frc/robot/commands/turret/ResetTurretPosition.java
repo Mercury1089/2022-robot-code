@@ -18,7 +18,6 @@ public class ResetTurretPosition extends InstantCommand {
     addRequirements(turret);
 
     setName("ResetTurretPosition");
-    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.

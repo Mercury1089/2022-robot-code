@@ -21,6 +21,7 @@ public class LoadFeederTrigger extends CommandBase {
 
     this.feeder = feeder;
     this.beamCondition = beamCondition;
+    setName("LoadFeederTrigger");
     
      addRequirements(feeder);
     }

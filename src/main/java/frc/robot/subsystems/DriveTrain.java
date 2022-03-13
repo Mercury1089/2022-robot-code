@@ -474,9 +474,9 @@ public class DriveTrain extends SubsystemBase implements IMercPIDTunable {
     public void initSendable(SendableBuilder builder) {
 
         builder.setActuator(true); // Only allow setting values when in Test mode
-        builder.addDoubleProperty("Left RPM", () -> MercMath.ticksPerTenthToRevsPerMinute(getLeftEncVelocityInTicksPerTenth()), null);
-        builder.addDoubleProperty("Right RPM", () -> MercMath.ticksPerTenthToRevsPerMinute(getRightEncVelocityInTicksPerTenth()), null);
-        builder.addDoubleProperty("Yaw", () -> getPigeonYaw(), null);
+        // builder.addDoubleProperty("Left RPM", () -> MercMath.ticksPerTenthToRevsPerMinute(getLeftEncVelocityInTicksPerTenth()), null);
+        // builder.addDoubleProperty("Right RPM", () -> MercMath.ticksPerTenthToRevsPerMinute(getRightEncVelocityInTicksPerTenth()), null);
+        // builder.addDoubleProperty("Yaw", () -> getPigeonYaw(), null);
         builder.addDoubleProperty("Avg RPM", () -> getVelocityInRevsPerMinute(), null);
     }
 

@@ -44,7 +44,7 @@ public class Turret extends SubsystemBase {
     turret = new TalonSRX(CAN.TURRET);
 
     turret.configFactoryDefault();
-    turret.setSelectedSensorPosition(0, RobotMap.PID.PRIMARY_PID_LOOP, RobotMap.CTRE_TIMEOUT);
+    resetTurretPos();
 
 
     setName("Turret");
@@ -153,7 +153,6 @@ public class Turret extends SubsystemBase {
   public boolean targetIsLost() {
     // if the target is not aquired or it hits a limit
     return !isTargetAcquired() || (isAtForwardLimit() || isAtReverseLimit());
-        // turretDefaultCommand.initialize()
   }
 
   public void setIsTargeting(boolean targeting) {
@@ -165,6 +164,7 @@ public class Turret extends SubsystemBase {
   }
 
   public void resetTurretPos() {
+    // reset encoder to 0 on talon
     turret.setSelectedSensorPosition(0, RobotMap.PID.PRIMARY_PID_LOOP, RobotMap.CTRE_TIMEOUT);
   }
 
@@ -172,19 +172,19 @@ public class Turret extends SubsystemBase {
   public void initSendable(SendableBuilder builder) {
     
     builder.setActuator(true); // Only allow setting values when in Test mode
-    builder.addDoubleProperty("Encoder", () -> turret.getSelectedSensorPosition(0), null);
-    builder.addDoubleProperty("EncoderDegrees", () -> getCustomTickInDegrees(), null);
+    // builder.addDoubleProperty("Encoder", () -> turret.getSelectedSensorPosition(0), null); // talon's current pos in ticks
+    builder.addDoubleProperty("EncoderDegrees", () -> getCustomTickInDegrees(), null); // talon's current pos in degs
     builder.addDoubleProperty("DistanceToTarget", () -> limelight.getDistanceToTarget(), null);
-    builder.addDoubleProperty("Velocity", () -> turret.getSelectedSensorVelocity(), null);
-    builder.addDoubleProperty("PID/kP", () -> getPVal(), (x) -> setPVal(x));
+    // builder.addDoubleProperty("Velocity", () -> turret.getSelectedSensorVelocity(), null); 
+    // builder.addDoubleProperty("PID/kP", () -> getPVal(), (x) -> setPVal(x));
 
     builder.addBooleanProperty("TargetAcquired", () -> limelight.getTargetAcquired(), null);
-    builder.addBooleanProperty("LimelightLEDState", () -> limelight.getLEDState(), null);
+    // builder.addBooleanProperty("LimelightLEDState", () -> limelight.getLEDState(), null);
     builder.addBooleanProperty("IsAligned", () -> isAligned(), null);
     builder.addDoubleProperty("LimelightXAngle", () -> getAngleToTarget(), null);
     builder.addBooleanProperty("isOnTarget", () -> isOnTarget(), null);
-    builder.addStringProperty("hitForwardLimit", () -> isAtForwardLimit() + "", null);
-    builder.addStringProperty("hitReverseLimit", () -> isAtReverseLimit() + "", null);
+    // builder.addStringProperty("hitForwardLimit", () -> isAtForwardLimit() + "", null);
+    // builder.addStringProperty("hitReverseLimit", () -> isAtReverseLimit() + "", null);
 
     //builder.addDoubleProperty(key, getter, setter);
     
