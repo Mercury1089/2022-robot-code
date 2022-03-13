@@ -39,12 +39,13 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
-        robotContainer.updateAutonChooser();
+        
         (new SetLEDState(robotContainer.getLimelightCamera(), LimelightLEDState.OFF)).schedule();
     }
 
     @Override
     public void disabledPeriodic() {
+        robotContainer.updateAutonChooser();
     }
 
     @Override

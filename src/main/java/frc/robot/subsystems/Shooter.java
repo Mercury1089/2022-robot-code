@@ -26,13 +26,15 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
 
   public static final double NOMINAL_OUT = 0.0, PEAK_OUT = 1.0;
   public static final double MAX_RPM = 5000.0, STEADY_RPM = 4000.0, LOW_RPM = 1000.0, NULL_RPM = -1.0;
-  public static final double MIN_DISTANCE = 8.5, MAX_DISTANCE = 16.5;
+  public static final double MIN_DISTANCE = 8.5, MAX_DISTANCE = 13.0;
+  public final int BREAKBEAM_DIO = 2;
 
   private CANSparkMax shooterLeft, shooterRight;
   private double targetVelocity;
   private PIDGain velocityGains;
   private Limelight limelight;
   private DigitalInput breakBeamSensor;
+  private boolean autoShootEnable;
 
   public enum ShooterMode {
     ONE_WHEEL, NONE
@@ -40,6 +42,8 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
 
   public Shooter(ShooterMode mode, Limelight limelight) {
     setName("Shooter");
+
+    autoShootEnable = true;
 
     if (mode == ShooterMode.ONE_WHEEL) {
       shooterLeft = new CANSparkMax(CAN.SHOOTER_LEFT, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -68,7 +72,7 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
   
     setPIDGain(SHOOTER_PID_SLOTS.VELOCITY_GAINS.getValue(), velocityGains);
 
-    this.breakBeamSensor = new DigitalInput(2); 
+    this.breakBeamSensor = new DigitalInput(BREAKBEAM_DIO); 
   }
 
   public void stopShooter() {
@@ -91,7 +95,7 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
    * @return calculated velocity based on distance
    */
   private double getVelocityFromDistance(double distance) {
-    return (2932 * Math.exp(0.0246 * distance));
+    return 50.0 + (2932.0 * Math.exp(0.0246 * distance));
   }
 
   /**
@@ -109,6 +113,10 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
    */
   public boolean isAtTargetVelocity() {
     return Math.abs(getVelocity() - targetVelocity) <= 0.01 * targetVelocity;
+  }
+
+  public boolean isReadyToShoot() {
+    return this.autoShootEnable && isAtTargetVelocity() ;
   }
 
   public void setVelocity(double velocity) {
@@ -129,6 +137,15 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
   public boolean hasBall() {
     // if the shooter has a ball (if beam is broken)
     return !breakBeamSensor.get();
+    
+  }
+
+  public void setAutoShootEnable(boolean autoShoot) {
+    this.autoShootEnable = autoShoot;
+  }
+
+  public boolean isAutoShootEnabled() {
+    return this.autoShootEnable;
   }
 
   @Override

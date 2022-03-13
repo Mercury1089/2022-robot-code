@@ -63,8 +63,8 @@ public class ScanForTarget extends CommandBase {
 
   public enum TurretDirection {
     // the position of the turret to rotate to (and current direction of rotation)
-    FORWARD(0.25),
-    BACK(-0.25);
+    FORWARD(0.80),
+    BACK(-0.80);
 
     public final double turretPosition;
 

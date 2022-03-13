@@ -70,7 +70,7 @@ public class DriveTrain extends SubsystemBase implements IMercPIDTunable {
  
     public static final int MOTOR_CONTROLLER_STATUS_FRAME_PERIOD_MS = 20;
     public static final int PIGEON_STATUS_FRAME_PERIOD_MS = 5;
-    public final double SAFE_SHOOT_RPM = 400.0;
+    public final double SAFE_SHOOT_RPM = 50.0;
 
     private PIDGain driveGains, smoothGains, motionProfileGains, turnGains;
 
@@ -99,6 +99,8 @@ public class DriveTrain extends SubsystemBase implements IMercPIDTunable {
         super();
         setName("DriveTrain");
         this.layout = layout;
+
+        
 
         // Initialize the motor controllers and (if applicable) the encoders
         switch (layout) {
@@ -161,6 +163,7 @@ public class DriveTrain extends SubsystemBase implements IMercPIDTunable {
         setPIDGain(DRIVE_SMOOTH_TURN_SLOT, new PIDGain(1.3, 0.0, 0.0, 0.0, 0.15));
 
         resetEncoders();
+        resetPigeonYaw();
 
         driveAssist = new DriveAssist(leaderLeft, leaderRight);
 
@@ -205,6 +208,7 @@ public class DriveTrain extends SubsystemBase implements IMercPIDTunable {
         /* Configure the Pigeon IMU to the other remote slot available on the right Talon */
         leaderRight.configRemoteFeedbackFilter(podgeboi.getDeviceID(), RemoteSensorSource.Pigeon_Yaw, DriveTrain.REMOTE_DEVICE_1);
         /* Configure Remote 1 [Pigeon IMU's Yaw] to be used for Auxiliary PID Index */
+
         leaderRight.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor1, DriveTrain.YAW_LOOP, RobotMap.CTRE_TIMEOUT);
         /* Scale the Feedback Sensor using a coefficient */
         leaderRight.configSelectedFeedbackCoefficient(1, DriveTrain.YAW_LOOP, RobotMap.CTRE_TIMEOUT);
@@ -476,7 +480,7 @@ public class DriveTrain extends SubsystemBase implements IMercPIDTunable {
         builder.setActuator(true); // Only allow setting values when in Test mode
         // builder.addDoubleProperty("Left RPM", () -> MercMath.ticksPerTenthToRevsPerMinute(getLeftEncVelocityInTicksPerTenth()), null);
         // builder.addDoubleProperty("Right RPM", () -> MercMath.ticksPerTenthToRevsPerMinute(getRightEncVelocityInTicksPerTenth()), null);
-        // builder.addDoubleProperty("Yaw", () -> getPigeonYaw(), null);
+        builder.addDoubleProperty("Yaw", () -> getPigeonYaw(), null);
         builder.addDoubleProperty("Avg RPM", () -> getVelocityInRevsPerMinute(), null);
     }
 
