@@ -28,6 +28,7 @@ import frc.robot.commands.shooter.RunShooterRPMPID;
 import frc.robot.commands.turret.ResetTurretPosition;
 import frc.robot.commands.turret.RotateToTarget;
 import frc.robot.commands.turret.ScanForTarget;
+import frc.robot.commands.turret.WaitForTarget;
 import frc.robot.sensors.Limelight;
 import frc.robot.sensors.Limelight.LimelightLEDState;
 import frc.robot.sensors.REVColorMux.I2CMUX;
@@ -352,6 +353,7 @@ public class RobotContainer {
             case TWO_CARGO:
                 autonCommand = new SequentialCommandGroup( 
                     new ParallelCommandGroup(
+                        new WaitForTarget(shooter, turret),
                         new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
                         new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
                         new DriveDistance(60.0, driveTrain)),
