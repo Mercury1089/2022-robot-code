@@ -352,16 +352,17 @@ public class RobotContainer {
             case TWO_CARGO:
                 autonCommand = new SequentialCommandGroup( 
                     new ParallelCommandGroup(
-                        new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
-                        new RunCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
+                        new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
+                        new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
                         new DriveDistance(60.0, driveTrain)),
-                    
-                    new CheckRobotEmpty(frontFeeder, backFeeder, shooter),
 
                     new MoveHeading(0, -12.7, driveTrain),
+                    
+                    new CheckRobotEmpty(frontFeeder, backFeeder, shooter),
                     new DriveDistance(145.0, driveTrain),
                     new DriveDistance(-100, driveTrain)
                     );
+                break;
             default:
                 autonCommand = new DriveDistance(72.0, driveTrain);
                 break;   

@@ -12,8 +12,10 @@ public class CheckRobotEmpty extends CommandBase {
 
   Feeder frontFeeder, backFeeder;
   Shooter shooter;
+  double counter = 0;
   /** Creates a new CheckRobotEmpty. */
   public CheckRobotEmpty(Feeder frontFeeder, Feeder backFeeder, Shooter shooter) {
+
 
     this.frontFeeder = frontFeeder;
     this.backFeeder = backFeeder;
@@ -37,6 +39,14 @@ public class CheckRobotEmpty extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return !frontFeeder.hasBall() && !backFeeder.hasBall() && !shooter.hasBall();
+    if (!frontFeeder.hasBall() && !backFeeder.hasBall() && !shooter.hasBall()) {
+      counter += 1;
+    } else {
+      counter = 0;
+    }
+    if (counter > 10) {
+      return true;
+    }
+    return false;
   }
 }

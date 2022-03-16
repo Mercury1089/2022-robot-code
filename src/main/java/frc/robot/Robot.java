@@ -21,6 +21,9 @@ public class Robot extends TimedRobot {
     public static RobotContainer robotContainer;
 
     public static boolean isInTestMode = false;
+    private SetLEDState limelightOff;
+    private SetLEDState limelightOn;
+
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -30,6 +33,11 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         CommandScheduler.getInstance().enable();
         robotContainer = new RobotContainer();
+
+        limelightOff = new SetLEDState(robotContainer.getLimelightCamera(), LimelightLEDState.OFF);
+        limelightOn = new SetLEDState(robotContainer.getLimelightCamera(), LimelightLEDState.ON);
+
+
     }
 
     @Override
@@ -40,7 +48,8 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         
-        (new SetLEDState(robotContainer.getLimelightCamera(), LimelightLEDState.OFF)).schedule();
+        // (new SetLEDState(robotContainer.getLimelightCamera(), LimelightLEDState.OFF)).schedule();
+        limelightOff.schedule();
     }
 
     @Override
@@ -52,7 +61,8 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         Command autonCommand = robotContainer.getAutonCommand();
         
-        (new SetLEDState(robotContainer.getLimelightCamera(), LimelightLEDState.ON)).schedule();
+       // (new SetLEDState(robotContainer.getLimelightCamera(), LimelightLEDState.ON)).schedule();
+        limelightOn.schedule();
         if (autonCommand != null){
             autonCommand.schedule();
             DriverStation.reportError("Auton is Scheduled", false);
