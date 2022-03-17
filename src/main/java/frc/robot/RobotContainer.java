@@ -197,7 +197,8 @@ public class RobotContainer {
         gamepadRB.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intake.setSpeed(IntakeSpeed.STOP), intake), 
         new RunCommand(() -> intakeArticulator.setIntakeIn(), intakeArticulator)));
 
-        gamepadBack.whenPressed(new RunCommand(() -> turret.setSpeed(() -> getGamepadAxis(GAMEPAD_AXIS.leftX)*0.5), turret));
+        gamepadBack.whenPressed(new ParallelCommandGroup(new RunCommand(() -> shooter.stopShooter(), shooter),
+                                                        new RunCommand(() -> turret.setPosition(0.0), turret))); 
 
         gamepadStart.whenPressed(new InstantCommand(() -> turret.setSpeed(() -> 0.0), turret));
 
