@@ -162,6 +162,13 @@ public class RobotContainer {
 
         right2.whenPressed(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
         right10.whenPressed(new ResetTurretPosition(turret));
+        try {
+            right8.whenPressed(new MoveOnTrajectory("Taxi-TwoCargo", driveTrain));
+            
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    
 
 
 
