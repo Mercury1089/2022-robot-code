@@ -15,6 +15,7 @@ import frc.robot.RobotMap.GAMEPAD_AXIS;
 import frc.robot.RobotMap.GAMEPAD_BUTTONS;
 import frc.robot.RobotMap.JOYSTICK_ADJUSTMENTS;
 import frc.robot.RobotMap.JOYSTICK_BUTTONS;
+import frc.robot.commands.Intake.RobotFullIntakeUp;
 import frc.robot.commands.drivetrain.DriveWithJoysticks;
 import frc.robot.commands.drivetrain.DriveWithJoysticks.DriveType;
 import frc.robot.commands.drivetrain.MoveOnTrajectory;
@@ -98,8 +99,7 @@ public class RobotContainer {
         // shooter.setDefaultCommand(new RunCommand(() -> shooter.stopShooter(), shooter));
         
 
-        intake = new Intake();
-        intakeArticulator = new IntakeArticulator();
+        
         
         I2CMUX mux = new I2CMUX();
 
@@ -138,6 +138,10 @@ public class RobotContainer {
         // backFeeder.setDefaultCommand(new RunCommand(() -> backFeeder.setSpeed(FeedSpeed.STOP), backFeeder));
 
         intake = new Intake();
+        intakeArticulator = new IntakeArticulator();
+        intakeArticulator.setDefaultCommand(new RobotFullIntakeUp(intake, intakeArticulator, frontFeeder, backFeeder));
+
+
         limelightCamera = new LimelightCamera();
         limelightCamera.getLimelight().setLEDState(LimelightLEDState.OFF);
 
@@ -147,13 +151,16 @@ public class RobotContainer {
 
         //driver controls
         //toggle intake in and out
-        left1.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
-                                                   new RunCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE), intake)));
-        left2.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intake.setSpeed(IntakeSpeed.STOP), intake), 
-                                                   new RunCommand(() -> intakeArticulator.setIntakeIn(), intakeArticulator)));
-        left3.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator), 
-                                                   new RunCommand(() -> intake.setSpeed(IntakeSpeed.EJECT), intake), 
-                                                   new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.EJECT), frontFeeder)));
+        // left1.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
+        //                                            new RunCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE), intake)));
+        // left2.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intake.setSpeed(IntakeSpeed.STOP), intake), 
+        //                                            new RunCommand(() -> intakeArticulator.setIntakeIn(), intakeArticulator)));
+
+        left1.whenPressed(new ParallelCommandGroup(new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
+                                                   new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE), intake)));
+
+        left2.whenPressed(new ParallelCommandGroup(new InstantCommand(() -> intake.setSpeed(IntakeSpeed.STOP), intake), 
+                                                   new InstantCommand(() -> intakeArticulator.setIntakeIn(), intakeArticulator)));
                                 
       
 
@@ -161,13 +168,9 @@ public class RobotContainer {
         left6.whenPressed(new SwitchLEDState(limelightCamera));
 
         right2.whenPressed(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
+        right8.whenPressed(new MoveOnTrajectory("Taxi-TwoCargo", driveTrain));
         right10.whenPressed(new ResetTurretPosition(turret));
-        try {
-            right8.whenPressed(new MoveOnTrajectory("Taxi-TwoCargo", driveTrain));
-            
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+        
     
 
 
@@ -360,15 +363,16 @@ public class RobotContainer {
             case TWO_CARGO:
                 autonCommand = new SequentialCommandGroup( 
                     new ParallelCommandGroup(
-                        new WaitForTarget(shooter, turret),
                         new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
                         new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
-                        new DriveDistance(60.0, driveTrain)),
-
-                    new MoveHeading(0, -12.7, driveTrain),
-                    
-                    new CheckRobotEmpty(frontFeeder, backFeeder, shooter),
-                    new DriveDistance(145.0, driveTrain),
+                        new CheckRobotEmpty(frontFeeder, backFeeder, shooter),
+                        new SequentialCommandGroup(
+                            new DriveDistance(60.0, driveTrain),
+                            new MoveHeading(0, -12.7, driveTrain)
+                        )
+                        
+                    ),
+                    new DriveDistance(148.0, driveTrain),
                     new DriveDistance(-100, driveTrain)
                     );
                 break;

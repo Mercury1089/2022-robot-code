@@ -214,7 +214,7 @@ public class DriveTrain extends SubsystemBase implements IMercPIDTunable {
         leaderRight.configSelectedFeedbackCoefficient(1, DriveTrain.YAW_LOOP, RobotMap.CTRE_TIMEOUT);
 
         /* Motion Magic Configurations */
-        leaderRight.configMotionAcceleration(1200);
+        leaderRight.configMotionAcceleration(1700);
         leaderRight.configMotionCruiseVelocity((int) MercMath.revsPerMinuteToTicksPerTenth(DriveTrain.MAX_RPM));
 
         int closedLoopTimeMs = 1;

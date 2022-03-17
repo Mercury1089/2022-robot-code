@@ -9,7 +9,7 @@ import frc.robot.RobotMap.CAN;
 public class ClimberWinch extends SubsystemBase{
     private final TalonFX climberWinchArticulator;
     private ClimberWinchStatus climberWinch;
-    private final double CLIMBER_WINCH_SPEED = 0.5;
+    private double CLIMBER_WINCH_SPEED = 0.5;
 
     public ClimberWinch() {
         super();
@@ -29,11 +29,16 @@ public class ClimberWinch extends SubsystemBase{
 
     public void setClimberWinchSpeedDisabled() {
         this.climberWinch = ClimberWinchStatus.DISABLED;
-        climberWinchArticulator.set(ControlMode.PercentOutput,0.0);
+        CLIMBER_WINCH_SPEED = 0.0;
+        climberWinchArticulator.set(ControlMode.PercentOutput,CLIMBER_WINCH_SPEED);
     }
 
-    public ClimberWinchStatus getClimberWinchSpeed() {
-        return this.climberWinch; //should be "return CLIMBER_WINCH_SPEED;"????? 
+    public ClimberWinchStatus getClimberWinchStatus() {
+        return this.climberWinch; 
+    }
+
+    public double getClimberWinchSpeed() {
+        return CLIMBER_WINCH_SPEED;
     }
 
 }

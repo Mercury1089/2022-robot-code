@@ -38,7 +38,7 @@ public class MercPathLoader {
             trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
         } catch (IOException ex) {
             DriverStation.reportError("Unable to open trajectory: " + pathName, ex.getStackTrace());
-            return null;
+            return trajectoryPoints;
         }
         if (trajectory != null) {
             trajectoryStates = trajectory.getStates();

@@ -17,7 +17,7 @@ public class ShootBall extends CommandBase {
   Shooter shooter;
   /** Creates a new ShootBall. */
   public 
-  ShootBall(Feeder backFeeder, Shooter shooter) {
+  ShootBall(Feeder backFeeder,  Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(backFeeder);
     setName("ShootBall");
@@ -31,6 +31,7 @@ public class ShootBall extends CommandBase {
   public void initialize() {
     this.backFeeder.setIsShooting(true);
     this.backFeeder.setSpeed(FeedSpeed.SHOOT);
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -41,6 +42,7 @@ public class ShootBall extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     this.backFeeder.setSpeed(FeedSpeed.STOP);
+
     this.backFeeder.setIsShooting(false);
   }
 

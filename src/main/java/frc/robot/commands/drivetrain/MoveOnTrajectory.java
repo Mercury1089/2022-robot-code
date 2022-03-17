@@ -27,13 +27,14 @@ public class MoveOnTrajectory extends CommandBase {
   private String pathName;
   private BufferedTrajectoryPointStream buffer;
 
-  public MoveOnTrajectory(String path, DriveTrain driveTrain) throws FileNotFoundException{
+  public MoveOnTrajectory(String path, DriveTrain driveTrain) {
     addRequirements(driveTrain);
     setName("MoveOn " + path + "Path");
 
     pathName = path;
     this.driveTrain = driveTrain;
     trajectoryPoints = MercPathLoader.loadPath(pathName);
+    
     buffer = new BufferedTrajectoryPointStream();
   }
 
