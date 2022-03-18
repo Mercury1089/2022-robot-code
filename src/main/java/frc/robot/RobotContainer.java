@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotMap.DS_USB;
@@ -198,7 +199,7 @@ public class RobotContainer {
         new RunCommand(() -> intakeArticulator.setIntakeIn(), intakeArticulator)));
 
         gamepadBack.whenPressed(new ParallelCommandGroup(new RunCommand(() -> shooter.stopShooter(), shooter),
-                                                        new RunCommand(() -> turret.setPosition(0.0), turret))); 
+                                                        new RunCommand(() -> turret.setPosition(0.0), turret)));
 
         gamepadStart.whenPressed(new InstantCommand(() -> turret.setSpeed(() -> 0.0), turret));
 
@@ -373,8 +374,9 @@ public class RobotContainer {
                         )
                         
                     ),
-                    new DriveDistance(148.0, driveTrain),
-                    new DriveDistance(-100, driveTrain)
+                    new DriveDistance(150.0, driveTrain),
+                    new WaitCommand(1.5),
+                    new DriveDistance(-150.0, driveTrain)
                     );
                 break;
             default:
