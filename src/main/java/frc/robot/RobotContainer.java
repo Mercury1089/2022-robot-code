@@ -92,16 +92,11 @@ public class RobotContainer {
 
     public RobotContainer() {
         autonChooser = new SendableChooser<Autons>();
-        autonChooser.setDefaultOption("Two Cargo", Autons.TWO_CARGO);
+        autonChooser.setDefaultOption("Four Cargo", Autons.FOUR_CARGO);
         autonChooser.addOption("Taxi", Autons.TAXI);
-        autonChooser.addOption("One Cargo", Autons.ONE_CARGO);
+        autonChooser.addOption("Two Cargo", Autons.TWO_CARGO);
         autonChooser.addOption("Nothing", Autons.NOTHING);
-
-
         SmartDashboard.putData("Auton Position", autonChooser);
-
-        
-
         updateAuton();
 
 
@@ -364,17 +359,14 @@ public class RobotContainer {
 
         if (autonSelected == Autons.NOTHING) {
             autonCommand = new DriveDistance(0.0, driveTrain);
-        }
-
-        if (autonSelected == Autons.TAXI) {
+        } else if (autonSelected == Autons.TAXI) {
             autonCommand = new DriveDistance(60.0, driveTrain);
-        } else if (autonSelected == Autons.ONE_CARGO) {
+        } else if (autonSelected == Autons.TWO_CARGO) {
             autonCommand = new ParallelCommandGroup(
                 new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
                 new RunCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
                 new DriveDistance(60.0, driveTrain));
-        } else if (autonSelected == Autons.TWO_CARGO) {
-
+        } else if (autonSelected == Autons.FOUR_CARGO) {
 
             autonCommand = new SequentialCommandGroup( 
                 new ParallelCommandGroup(
@@ -385,21 +377,17 @@ public class RobotContainer {
                         new DriveDistance(60.0, driveTrain),
                         new MoveHeading(0, -12.7, driveTrain)
                     )
-                    
                 ),
                 new DriveDistance(150.0, driveTrain),
                 new WaitCommand(1.5),
                 new DriveDistance(-150.0, driveTrain)
                 );
         }
-
-
-
     }
 
     public void updateAuton() {
         Autons currAuton = autonChooser.getSelected();
-        if (currAuton != currentSelectedAuton) {
+        if (currAuton != null && currAuton != currentSelectedAuton) {
             currentSelectedAuton = currAuton;
             initializeAutonCommand(currentSelectedAuton);
         }
@@ -417,15 +405,8 @@ public class RobotContainer {
     public enum Autons {
         NOTHING,
         TAXI,
-        ONE_CARGO,
-        TWO_CARGO
-    }
-
-    public enum StartingPosition {
-        NULL,
-        NOON,
-        TWO_OCLOCK,
-        FOUR_OCLOCK
+        TWO_CARGO,
+        FOUR_CARGO
     }
 
     public LimelightCamera getLimelightCamera() {
