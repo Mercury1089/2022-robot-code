@@ -31,27 +31,18 @@ public class ShuffleDash {
 
     private TunablePIDSlot tunableSlot = null;
 
-    private SendableChooser<StartingPosition> autonPositionChooser;
-    private SendableChooser<Autons> autonChooser;
-    private StartingPosition oldPosition = StartingPosition.NULL;
+    
     private List<IMercShuffleBoardPublisher> publishers;
     private SendableChooser<TunablePIDSlot> tunablePIDChooser;
     private String positionColor;
     private RobotContainer robotContainer;
-    private Autons oldAuton = Autons.NOTHING;
+
 
     public ShuffleDash(RobotContainer robotContainer) {
         this.robotContainer = robotContainer;
 
         SmartDashboard.putString("Position Control Color", getPositionControlColor());
 
-        autonPositionChooser = new SendableChooser<>();
-        autonPositionChooser.addOption("Any Position", StartingPosition.ANY_POSITION);
-        autonPositionChooser.addOption("Noon", StartingPosition.NOON);
-        autonPositionChooser.addOption("2 oClock", StartingPosition.TWO_OCLOCK);
-        autonPositionChooser.addOption("4 oClock", StartingPosition.FOUR_OCLOCK);
-        
-        SmartDashboard.putData("Auton Position", autonPositionChooser);
         publishers = new ArrayList<IMercShuffleBoardPublisher>();
 
         tunablePIDChooser = new SendableChooser<TunablePIDSlot>();
@@ -101,61 +92,13 @@ public class ShuffleDash {
             this.tunableSlot = tunableSlot;
         }
 
-        updateAutonChooser();
     }
 
-    public StartingPosition getStartingPosition() {
-        return autonPositionChooser == null ?
-            StartingPosition.NULL :
-            autonPositionChooser.getSelected() == null ? StartingPosition.NULL : autonPositionChooser.getSelected();
+
+    public RobotContainer.Autons getAuton() {
+        return robotContainer.getSelectedAuton();
     }
 
-    public Autons getAuton() {
-        return autonChooser == null ?
-            Autons.NOTHING :
-            autonChooser.getSelected();
-    }
-
-    public void updateAutonChooser() {
-        StartingPosition startingPosition = getStartingPosition();
-        if(oldPosition == StartingPosition.NULL && startingPosition == StartingPosition.NULL)
-            //autonChooser = new SendableChooser<String>();
-            autonChooser = new SendableChooser<Autons>();
-            
-        if(startingPosition != oldPosition) {
-            //autonChooser = new SendableChooser<String>();
-            autonChooser = new SendableChooser<Autons>();
-
-            autonChooser.addOption("No Option", Autons.NOTHING);
-            autonChooser.addOption("Taxi", Autons.TAXI);
-
-            switch(startingPosition) {
-                case ANY_POSITION:
-                    break;
-                case NOON:
-                    autonChooser.addOption("One Cargo", Autons.ONE_CARGO);
-                    autonChooser.addOption("Two Cargo", Autons.TWO_CARGO);
-                    break;
-                case TWO_OCLOCK:
-                    autonChooser.addOption("Two Cargo", Autons.TWO_CARGO);
-                    break;
-                case FOUR_OCLOCK:
-                    break;
-            }
-            oldPosition = startingPosition;
-
-        }
-
-        SmartDashboard.putData("Choose Auton", autonChooser);
-        //SmartDashboard.putString("Auton Chosen", autonChooser.getSelected() == null ? "Nothing" : autonChooser.getSelected();
-        SmartDashboard.putString("Auton Chosen", autonChooser.getSelected() == null ? "Nothing" : autonChooser.getSelected().toString());
-
-        Autons auton = getAuton();
-        if (auton != oldAuton){
-            robotContainer.initializeAutonCommand();
-            oldAuton = auton;
-        }
-    }
 
     public String getPositionControlColor() {
         positionColor = DriverStation.getGameSpecificMessage();
@@ -175,18 +118,4 @@ public class ShuffleDash {
         return "Unknown";
     }
 
-    public enum StartingPosition {
-        NULL,
-        ANY_POSITION,
-        NOON,
-        TWO_OCLOCK,
-        FOUR_OCLOCK
-    }
-
-    public enum Autons {
-        NOTHING,
-        TAXI,
-        ONE_CARGO,
-        TWO_CARGO
-    }
 }

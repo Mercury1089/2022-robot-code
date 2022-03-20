@@ -2,7 +2,12 @@ package frc.robot;
 
 import java.io.FileNotFoundException;
 
+import edu.wpi.first.networktables.EntryNotification;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -52,6 +57,7 @@ import frc.robot.subsystems.Turret;
 import frc.robot.util.ShuffleDash;
 import frc.robot.util.TriggerButton;
 
+
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the commands and command groups that allow control of the robot.
@@ -61,6 +67,7 @@ public class RobotContainer {
     public static final double DEADZONE = 0.08;
 
     private ShuffleDash shuffleDash;
+    private SendableChooser<Autons> autonChooser;
 
     private Joystick rightJoystick, leftJoystick, gamepad;
 
@@ -81,7 +88,23 @@ public class RobotContainer {
     
     private Command autonCommand = null;
 
+    public Autons currentSelectedAuton = Autons.NOTHING;
+
     public RobotContainer() {
+        autonChooser = new SendableChooser<Autons>();
+        autonChooser.setDefaultOption("Two Cargo", Autons.TWO_CARGO);
+        autonChooser.addOption("Taxi", Autons.TAXI);
+        autonChooser.addOption("One Cargo", Autons.ONE_CARGO);
+        autonChooser.addOption("Nothing", Autons.NOTHING);
+
+
+        SmartDashboard.putData("Auton Position", autonChooser);
+
+        
+
+        updateAuton();
+
+
         leftJoystick = new Joystick(DS_USB.LEFT_STICK);
         rightJoystick = new Joystick(DS_USB.RIGHT_STICK);
         gamepad = new Joystick(DS_USB.GAMEPAD);
@@ -296,9 +319,6 @@ public class RobotContainer {
         return ((axis % 2 != 0 && axis != 3) ? -1.0 : 1.0) * gamepad.getRawAxis(axis);
     }
 
-    public void updateAutonChooser() {
-        shuffleDash.updateAutonChooser();
-    }
 
     private void initializeJoystickButtons() {
         left1 = new JoystickButton(leftJoystick, JOYSTICK_BUTTONS.BTN1);
@@ -340,53 +360,72 @@ public class RobotContainer {
         gamepadRT = new TriggerButton(gamepad, GAMEPAD_AXIS.rightTrigger);
     }
     
-    public void initializeAutonCommand() {
-        ShuffleDash.Autons auton = shuffleDash.getAuton();
-        if (auton == null) return;
-        switch (shuffleDash.getAuton()){
-            case NOTHING:
-                autonCommand = null;
-                break;
-            case TAXI:
-                autonCommand = new DriveDistance(60.0, driveTrain);
-                break;
-            case ONE_CARGO:
-                
-                autonCommand = new ParallelCommandGroup(
-                    new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
-                    new RunCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
-                    new DriveDistance(60.0, driveTrain));
+    public void initializeAutonCommand(Autons autonSelected) {
 
-                // autonCommand = new ParallelCommandGroup(
-                //     new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
-                //     new RunIntake(intake),
-                //     new MoveHeading(90.0, 45, driveTrain));
-                break;
-            case TWO_CARGO:
-                autonCommand = new SequentialCommandGroup( 
-                    new ParallelCommandGroup(
-                        new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
-                        new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
-                        new CheckRobotEmpty(frontFeeder, backFeeder, shooter),
-                        new SequentialCommandGroup(
-                            new DriveDistance(60.0, driveTrain),
-                            new MoveHeading(0, -12.7, driveTrain)
-                        )
-                        
-                    ),
-                    new DriveDistance(150.0, driveTrain),
-                    new WaitCommand(1.5),
-                    new DriveDistance(-150.0, driveTrain)
-                    );
-                break;
-            default:
-                autonCommand = new DriveDistance(72.0, driveTrain);
-                break;   
+        if (autonSelected == Autons.NOTHING) {
+            autonCommand = new DriveDistance(0.0, driveTrain);
         }
+
+        if (autonSelected == Autons.TAXI) {
+            autonCommand = new DriveDistance(60.0, driveTrain);
+        } else if (autonSelected == Autons.ONE_CARGO) {
+            autonCommand = new ParallelCommandGroup(
+                new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
+                new RunCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
+                new DriveDistance(60.0, driveTrain));
+        } else if (autonSelected == Autons.TWO_CARGO) {
+
+
+            autonCommand = new SequentialCommandGroup( 
+                new ParallelCommandGroup(
+                    new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
+                    new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
+                    new CheckRobotEmpty(frontFeeder, backFeeder, shooter),
+                    new SequentialCommandGroup(
+                        new DriveDistance(60.0, driveTrain),
+                        new MoveHeading(0, -12.7, driveTrain)
+                    )
+                    
+                ),
+                new DriveDistance(150.0, driveTrain),
+                new WaitCommand(1.5),
+                new DriveDistance(-150.0, driveTrain)
+                );
+        }
+
+
+
+    }
+
+    public void updateAuton() {
+        Autons currAuton = autonChooser.getSelected();
+        if (currAuton != currentSelectedAuton) {
+            currentSelectedAuton = currAuton;
+            initializeAutonCommand(currentSelectedAuton);
+        }
+        SmartDashboard.putString("Auton Chosen", currentSelectedAuton == null ? "Nothing" : currentSelectedAuton.toString());
+    }
+
+    public Autons getSelectedAuton() {
+        return this.currentSelectedAuton;
     }
 
     public Command getAutonCommand(){
         return this.autonCommand;
+    }
+
+    public enum Autons {
+        NOTHING,
+        TAXI,
+        ONE_CARGO,
+        TWO_CARGO
+    }
+
+    public enum StartingPosition {
+        NULL,
+        NOON,
+        TWO_OCLOCK,
+        FOUR_OCLOCK
     }
 
     public LimelightCamera getLimelightCamera() {

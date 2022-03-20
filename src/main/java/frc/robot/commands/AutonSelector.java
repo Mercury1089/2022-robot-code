@@ -9,6 +9,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.RobotContainer.Autons;
 import frc.robot.sensors.Limelight;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Feeder;
@@ -17,7 +18,7 @@ import frc.robot.subsystems.IntakeArticulator;
 import frc.robot.subsystems.LimelightCamera;
 import frc.robot.subsystems.Shooter;
 import frc.robot.util.ShuffleDash;
-import frc.robot.util.ShuffleDash.Autons;
+
 
 public class AutonSelector extends InstantCommand {
   Autons auton;
