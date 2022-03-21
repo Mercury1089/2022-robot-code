@@ -6,46 +6,47 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
+
+import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.RobotMap.CAN;
 
 public class ClimberWinch extends SubsystemBase{
     private final TalonFX climberWinch;
-    private ClimberWinchStatus climberWinchStatus;
     private double CLIMBER_WINCH_SPEED = 0.5;
+    private boolean isLocked;
 
     public ClimberWinch() {
         super();
         climberWinch = new TalonFX(CAN.CLIMBER_WINCH);
-        climberWinchStatus = ClimberWinchStatus.DISABLED;
+
+        isLocked = true;
     }
 
-    public enum ClimberWinchStatus {
-        ACTIVE,
-        DISABLED
-    }
+    
 
     public void setClimberWinchSpeedActive() {
-        this.climberWinchStatus = ClimberWinchStatus.ACTIVE;
         climberWinch.set(ControlMode.PercentOutput,CLIMBER_WINCH_SPEED);
     }
 
     public void setClimberWinchSpeedDisabled() {
-        this.climberWinchStatus = ClimberWinchStatus.DISABLED;
         CLIMBER_WINCH_SPEED = 0.0;
         climberWinch.set(ControlMode.PercentOutput,CLIMBER_WINCH_SPEED);
     }
 
-    public ClimberWinchStatus getClimberWinchStatus() {
-        return this.climberWinchStatus; 
-    }
-
-    public double getClimberWinchSpeed() {
-        return CLIMBER_WINCH_SPEED;
-    }
 
     public void setSpeed(Supplier<Double> speed) {
-        climberWinch.set(ControlMode.PercentOutput, speed.get());
+        if (!this.isLocked) {
+            climberWinch.set(ControlMode.PercentOutput, speed.get());
+        }
+    }
+
+    public void setIsLocked(boolean locked) {
+        this.isLocked = locked;
+    }
+
+    public boolean getIsLocked() {
+        return this.isLocked;
     }
 
 }
