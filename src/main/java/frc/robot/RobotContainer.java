@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotMap.DS_USB;
 import frc.robot.RobotMap.GAMEPAD_AXIS;
 import frc.robot.RobotMap.GAMEPAD_BUTTONS;
+import frc.robot.RobotMap.GAMEPAD_POV;
 import frc.robot.RobotMap.JOYSTICK_ADJUSTMENTS;
 import frc.robot.RobotMap.JOYSTICK_BUTTONS;
 import frc.robot.commands.Intake.RobotFullIntakeUp;
@@ -29,6 +30,7 @@ import frc.robot.commands.drivetrain.MoveHeadingDerivatives.DriveDistance;
 import frc.robot.commands.drivetrain.MoveHeadingDerivatives.MoveHeading;
 import frc.robot.commands.feeder.LoadFeederTrigger;
 import frc.robot.commands.feeder.ShootBall;
+import frc.robot.commands.limelightCamera.SetLEDState;
 import frc.robot.commands.limelightCamera.SwitchLEDState;
 import frc.robot.commands.shooter.CheckRobotEmpty;
 import frc.robot.commands.shooter.RunShooterRPMPID;
@@ -36,10 +38,13 @@ import frc.robot.commands.turret.ResetTurretPosition;
 import frc.robot.commands.turret.RotateToTarget;
 import frc.robot.commands.turret.ScanForTarget;
 import frc.robot.commands.turret.WaitForTarget;
+import frc.robot.commands.turret.ScanForTarget.TurretDirection;
 import frc.robot.sensors.Limelight;
 import frc.robot.sensors.Limelight.LimelightLEDState;
 import frc.robot.sensors.REVColorMux.I2CMUX;
 import frc.robot.sensors.REVColorMux.REVColor.ColorSensorID;
+import frc.robot.subsystems.ClimberArticulator;
+import frc.robot.subsystems.ClimberWinch;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.DriveTrain.DriveTrainLayout;
 import frc.robot.subsystems.Feeder;
@@ -54,6 +59,7 @@ import frc.robot.subsystems.LimelightCamera;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Shooter.ShooterMode;
 import frc.robot.subsystems.Turret;
+import frc.robot.util.PovButton;
 import frc.robot.util.ShuffleDash;
 import frc.robot.util.TriggerButton;
 
@@ -75,6 +81,7 @@ public class RobotContainer {
     private JoystickButton right1, right2, right3, right4, right5, right6, right7, right8, right9, right10, right11;
     private JoystickButton gamepadA, gamepadB, gamepadX, gamepadY, gamepadRB, gamepadLB, gamepadL3, gamepadBack, gamepadStart, gamepadLeftStickButton, gamepadRightStickButton;
     private TriggerButton gamepadLT, gamepadRT;
+    private PovButton gamepadPOVDown, gamepadPOVUp;
 
     private DriveTrain driveTrain;
     private Shooter shooter;
@@ -83,6 +90,8 @@ public class RobotContainer {
     private IntakeArticulator intakeArticulator;
     private Feeder frontFeeder, backFeeder;
     private LimelightCamera limelightCamera;
+    private ClimberArticulator climberArticulator;
+    private ClimberWinch climberWinch;
 
     private Limelight limelight;
     
@@ -91,13 +100,7 @@ public class RobotContainer {
     public Autons currentSelectedAuton = Autons.NOTHING;
 
     public RobotContainer() {
-        autonChooser = new SendableChooser<Autons>();
-        autonChooser.setDefaultOption("Four Cargo", Autons.FOUR_CARGO);
-        autonChooser.addOption("Taxi", Autons.TAXI);
-        autonChooser.addOption("Two Cargo", Autons.TWO_CARGO);
-        autonChooser.addOption("Nothing", Autons.NOTHING);
-        SmartDashboard.putData("Auton Position", autonChooser);
-        updateAuton();
+        
 
 
         leftJoystick = new Joystick(DS_USB.LEFT_STICK);
@@ -115,7 +118,8 @@ public class RobotContainer {
 
         shooter = new Shooter(ShooterMode.ONE_WHEEL, limelight);
         shooter.setDefaultCommand(new RunCommand(() -> shooter.setVelocity(shooter.getVelocityToTarget()), shooter));
-        // shooter.setDefaultCommand(new RunCommand(() -> shooter.stopShooter(), shooter));
+
+        
         
 
         
@@ -159,6 +163,15 @@ public class RobotContainer {
         intake = new Intake();
         intakeArticulator = new IntakeArticulator();
         intakeArticulator.setDefaultCommand(new RobotFullIntakeUp(intake, intakeArticulator, frontFeeder, backFeeder));
+
+        climberArticulator = new ClimberArticulator();
+        climberArticulator.setDefaultCommand(new RunCommand(() -> climberArticulator.setSpeed(() -> 0.0), climberArticulator));
+      //  (new RunCommand(() -> turret.setSpeed(() -> getGamepadAxis(GAMEPAD_AXIS.leftX)*0.5), turret));
+
+        climberWinch = new ClimberWinch();
+        climberWinch.setDefaultCommand(new RunCommand(() -> climberWinch.setSpeed(() -> 0.0), climberWinch));
+
+        
 
 
         limelightCamera = new LimelightCamera();
@@ -204,7 +217,15 @@ public class RobotContainer {
 
         // Use the following to set velocity based on target distance
         gamepadA.whenPressed(new InstantCommand(() -> shooter.stopShooter(), shooter));
-        gamepadB.whenPressed(new RunCommand(() -> shooter.stopShooter(), shooter));
+        gamepadB.whenPressed(new ParallelCommandGroup(
+            new SetLEDState(getLimelightCamera(), LimelightLEDState.OFF),
+            new RunCommand( () -> shooter.stopShooter(), shooter),
+            new RunCommand( () -> turret.setPosition(180.0), turret)
+        ));
+
+        gamepadY.whenPressed(new RunCommand(() -> shooter.stopShooter(), shooter));
+
+        
 
         gamepadLT.whenPressed(new ShootBall(backFeeder, shooter));
 
@@ -216,10 +237,12 @@ public class RobotContainer {
         gamepadRB.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intake.setSpeed(IntakeSpeed.STOP), intake), 
         new RunCommand(() -> intakeArticulator.setIntakeIn(), intakeArticulator)));
 
-        gamepadBack.whenPressed(new ParallelCommandGroup(new RunCommand(() -> shooter.stopShooter(), shooter),
-                                                        new RunCommand(() -> turret.setPosition(0.0), turret)));
+        gamepadBack.and(gamepadStart).whenActive(new InstantCommand(() -> climberArticulator.setIsLocked(false), climberArticulator));
 
-        gamepadStart.whenPressed(new InstantCommand(() -> turret.setSpeed(() -> 0.0), turret));
+        gamepadPOVUp.whileHeld(new RunCommand(() -> climberArticulator.setSpeed(() -> 1.0), climberArticulator));
+        gamepadPOVDown.whileHeld(new RunCommand(() -> climberArticulator.setSpeed(() -> -0.5), climberArticulator));
+
+
 
         
         
@@ -273,6 +296,14 @@ public class RobotContainer {
 
         Trigger shootBall = new Trigger(() -> turret.isReadyToShoot() && shooter.isAtTargetVelocity() && backFeeder.hasBall() && driveTrain.isSafeShootingSpeed());
         shootBall.whileActiveContinuous(new ShootBall(backFeeder, shooter));
+
+        autonChooser = new SendableChooser<Autons>();
+        autonChooser.setDefaultOption("Four Cargo", Autons.FOUR_CARGO);
+        autonChooser.addOption("Taxi", Autons.TAXI);
+        autonChooser.addOption("Two Cargo", Autons.TWO_CARGO);
+        autonChooser.addOption("Nothing", Autons.NOTHING);
+        SmartDashboard.putData("Auton Chooser", autonChooser);
+        updateAuton();
         
 
     }
@@ -353,6 +384,10 @@ public class RobotContainer {
         gamepadRightStickButton = new JoystickButton(gamepad, GAMEPAD_BUTTONS.R3);
         gamepadLT = new TriggerButton(gamepad, GAMEPAD_AXIS.leftTrigger);
         gamepadRT = new TriggerButton(gamepad, GAMEPAD_AXIS.rightTrigger);
+        
+
+        gamepadPOVDown = new PovButton(gamepad, GAMEPAD_POV.DOWN);
+        gamepadPOVUp = new PovButton(gamepad, GAMEPAD_POV.UP);
     }
     
     public void initializeAutonCommand(Autons autonSelected) {
