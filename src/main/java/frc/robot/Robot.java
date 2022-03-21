@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.limelightCamera.SetLEDState;
+import frc.robot.commands.RunsDisabledInstantCommand;
 import frc.robot.sensors.Limelight.LimelightLEDState;
 
 /**
@@ -21,8 +21,8 @@ public class Robot extends TimedRobot {
     public static RobotContainer robotContainer;
 
     public static boolean isInTestMode = false;
-    private SetLEDState limelightOff;
-    private SetLEDState limelightOn;
+    private Command limelightOff;
+    private Command limelightOn;
 
 
     /**
@@ -34,10 +34,8 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().enable();
         robotContainer = new RobotContainer();
 
-        limelightOff = new SetLEDState(robotContainer.getLimelightCamera(), LimelightLEDState.OFF);
-        limelightOn = new SetLEDState(robotContainer.getLimelightCamera(), LimelightLEDState.ON);
-
-
+        limelightOff = new RunsDisabledInstantCommand(() -> robotContainer.getLimelight().setLEDState(LimelightLEDState.OFF));
+        limelightOn = new RunsDisabledInstantCommand(() -> robotContainer.getLimelight().setLEDState(LimelightLEDState.ON));
     }
 
     @Override
@@ -47,26 +45,19 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
-
-        
-        
-        // (new SetLEDState(robotContainer.getLimelightCamera(), LimelightLEDState.OFF)).schedule();
         limelightOff.schedule();
     }
 
     @Override
     public void disabledPeriodic() {
-
         robotContainer.updateAuton();
-       
     }
 
     @Override
     public void autonomousInit() {
-        Command autonCommand = robotContainer.getAutonCommand();
-        
-       // (new SetLEDState(robotContainer.getLimelightCamera(), LimelightLEDState.ON)).schedule();
         limelightOn.schedule();
+        Command autonCommand = robotContainer.getAutonCommand();
+
         if (autonCommand != null){
             autonCommand.schedule();
             DriverStation.reportError("Auton is Scheduled", false);
@@ -81,7 +72,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        (new SetLEDState(robotContainer.getLimelightCamera(), LimelightLEDState.ON)).schedule();
+        limelightOn.schedule();
     }
 
     @Override

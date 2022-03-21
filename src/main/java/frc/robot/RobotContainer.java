@@ -1,10 +1,5 @@
 package frc.robot;
 
-import java.io.FileNotFoundException;
-
-import edu.wpi.first.networktables.EntryNotification;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,6 +17,7 @@ import frc.robot.RobotMap.GAMEPAD_BUTTONS;
 import frc.robot.RobotMap.GAMEPAD_POV;
 import frc.robot.RobotMap.JOYSTICK_ADJUSTMENTS;
 import frc.robot.RobotMap.JOYSTICK_BUTTONS;
+import frc.robot.commands.RunsDisabledInstantCommand;
 import frc.robot.commands.Intake.RobotFullIntakeUp;
 import frc.robot.commands.drivetrain.DriveWithJoysticks;
 import frc.robot.commands.drivetrain.DriveWithJoysticks.DriveType;
@@ -30,15 +26,9 @@ import frc.robot.commands.drivetrain.MoveHeadingDerivatives.DriveDistance;
 import frc.robot.commands.drivetrain.MoveHeadingDerivatives.MoveHeading;
 import frc.robot.commands.feeder.LoadFeederTrigger;
 import frc.robot.commands.feeder.ShootBall;
-import frc.robot.commands.limelightCamera.SetLEDState;
-import frc.robot.commands.limelightCamera.SwitchLEDState;
 import frc.robot.commands.shooter.CheckRobotEmpty;
-import frc.robot.commands.shooter.RunShooterRPMPID;
-import frc.robot.commands.turret.ResetTurretPosition;
 import frc.robot.commands.turret.RotateToTarget;
 import frc.robot.commands.turret.ScanForTarget;
-import frc.robot.commands.turret.WaitForTarget;
-import frc.robot.commands.turret.ScanForTarget.TurretDirection;
 import frc.robot.sensors.Limelight;
 import frc.robot.sensors.Limelight.LimelightLEDState;
 import frc.robot.sensors.REVColorMux.I2CMUX;
@@ -55,7 +45,6 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Intake.IntakeSpeed;
 import frc.robot.subsystems.IntakeArticulator;
 import frc.robot.subsystems.IntakeArticulator.IntakePosition;
-import frc.robot.subsystems.LimelightCamera;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Shooter.ShooterMode;
 import frc.robot.subsystems.Turret;
@@ -89,7 +78,6 @@ public class RobotContainer {
     private Intake intake;
     private IntakeArticulator intakeArticulator;
     private Feeder frontFeeder, backFeeder;
-    private LimelightCamera limelightCamera;
     private ClimberArticulator climberArticulator;
     private ClimberWinch climberWinch;
 
@@ -171,12 +159,6 @@ public class RobotContainer {
         climberWinch = new ClimberWinch();
         climberWinch.setDefaultCommand(new RunCommand(() -> climberWinch.setSpeed(() -> 0.0), climberWinch));
 
-        
-
-
-        limelightCamera = new LimelightCamera();
-        limelightCamera.getLimelight().setLEDState(LimelightLEDState.OFF);
-
         shuffleDash = new ShuffleDash(this);
     
         initializeJoystickButtons();
@@ -194,22 +176,11 @@ public class RobotContainer {
         left2.whenPressed(new ParallelCommandGroup(new InstantCommand(() -> intake.setSpeed(IntakeSpeed.STOP), intake), 
                                                    new InstantCommand(() -> intakeArticulator.setIntakeIn(), intakeArticulator)));
                                 
-      
+        left6.whenPressed(new RunsDisabledInstantCommand(() -> limelight.switchLEDState()));
 
-        
-        left6.whenPressed(new SwitchLEDState(limelightCamera));
 
         right2.whenPressed(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
-        right8.whenPressed(new MoveOnTrajectory("Taxi-TwoCargo", driveTrain));
-        right10.whenPressed(new ResetTurretPosition(turret));
-        
-    
-
-
-
-        // gamepadX.whenPressed(new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.SHOOT), frontFeeder));
-        // gamepadY.whenPressed(new RunCommand(() -> backFeeder.setSpeed(FeedSpeed.SHOOT), backFeeder));
-
+        right10.whenPressed(new RunsDisabledInstantCommand(() -> turret.resetTurretPos(), turret));
 
 
         // Use the following to set velocity from SmartDash
@@ -218,7 +189,7 @@ public class RobotContainer {
         // Use the following to set velocity based on target distance
         gamepadA.whenPressed(new InstantCommand(() -> shooter.stopShooter(), shooter));
         gamepadB.whenPressed(new ParallelCommandGroup(
-            new SetLEDState(getLimelightCamera(), LimelightLEDState.OFF),
+            new InstantCommand(() -> limelight.setLEDState(LimelightLEDState.OFF)),
             new RunCommand( () -> shooter.stopShooter(), shooter),
             new RunCommand( () -> turret.setPosition(180.0), turret)
         ));
@@ -444,8 +415,8 @@ public class RobotContainer {
         FOUR_CARGO
     }
 
-    public LimelightCamera getLimelightCamera() {
-        return this.limelightCamera;
+    public Limelight getLimelight() {
+        return this.limelight;
     }
 
 }
