@@ -224,6 +224,7 @@ public class RobotContainer {
         ));
 
         gamepadY.whenPressed(new RunCommand(() -> shooter.stopShooter(), shooter));
+        gamepadX.whileHeld(new RunCommand(() -> climberWinch.setSpeed(() -> 1.0), climberWinch));
 
         
 
@@ -237,7 +238,13 @@ public class RobotContainer {
         gamepadRB.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intake.setSpeed(IntakeSpeed.STOP), intake), 
         new RunCommand(() -> intakeArticulator.setIntakeIn(), intakeArticulator)));
 
-        gamepadBack.and(gamepadStart).whenActive(new InstantCommand(() -> climberArticulator.setIsLocked(false), climberArticulator));
+
+        gamepadBack.and(gamepadStart).whenActive(new ParallelCommandGroup(
+            new InstantCommand(() -> climberArticulator.setIsLocked(false), climberArticulator),
+            new InstantCommand(() -> climberWinch.setIsLocked(false), climberWinch)
+            )
+        );
+
 
         gamepadPOVUp.whileHeld(new RunCommand(() -> climberArticulator.setSpeed(() -> 1.0), climberArticulator));
         gamepadPOVDown.whileHeld(new RunCommand(() -> climberArticulator.setSpeed(() -> -0.5), climberArticulator));
