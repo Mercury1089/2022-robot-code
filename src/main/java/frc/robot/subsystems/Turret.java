@@ -103,7 +103,7 @@ public class Turret extends SubsystemBase {
   }
 
   public boolean isTargetAcquired(){
-    return limelight.getTargetAcquired();
+    return limelight.getLEDState() && limelight.getTargetAcquired();
   }
 
 

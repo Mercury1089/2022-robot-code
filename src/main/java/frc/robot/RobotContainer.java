@@ -186,12 +186,14 @@ public class RobotContainer {
         // Use the following to set velocity from SmartDash
         // gamepadA.whenPressed(new RunCommand(() -> shooter.setVelocity(shooter.getSmartDashboardRPM()), shooter));
 
-        // Use the following to set velocity based on target distance
+        // Use the following to set velocity based on target distance (reverts to default shooter command)
         gamepadA.whenPressed(new InstantCommand(() -> shooter.stopShooter(), shooter));
-        gamepadB.whenPressed(new ParallelCommandGroup(
+        // Turn off the LEDs to disable targeting, then stop the shooter and lock it into position.
+        gamepadB.whenPressed(new SequentialCommandGroup(
             new InstantCommand(() -> limelight.setLEDState(LimelightLEDState.OFF)),
-            new RunCommand( () -> shooter.stopShooter(), shooter),
-            new RunCommand( () -> turret.setPosition(180.0), turret)
+            new ParallelCommandGroup(
+                new RunCommand( () -> shooter.stopShooter(), shooter),
+                new RunCommand( () -> turret.setPosition(180.0), turret))
         ));
 
         gamepadY.whenPressed(new RunCommand(() -> shooter.stopShooter(), shooter));
