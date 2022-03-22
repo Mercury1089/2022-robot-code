@@ -24,6 +24,7 @@ public class Limelight implements TableEntryListener {
 
     private NetworkTable nt; // finds the limelight network table
     private double numTargets, targetCenterXAngle, targetCenterYAngle, targetArea, horizontalLength, verticalLength, shortLength, longLength;
+    private LimelightLEDState ledState;
     private double[] cornerx;
     private boolean targetAcquired;
     private final double areaCoeff = 16.2;
@@ -47,6 +48,7 @@ public class Limelight implements TableEntryListener {
         nt.addEntryListener(this, EntryListenerFlags.kImmediate | EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
         shortLength = 0.0;
         longLength = 0.0;
+        ledState = LimelightLEDState.OFF;
     }
 
     /**
@@ -96,6 +98,9 @@ public class Limelight implements TableEntryListener {
             }
             case "tlong": {
                 longLength = nv.getDouble();
+            }
+            case "ledMode": {
+                ledState = LimelightLEDState.valueOf(nv.getDouble());
             }
             default: {
                 break;
@@ -246,35 +251,22 @@ public class Limelight implements TableEntryListener {
      *
      * @param limelightLEDState the state of the LED.
      */
-    public void setLEDState(LimelightLEDState limelightLEDState) {
-        nt.getEntry("ledMode").setNumber(limelightLEDState.value);
+    public synchronized void setLEDState(LimelightLEDState ledState) {
+        this.ledState = ledState;
+        nt.getEntry("ledMode").setNumber(ledState.value);
     }
 
     public boolean getLEDState() {
-        return nt.getEntry("ledMode").getNumber(0.0).doubleValue() == LimelightLEDState.ON.value ||
-               nt.getEntry("ledMode").getNumber(0.0).doubleValue() == LimelightLEDState.PIPELINE_DEFAULT.value;
+        // We are assuming PIPELINE_DEFULT is ON here
+        return ledState == LimelightLEDState.ON || ledState == LimelightLEDState.PIPELINE_DEFAULT;
     }
 
     public void switchLEDState() {
-        if ((double) (nt.getEntry("ledMode").getNumber(0.0)) == LimelightLEDState.OFF.getValue()) {
-            setLEDState(LimelightLEDState.ON);
-        } else {
-            setLEDState(LimelightLEDState.OFF);
-        }
+        setLEDState(getLEDState() ? LimelightLEDState.ON : LimelightLEDState.OFF);
     }
 
     public void setPipeline(int slot) {
         nt.getEntry("pipeline").setNumber(slot);
-    }
-
-    public synchronized boolean isSafeToTrack() {
-        for (double corner : this.cornerx) {
-            if (corner >= limelightResX - safeTurnThreshold || corner <= safeTurnThreshold) {
-                System.out.println("not safe, turning!");
-                return false;
-            }
-        }
-        return true;
     }
 
     public enum LimelightLEDState {
@@ -288,6 +280,12 @@ public class Limelight implements TableEntryListener {
 
         public double getValue() {
             return value;
+        }
+        public static LimelightLEDState valueOf(double value) {
+            for (LimelightLEDState state : LimelightLEDState.values()) {
+                if (state.value == value) return state;
+            }
+            return LimelightLEDState.OFF;
         }
     }
 
