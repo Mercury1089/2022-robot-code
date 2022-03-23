@@ -113,7 +113,7 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
    * @return true if at target velocity, false otherwise
    */
   public boolean isAtTargetVelocity() {
-    return Math.abs(getVelocity() - targetVelocity) <= 0.01 * targetVelocity;
+    return Math.abs(getVelocity() - targetVelocity) <= 0.02 * targetVelocity;
   }
 
   public boolean isReadyToShoot() {

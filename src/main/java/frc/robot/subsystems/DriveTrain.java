@@ -214,7 +214,7 @@ public class DriveTrain extends SubsystemBase implements IMercPIDTunable {
         leaderRight.configSelectedFeedbackCoefficient(1, DriveTrain.YAW_LOOP, RobotMap.CTRE_TIMEOUT);
 
         /* Motion Magic Configurations */
-        leaderRight.configMotionAcceleration((int) MercMath.revsPerMinuteToTicksPerTenth(1200));
+        leaderRight.configMotionAcceleration((int) MercMath.revsPerMinuteToTicksPerTenth(600));
         leaderRight.configMotionCruiseVelocity((int) MercMath.revsPerMinuteToTicksPerTenth(DriveTrain.MAX_RPM));
 
         int closedLoopTimeMs = 1;
@@ -447,6 +447,7 @@ public class DriveTrain extends SubsystemBase implements IMercPIDTunable {
     public boolean isSafeShootingSpeed() {
         return getVelocityInRevsPerMinute() < SAFE_SHOOT_RPM;
     }
+
 
     public double getRightEncVelocityInTicksPerTenth() {
         if (layout == DriveTrainLayout.TALONS_VICTORS)

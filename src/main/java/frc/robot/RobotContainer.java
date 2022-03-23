@@ -187,7 +187,9 @@ public class RobotContainer {
         // gamepadA.whenPressed(new RunCommand(() -> shooter.setVelocity(shooter.getSmartDashboardRPM()), shooter));
 
         // Use the following to set velocity based on target distance (reverts to default shooter command)
-        gamepadA.whenPressed(new InstantCommand(() -> shooter.stopShooter(), shooter));
+        gamepadA.whenPressed(new ParallelCommandGroup(
+                                new InstantCommand(() -> shooter.stopShooter(), shooter),
+                                new InstantCommand(() -> limelight.setLEDState(LimelightLEDState.ON))));
         // Turn off the LEDs to disable targeting, then stop the shooter and lock it into position.
         gamepadB.whenPressed(new SequentialCommandGroup(
             new InstantCommand(() -> limelight.setLEDState(LimelightLEDState.OFF)),
@@ -196,7 +198,7 @@ public class RobotContainer {
                 new RunCommand( () -> turret.setPosition(180.0), turret))
         ));
 
-        gamepadY.whenPressed(new RunCommand(() -> shooter.stopShooter(), shooter));
+        gamepadY.whenPressed(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator));
         gamepadX.whileHeld(new RunCommand(() -> climberWinch.setSpeed(() -> 1.0), climberWinch));
 
         
@@ -213,8 +215,14 @@ public class RobotContainer {
 
 
         gamepadBack.and(gamepadStart).whenActive(new ParallelCommandGroup(
-            new InstantCommand(() -> climberArticulator.setIsLocked(false), climberArticulator),
-            new InstantCommand(() -> climberWinch.setIsLocked(false), climberWinch)
+            new SequentialCommandGroup(
+            new InstantCommand(() -> limelight.setLEDState(LimelightLEDState.OFF)),
+            new ParallelCommandGroup(
+                new RunCommand( () -> shooter.stopShooter(), shooter),
+                new RunCommand( () -> turret.setPosition(180.0), turret))
+            ),
+            new InstantCommand(() -> climberArticulator.setIsLocked(false)),
+            new InstantCommand(() -> climberWinch.setIsLocked(false))
             )
         );
 
@@ -394,8 +402,8 @@ public class RobotContainer {
                     )
                 ),
                 new DriveDistance(150.0, driveTrain),
-                new WaitCommand(1.5),
-                new DriveDistance(-150.0, driveTrain)
+                new WaitCommand(0.75),
+                new DriveDistance(-115.0, driveTrain)
                 );
         }
     }

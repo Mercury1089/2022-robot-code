@@ -92,15 +92,19 @@ public class Limelight implements TableEntryListener {
             }
             case "tcornx": {
                 cornerx = nv.getDoubleArray();
+                break;
             }
             case "tshort": {
                 shortLength = nv.getDouble();
+                break;
             }
             case "tlong": {
                 longLength = nv.getDouble();
+                break;
             }
             case "ledMode": {
                 ledState = LimelightLEDState.valueOf(nv.getDouble());
+                break;
             }
             default: {
                 break;
@@ -262,7 +266,7 @@ public class Limelight implements TableEntryListener {
     }
 
     public void switchLEDState() {
-        setLEDState(getLEDState() ? LimelightLEDState.ON : LimelightLEDState.OFF);
+        setLEDState(getLEDState() ? LimelightLEDState.OFF : LimelightLEDState.ON);
     }
 
     public void setPipeline(int slot) {
