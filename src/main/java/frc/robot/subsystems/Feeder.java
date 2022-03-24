@@ -45,6 +45,7 @@ public class Feeder extends SubsystemBase {
   private DigitalInput breakBeamSensor;
   private int dioPort;
   private boolean isShooting;
+  private boolean hasColorSensor;
 
   /**
    * Creates a new Feeder.
@@ -52,6 +53,7 @@ public class Feeder extends SubsystemBase {
   public Feeder(boolean hasColorSensor, BreakBeamDIO DIOPort, int motorControllerID) {
 
     dioPort = DIOPort.dioPort;
+    hasColorSensor = hasColorSensor;
 
     
     breakBeamSensor = new DigitalInput(dioPort); 
@@ -75,6 +77,8 @@ public class Feeder extends SubsystemBase {
   }
 
   public boolean isCorrectColor() {
+
+    
     // is detected color of ball is same as FMS' alliance color 
     // (and make sure there's actually a color being picked up)
     return colorSensor.getColor() ==  DriverStation.getAlliance() &&
@@ -143,17 +147,18 @@ public class Feeder extends SubsystemBase {
     builder.setActuator(true); // Only allow setting values when in Test mode
     builder.setSafeState(() -> setSpeed(FeedSpeed.STOP)); // Provide method to make the subsystem safe
 
-    /*
-    builder.addStringProperty("Color/Detected", () -> colorSensor.getDetectedColor().toString(), null);
-    builder.addDoubleProperty("Color/Confidence", () -> colorSensor.getConfidence(), null);
-    builder.addStringProperty("Color/ENUM", () -> colorSensor.getColor().toString(), null);
-    builder.addStringProperty("Color/SameAllianceColor", () -> "" + isCorrectColor(), null);
-    builder.addStringProperty("Color/whoseBall", () -> whoseBall().toString(), null);
-    
-    builder.addDoubleProperty("Color/RGB/Red", () -> colorSensor.getDetectedColor().red * 255, null);
-    builder.addDoubleProperty("Color/RGB/Green", () -> colorSensor.getDetectedColor().green * 255, null);
-    builder.addDoubleProperty("Color/RGB/Blue", () -> colorSensor.getDetectedColor().blue * 255, null);
-    */
+    if (hasColorSensor) {
+      builder.addStringProperty("Color/Detected", () -> colorSensor.getDetectedColor().toString(), null);
+      builder.addDoubleProperty("Color/Confidence", () -> colorSensor.getConfidence(), null);
+      builder.addStringProperty("Color/ENUM", () -> colorSensor.getColor().toString(), null);
+      builder.addStringProperty("Color/SameAllianceColor", () -> "" + isCorrectColor(), null);
+      builder.addStringProperty("Color/whoseBall", () -> whoseBall().toString(), null);
+      
+      builder.addDoubleProperty("Color/RGB/Red", () -> colorSensor.getDetectedColor().red * 255, null);
+      builder.addDoubleProperty("Color/RGB/Green", () -> colorSensor.getDetectedColor().green * 255, null);
+      builder.addDoubleProperty("Color/RGB/Blue", () -> colorSensor.getDetectedColor().blue * 255, null);
+
+    }
     builder.addBooleanProperty("hasBall", () -> hasBall(), null);
   }
 }
