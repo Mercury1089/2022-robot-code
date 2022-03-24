@@ -9,6 +9,7 @@ package frc.robot.sensors.REVColorMux;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.util.Color;
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorMatchResult;
@@ -21,28 +22,25 @@ public class REVColor {
 
   
   private final ColorSensorV3 colorSensor;
-  private final I2CMUX mux;
+  private final I2C.Port i2cPort;
   private final ColorMatch colorMatch;
   private final Color targetRed;
   private final Color targetBlue;
   private final double CONFIDENCE_THRESHOLD;
-  private double confidence;
-  private final int colorSensorID;
-  
+  private final double UPDATE_PERIOD_SECOND = 0.02;
+  private double confidence;  
+  private DriverStation.Alliance ballColor;
+  private Notifier colorUpdater;
   
   
   private Color detectedColor;
 
-  public REVColor(ColorSensorID colorSensorIDEnum, I2CMUX mux) {
-    this.mux = mux;
+  public REVColor() {
 
-    colorSensorID = colorSensorIDEnum.id;
-    
-   
-    synchronized(this) {
-      mux.setEnabledBuses(colorSensorID);
-      colorSensor = new ColorSensorV3(I2C.Port.kMXP);
-    }
+    ballColor = DriverStation.Alliance.Invalid;
+
+    i2cPort = I2C.Port.kMXP;
+    colorSensor = new ColorSensorV3(i2cPort);
     colorMatch = new ColorMatch();
 
     CONFIDENCE_THRESHOLD = 0.97;
@@ -55,34 +53,34 @@ public class REVColor {
     colorMatch.addColorMatch(targetRed);
     colorMatch.addColorMatch(targetBlue);
 
-    
+    colorUpdater = new Notifier(() -> updateColor());
+    colorUpdater.startPeriodic(UPDATE_PERIOD_SECOND);
+  }
 
+  private void updateColor() {
+
+    detectedColor = getRawColor();
+    try {
+      ColorMatchResult match = colorMatch.matchColor(detectedColor);
+      confidence = match.confidence;
+
+      if (match.color == targetRed) {
+        ballColor = DriverStation.Alliance.Red;
+      } else if (match.color == targetBlue) {
+        ballColor =  DriverStation.Alliance.Blue;
+      }
+      ballColor =  DriverStation.Alliance.Invalid;
+
+    } catch (Exception nullPointerException) {
+      ballColor =  DriverStation.Alliance.Invalid;
+    }
   }
 
   public DriverStation.Alliance getColor() {
-
-    return DriverStation.Alliance.Invalid;
-    // detectedColor = getRawColor();
-    // try {
-    //   ColorMatchResult match = colorMatch.matchColor(detectedColor);
-    //   confidence = match.confidence;
-
-    //   if (match.color == targetRed) {
-    //     return DriverStation.Alliance.Red;
-    //   } else if (match.color == targetBlue) {
-    //     return DriverStation.Alliance.Blue;
-    //   }
-    //   return DriverStation.Alliance.Invalid;
-
-    // } catch (Exception nullPointerException) {
-    //   return DriverStation.Alliance.Invalid;
-    // }
+    return ballColor;
   }
 
-
-
-  public synchronized Color getRawColor() {
-    mux.setEnabledBuses(colorSensorID);
+  public Color getRawColor() {
     return colorSensor.getColor();
   }
 
@@ -101,19 +99,4 @@ public class REVColor {
     colorMatch.setConfidenceThreshold(confThresh); // need to change this?
   }
 
-
-
-
-  public enum ColorSensorID {
-    // enum to set correct enabled bus on MUX
-    FRONT(0),
-    BACK(1);
-
-    public final int id; 
-
-    ColorSensorID(int id) {
-      this.id = id;
-    }
-
-  }
 }

@@ -31,8 +31,6 @@ import frc.robot.commands.turret.RotateToTarget;
 import frc.robot.commands.turret.ScanForTarget;
 import frc.robot.sensors.Limelight;
 import frc.robot.sensors.Limelight.LimelightLEDState;
-import frc.robot.sensors.REVColorMux.I2CMUX;
-import frc.robot.sensors.REVColorMux.REVColor.ColorSensorID;
 import frc.robot.subsystems.ClimberArticulator;
 import frc.robot.subsystems.ClimberWinch;
 import frc.robot.subsystems.DriveTrain;
@@ -111,10 +109,9 @@ public class RobotContainer {
         
 
         
-        
-        I2CMUX mux = new I2CMUX();
 
-        frontFeeder = new Feeder(ColorSensorID.FRONT, BreakBeamDIO.FRONT, RobotMap.CAN.FEEDER_F, mux);
+
+        frontFeeder = new Feeder(true, BreakBeamDIO.FRONT, RobotMap.CAN.FEEDER_F);
         // /*
         // no ball in front or back --> run frontFeeder
         // ball in front but not back --> run frontFeeder
@@ -141,7 +138,7 @@ public class RobotContainer {
         (IntakePosition.OUT or ball in front)
         --> run the back feeder
         */
-        backFeeder = new Feeder(ColorSensorID.BACK, BreakBeamDIO.BACK, RobotMap.CAN.FEEDER_B, mux);
+        backFeeder = new Feeder(false, BreakBeamDIO.BACK, RobotMap.CAN.FEEDER_B);
         backFeeder.setDefaultCommand(new LoadFeederTrigger(backFeeder, () ->
                 !backFeeder.hasBall() &&
                 (intakeArticulator.getIntakePosition() == IntakePosition.OUT || frontFeeder.hasBall()
@@ -269,7 +266,12 @@ public class RobotContainer {
         */
 
         Trigger unloadFeeder = new Trigger(() -> frontFeeder.whoseBall() == BallMatchesAlliance.DIFFERENT);
-        unloadFeeder.whileActiveContinuous(new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.EJECT), frontFeeder));
+        unloadFeeder.whileActiveContinuous(new ParallelCommandGroup(
+            new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.EJECT), frontFeeder),
+            new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
+            new RunCommand(() -> intake.setSpeed(IntakeSpeed.EJECT), intake)
+        ));
+            
         
 
         Trigger rotateTargetTrigger = new Trigger(() -> !turret.targetIsLost());

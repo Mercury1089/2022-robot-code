@@ -18,10 +18,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.sensors.REVColorMux.I2CMUX;
 import frc.robot.sensors.REVColorMux.REVColor;
-
-import frc.robot.sensors.REVColorMux.REVColor.ColorSensorID;
 
 public class Feeder extends SubsystemBase {
   
@@ -52,7 +49,7 @@ public class Feeder extends SubsystemBase {
   /**
    * Creates a new Feeder.
    */
-  public Feeder(ColorSensorID colorSensorID, BreakBeamDIO DIOPort, int motorControllerID, I2CMUX mux) {
+  public Feeder(boolean hasColorSensor, BreakBeamDIO DIOPort, int motorControllerID) {
 
     dioPort = DIOPort.dioPort;
 
@@ -64,8 +61,12 @@ public class Feeder extends SubsystemBase {
     feedWheel.setNeutralMode(NeutralMode.Brake);
     setName("Feeder " + DIOPort.toString());
     
-
-    colorSensor = new REVColor(colorSensorID, mux);
+    if (hasColorSensor) {
+      colorSensor = new REVColor();
+    } else {
+      colorSensor = null;
+    }
+    
     isShooting = false;
   }
 
