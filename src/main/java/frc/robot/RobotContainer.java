@@ -266,12 +266,16 @@ public class RobotContainer {
         */
 
         Trigger unloadFeeder = new Trigger(() -> frontFeeder.whoseBall() == BallMatchesAlliance.DIFFERENT);
+        
         unloadFeeder.whileActiveContinuous(new ParallelCommandGroup(
             new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.EJECT), frontFeeder),
             new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
             new RunCommand(() -> intake.setSpeed(IntakeSpeed.EJECT), intake)
         ));
-            
+        unloadFeeder.whenInactive(new SequentialCommandGroup(
+            new WaitCommand(1.0),
+            new InstantCommand(() -> intake.setSpeed(IntakeSpeed.EJECT), intake, intakeArticulator)
+        ));
         
 
         Trigger rotateTargetTrigger = new Trigger(() -> !turret.targetIsLost());

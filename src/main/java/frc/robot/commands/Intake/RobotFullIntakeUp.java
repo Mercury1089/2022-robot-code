@@ -9,6 +9,7 @@ import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.IntakeArticulator;
 import frc.robot.subsystems.Intake.IntakeSpeed;
+import frc.robot.subsystems.IntakeArticulator.IntakePosition;
 
 public class RobotFullIntakeUp extends CommandBase {
 
@@ -35,6 +36,9 @@ public class RobotFullIntakeUp extends CommandBase {
   @Override
   public void execute() {
 
+    if (this.intakeArticulator.getIntakePosition() == IntakePosition.OUT) {
+      this.intake.setSpeed(IntakeSpeed.INTAKE);
+    }
     if (this.feederFront.hasBall() && this.feederBack.hasBall()) {
         this.intakeArticulator.setIntakeIn();
         this.intake.setSpeed(IntakeSpeed.STOP);

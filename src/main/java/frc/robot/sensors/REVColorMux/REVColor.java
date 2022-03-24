@@ -33,7 +33,7 @@ public class REVColor {
   private Notifier colorUpdater;
   
   
-  private Color detectedColor;
+  private Color detectedColor = new Color(0.0, 0.0, 0.0);
 
   public REVColor() {
 
@@ -43,12 +43,15 @@ public class REVColor {
     colorSensor = new ColorSensorV3(i2cPort);
     colorMatch = new ColorMatch();
 
-    CONFIDENCE_THRESHOLD = 0.97;
+    CONFIDENCE_THRESHOLD = 0.93;
     setConfidence(CONFIDENCE_THRESHOLD);
 
     // calibrated RGB's
-    targetRed = new Color(0.373, 0.451, 0.173);
-    targetBlue = new Color(0.263, 0.478, 0.255);
+    // targetRed = new Color(0.373, 0.451, 0.173);
+    // targetBlue = new Color(0.263, 0.478, 0.255);
+
+    targetRed = new Color(0.509, 0.373, 0.140);
+    targetBlue = new Color(0.138, 0.407,0.458);
 
     colorMatch.addColorMatch(targetRed);
     colorMatch.addColorMatch(targetBlue);
@@ -59,7 +62,7 @@ public class REVColor {
 
   private void updateColor() {
 
-    detectedColor = getRawColor();
+    detectedColor = colorSensor.getColor();
     try {
       ColorMatchResult match = colorMatch.matchColor(detectedColor);
       confidence = match.confidence;
@@ -68,8 +71,10 @@ public class REVColor {
         ballColor = DriverStation.Alliance.Red;
       } else if (match.color == targetBlue) {
         ballColor =  DriverStation.Alliance.Blue;
+      } else {
+        ballColor =  DriverStation.Alliance.Invalid;
       }
-      ballColor =  DriverStation.Alliance.Invalid;
+     
 
     } catch (Exception nullPointerException) {
       ballColor =  DriverStation.Alliance.Invalid;
@@ -80,14 +85,7 @@ public class REVColor {
     return ballColor;
   }
 
-  public Color getRawColor() {
-    return colorSensor.getColor();
-  }
-
   public Color getDetectedColor() {
-    if (detectedColor == null) {
-      return getRawColor();
-    }
     return detectedColor;
   }
 

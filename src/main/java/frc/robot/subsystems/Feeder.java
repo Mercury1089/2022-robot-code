@@ -53,7 +53,7 @@ public class Feeder extends SubsystemBase {
   public Feeder(boolean hasColorSensor, BreakBeamDIO DIOPort, int motorControllerID) {
 
     dioPort = DIOPort.dioPort;
-    hasColorSensor = hasColorSensor;
+    this.hasColorSensor = hasColorSensor;
 
     
     breakBeamSensor = new DigitalInput(dioPort); 
@@ -147,8 +147,7 @@ public class Feeder extends SubsystemBase {
     builder.setActuator(true); // Only allow setting values when in Test mode
     builder.setSafeState(() -> setSpeed(FeedSpeed.STOP)); // Provide method to make the subsystem safe
 
-    if (hasColorSensor) {
-      builder.addStringProperty("Color/Detected", () -> colorSensor.getDetectedColor().toString(), null);
+    if (this.hasColorSensor) {
       builder.addDoubleProperty("Color/Confidence", () -> colorSensor.getConfidence(), null);
       builder.addStringProperty("Color/ENUM", () -> colorSensor.getColor().toString(), null);
       builder.addStringProperty("Color/SameAllianceColor", () -> "" + isCorrectColor(), null);
@@ -158,6 +157,11 @@ public class Feeder extends SubsystemBase {
       builder.addDoubleProperty("Color/RGB/Green", () -> colorSensor.getDetectedColor().green * 255, null);
       builder.addDoubleProperty("Color/RGB/Blue", () -> colorSensor.getDetectedColor().blue * 255, null);
 
+      builder.addDoubleProperty("Color/RGB/RawRed", () -> colorSensor.getDetectedColor().red, null);
+      builder.addDoubleProperty("Color/RGB/RawGreen", () -> colorSensor.getDetectedColor().green, null);
+      builder.addDoubleProperty("Color/RGB/RawBlue", () -> colorSensor.getDetectedColor().blue, null);
+
+      
     }
     builder.addBooleanProperty("hasBall", () -> hasBall(), null);
   }
