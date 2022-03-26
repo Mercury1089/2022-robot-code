@@ -74,6 +74,8 @@ public class ClimberArticulator extends SubsystemBase {
     
     builder.setActuator(true); // Only allow setting values when in Test mode
     builder.addBooleanProperty("isLocked", () -> getIsLocked(), null);
+
+
     
   }
 

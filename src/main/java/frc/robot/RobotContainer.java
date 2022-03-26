@@ -407,9 +407,9 @@ public class RobotContainer {
                         new MoveHeading(0, -12.7, driveTrain)
                     )
                 ),
-                new DriveDistance(145.0, driveTrain),
+                new DriveDistance(149.5, driveTrain),
                 new WaitCommand(0.75),
-                new DriveDistance(-115.0, driveTrain)
+                new DriveDistance(-120.0, driveTrain)
                 );
         }
     }

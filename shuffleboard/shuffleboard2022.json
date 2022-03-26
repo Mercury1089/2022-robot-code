@@ -41,17 +41,6 @@
               "_title": "SmartDashboard/Auton Chosen"
             }
           },
-          "9,0": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "ComboBox Chooser",
-              "_source0": "network_table:///SmartDashboard/Choose Auton",
-              "_title": "SmartDashboard/Choose Auton"
-            }
-          },
           "10,1": {
             "size": [
               2,
@@ -148,6 +137,17 @@
               "_title": "LiveWindow/Turret/TargetAcquired",
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "9,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Auton Chooser",
+              "_title": "SmartDashboard/Auton Chooser"
             }
           }
         }
