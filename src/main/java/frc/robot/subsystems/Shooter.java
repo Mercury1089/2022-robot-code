@@ -29,6 +29,7 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
   public static final double MIN_DISTANCE = 6.7, MAX_DISTANCE = 17.0;
   //public static final double MIN_DISTANCE = 2.0, MAX_DISTANCE = 20.0;
   public final int BREAKBEAM_DIO = 2;
+  private final double TARGET_VELOCITY_THRESHOLD = 75.0; // within a +- 75 rpm range to shoot
 
   private CANSparkMax shooterLeft, shooterRight;
   private double targetVelocity;
@@ -113,7 +114,8 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
    * @return true if at target velocity, false otherwise
    */
   public boolean isAtTargetVelocity() {
-    return Math.abs(getVelocity() - targetVelocity) <= 0.02 * targetVelocity;
+   // return Math.abs(getVelocity() - targetVelocity) <= 0.02 * targetVelocity;
+      return Math.abs(getVelocity() - targetVelocity) <= TARGET_VELOCITY_THRESHOLD;
   }
 
   public boolean isReadyToShoot() {
