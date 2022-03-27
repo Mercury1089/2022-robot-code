@@ -27,7 +27,7 @@ public class REVColor {
   private final Color targetRed;
   private final Color targetBlue;
   private final double CONFIDENCE_THRESHOLD;
-  private final double UPDATE_PERIOD_SECOND = 0.02;
+  private final double UPDATE_PERIOD_SECOND = 0.04;
   private double confidence;  
   private DriverStation.Alliance ballColor;
   private Notifier colorUpdater;
@@ -43,7 +43,7 @@ public class REVColor {
     colorSensor = new ColorSensorV3(i2cPort);
     colorMatch = new ColorMatch();
 
-    CONFIDENCE_THRESHOLD = 0.93;
+    CONFIDENCE_THRESHOLD = 0.90;
     setConfidence(CONFIDENCE_THRESHOLD);
 
     // calibrated RGB's

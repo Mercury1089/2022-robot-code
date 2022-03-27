@@ -25,7 +25,7 @@ public class Feeder extends SubsystemBase {
   public enum FeedSpeed{
     STOP(0.0), // stop running feeder motors
     LOAD(0.60), // run feeder motors inward
-    EJECT(-0.60), // run feeder motors outward
+    EJECT(-1.00), // run feeder motors outward
     SHOOT(1.00); // run feeder motors full speed inwards
 
     public final double speed; 

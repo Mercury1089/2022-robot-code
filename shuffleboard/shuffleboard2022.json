@@ -149,6 +149,17 @@
               "_source0": "network_table:///SmartDashboard/Auton Chooser",
               "_title": "SmartDashboard/Auton Chooser"
             }
+          },
+          "10,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///LiveWindow/Feeder/Feeder FRONT/Color/ENUM",
+              "_title": "LiveWindow/Feeder/Feeder FRONT/Color/ENUM"
+            }
           }
         }
       }

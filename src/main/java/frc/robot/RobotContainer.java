@@ -394,7 +394,10 @@ public class RobotContainer {
             autonCommand = new ParallelCommandGroup(
                 new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
                 new RunCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
-                new DriveDistance(60.0, driveTrain));
+                new SequentialCommandGroup(
+                    new DriveDistance(60.0, driveTrain),
+                    new MoveHeading(0, -12.7, driveTrain)
+                ));
         } else if (autonSelected == Autons.FOUR_CARGO) {
 
             autonCommand = new SequentialCommandGroup( 
@@ -407,9 +410,9 @@ public class RobotContainer {
                         new MoveHeading(0, -12.7, driveTrain)
                     )
                 ),
-                new DriveDistance(149.5, driveTrain),
+                new DriveDistance(147.5, driveTrain),
                 new WaitCommand(0.75),
-                new DriveDistance(-120.0, driveTrain)
+                new DriveDistance(-125.0, driveTrain)
                 );
         }
     }

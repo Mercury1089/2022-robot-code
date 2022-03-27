@@ -26,10 +26,10 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
 
   public static final double NOMINAL_OUT = 0.0, PEAK_OUT = 1.0;
   public static final double MAX_RPM = 5000.0, STEADY_RPM = 3750.0, LOW_RPM = 1000.0, NULL_RPM = -1.0;
-  public static final double MIN_DISTANCE = 6.7, MAX_DISTANCE = 17.0;
+  public static final double MIN_DISTANCE = 6.7, MAX_DISTANCE = 16.0;
   //public static final double MIN_DISTANCE = 2.0, MAX_DISTANCE = 20.0;
   public final int BREAKBEAM_DIO = 2;
-  private final double TARGET_VELOCITY_THRESHOLD = 75.0; // within a +- 75 rpm range to shoot
+  private final double TARGET_VELOCITY_THRESHOLD = 88.0; // within a +- 88 rpm range to shoot
 
   private CANSparkMax shooterLeft, shooterRight;
   private double targetVelocity;
