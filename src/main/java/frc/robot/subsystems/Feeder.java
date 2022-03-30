@@ -16,9 +16,8 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.sensors.REVColorMux.REVColor;
+import frc.robot.sensors.REVColorSensor.REVColor;
 
 public class Feeder extends SubsystemBase {
   
@@ -77,8 +76,6 @@ public class Feeder extends SubsystemBase {
   }
 
   public boolean isCorrectColor() {
-
-    
     // is detected color of ball is same as FMS' alliance color 
     // (and make sure there's actually a color being picked up)
     return colorSensor.getColor() ==  DriverStation.getAlliance() &&
@@ -91,6 +88,10 @@ public class Feeder extends SubsystemBase {
     DIFFERENT: ball is def opposing alliance ball
     NONE: there is no ball
     */
+
+    if (!hasColorSensor) {
+      return BallMatchesAlliance.NONE;
+    }
 
     // get opposite alliance color
     DriverStation.Alliance oppositeAlliance;

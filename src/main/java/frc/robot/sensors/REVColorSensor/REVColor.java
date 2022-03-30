@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.sensors.REVColorMux;
+package frc.robot.sensors.REVColorSensor;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
@@ -94,7 +94,7 @@ public class REVColor {
   }
 
   public void setConfidence(double confThresh) {
-    colorMatch.setConfidenceThreshold(confThresh); // need to change this?
+    colorMatch.setConfidenceThreshold(confThresh);
   }
 
 }
