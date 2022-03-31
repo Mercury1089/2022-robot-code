@@ -45,6 +45,7 @@ public class Feeder extends SubsystemBase {
   private int dioPort;
   private boolean isShooting;
   private boolean hasColorSensor;
+  private boolean manualSmartDashShoot;
 
   /**
    * Creates a new Feeder.
@@ -142,6 +143,19 @@ public class Feeder extends SubsystemBase {
     return isShooting;
   }
 
+  public boolean smartDashShoot() {
+    return this.manualSmartDashShoot;
+  }
+
+  public void setSmartDashShoot(boolean setManual) {
+    this.manualSmartDashShoot = setManual;
+    if (manualSmartDashShoot) {
+      setSpeed(FeedSpeed.SHOOT);
+    } else {
+      setSpeed(FeedSpeed.STOP);
+    }
+  }
+
   @Override
   public void initSendable(SendableBuilder builder) {
     
@@ -161,9 +175,9 @@ public class Feeder extends SubsystemBase {
       builder.addDoubleProperty("Color/RGB/RawRed", () -> colorSensor.getDetectedColor().red, null);
       builder.addDoubleProperty("Color/RGB/RawGreen", () -> colorSensor.getDetectedColor().green, null);
       builder.addDoubleProperty("Color/RGB/RawBlue", () -> colorSensor.getDetectedColor().blue, null);
-
-      
     }
+
+    builder.addBooleanProperty("ShootBall", () -> smartDashShoot(), (x) -> setSmartDashShoot(x));
     builder.addBooleanProperty("hasBall", () -> hasBall(), null);
   }
 }

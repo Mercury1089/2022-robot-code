@@ -29,7 +29,7 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
   public static final double MIN_DISTANCE = 6.7, MAX_DISTANCE = 16.0;
   //public static final double MIN_DISTANCE = 2.0, MAX_DISTANCE = 20.0;
   public final int BREAKBEAM_DIO = 2;
-  private final double TARGET_VELOCITY_THRESHOLD = 88.0; // within a +- 88 rpm range to shoot
+  private final double TARGET_VELOCITY_THRESHOLD = 50.0; // within a +- 88 rpm range to shoot
 
   private CANSparkMax shooterLeft, shooterRight;
   private double targetVelocity;
@@ -37,6 +37,11 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
   private Limelight limelight;
   private DigitalInput breakBeamSensor;
   private boolean autoShootEnable;
+  private double smartDashboardTargetVelocity = 0.0;
+  private boolean useSpeed, setPID;
+  private double smartdashkP = 1e-6, smartdashkF = 1.7e-5;
+
+  
 
   public enum ShooterMode {
     ONE_WHEEL, NONE
@@ -68,7 +73,8 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
 
     stopShooter();
     targetVelocity = 0.0;
-    velocityGains = new PIDGain(1e-5, 2e-7, 1e-5, 1e-5);
+    // velocityGains = new PIDGain(1e-5, 2e-7, 1e-5, 2.6e-4);
+    velocityGains = new PIDGain(0.00026, 0, 0, 0.000164);
     
     this.limelight = limelight;
   
@@ -89,6 +95,9 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
   public double getVelocity() {
     return shooterLeft != null ? shooterLeft.getEncoder().getVelocity() : 0.0;
   }
+
+
+
 
   /**
    * Get the target velocity for the shooter based on a distance
@@ -162,15 +171,76 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
     return this.autoShootEnable;
   }
 
+  public double getTargetVelocity() {
+    return smartDashboardTargetVelocity;
+  }
+
+  public void setTargetVelocity(double velocity) {
+    smartDashboardTargetVelocity = velocity;
+    
+  }
+
+  public void setSmartDashSpeed(boolean useSpeed) {
+    this.useSpeed = useSpeed;
+    if (useSpeed) {
+      setVelocity(smartDashboardTargetVelocity);
+    } 
+  }
+
+  public boolean getUseSpeed() {
+    return this.useSpeed;
+  }
+
+  public void setPVal(double pval) {
+    this.smartdashkP = pval;
+  }
+
+  public void setFVal(double kFVal) {
+    this.smartdashkF = kFVal;
+  }
+
+  public double getPVal() {
+    return this.smartdashkP;
+  }
+
+  public double getFVal() {
+    return this.smartdashkF;
+  }
+
+  public void setSmartDashPID(boolean setPID) {
+    this.setPID = setPID;
+    if (this.setPID) {
+      velocityGains = new PIDGain(smartdashkP, 0, 0, smartdashkF);
+      setPIDGain(SHOOTER_PID_SLOTS.VELOCITY_GAINS.getValue(), velocityGains);
+    } 
+  }
+
+  public boolean getSetPID() {
+    return this.setPID;
+  }
+
+
+
+
+
   @Override
   public void initSendable(SendableBuilder builder) {
     
-    builder.setActuator(true); // Only allow setting values when in Test mode
+    // builder.setActuator(true); // Only allow setting values when in Test mode
     builder.addBooleanProperty("ShooterHasBall", () -> hasBall(), null);
     builder.addDoubleProperty("CurrentRPM", () -> getVelocity(), null);
     builder.addDoubleProperty("TargetRPM", () -> targetVelocity, null);
     builder.addBooleanProperty("AtTargetRPM", () -> isAtTargetVelocity(), null);
+    builder.addDoubleProperty("setTargetRPM", () -> getTargetVelocity(), (x) -> setTargetVelocity(x));
+    builder.addBooleanProperty("setToTargetSpeed", () -> getUseSpeed(), (x) -> setSmartDashSpeed(x));
+
+    builder.addDoubleProperty("SetPVal", () -> getPVal(), (x) -> setPVal(x));
+    builder.addDoubleProperty("SetFVal", () -> getFVal(), (x) -> setFVal(x));
+    builder.addBooleanProperty("SetPID", () -> getSetPID(), (x) -> setSmartDashPID(x));
+    
+    
     builder.addStringProperty("Within Target", () -> insideShooterBounds().toString(), null);
+    
   }
 
   @Override
