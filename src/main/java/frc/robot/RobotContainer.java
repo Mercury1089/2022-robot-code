@@ -31,7 +31,7 @@ import frc.robot.commands.turret.RotateToTarget;
 import frc.robot.commands.turret.ScanForTarget;
 import frc.robot.sensors.Limelight;
 import frc.robot.sensors.Limelight.LimelightLEDState;
-import frc.robot.sensors.REVColorSensor.PicoREVColor;
+import frc.robot.sensors.REVColorSensor.PicoColorSensor;
 import frc.robot.subsystems.ClimberArticulator;
 import frc.robot.subsystems.ClimberWinch;
 import frc.robot.subsystems.DriveTrain;
@@ -106,9 +106,9 @@ public class RobotContainer {
         shooter = new Shooter(ShooterMode.ONE_WHEEL, limelight);
         shooter.setDefaultCommand(new RunCommand(() -> shooter.setVelocity(shooter.getVelocityToTarget()), shooter));
 
-        PicoREVColor colorSensor = new PicoREVColor();
+        PicoColorSensor picoColorSensor = new PicoColorSensor();
         
-        frontFeeder = new Feeder(colorSensor, 0, BreakBeamDIO.FRONT, RobotMap.CAN.FEEDER_F);
+        frontFeeder = new Feeder(picoColorSensor, 0, BreakBeamDIO.FRONT, RobotMap.CAN.FEEDER_F);
         // /*
         // no ball in front or back --> run frontFeeder
         // ball in front but not back --> run frontFeeder
@@ -135,7 +135,7 @@ public class RobotContainer {
         (IntakePosition.OUT or ball in front)
         --> run the back feeder
         */
-        backFeeder = new Feeder(colorSensor, 1, BreakBeamDIO.BACK, RobotMap.CAN.FEEDER_B);
+        backFeeder = new Feeder(picoColorSensor, 1, BreakBeamDIO.BACK, RobotMap.CAN.FEEDER_B);
         backFeeder.setDefaultCommand(new LoadFeederTrigger(backFeeder, () ->
                 !backFeeder.hasBall() &&
                 (intakeArticulator.getIntakePosition() == IntakePosition.OUT || frontFeeder.hasBall()

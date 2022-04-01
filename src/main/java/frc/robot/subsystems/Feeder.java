@@ -17,6 +17,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.sensors.REVColorSensor.PicoColorSensor;
 import frc.robot.sensors.REVColorSensor.PicoREVColor;
 import frc.robot.sensors.REVColorSensor.REVColor;
 
@@ -50,7 +51,7 @@ public class Feeder extends SubsystemBase {
   /**
    * Creates a new Feeder.
    */
-  public Feeder(PicoREVColor colorSensor, int colorSensorID, BreakBeamDIO DIOPort, int motorControllerID) {
+  public Feeder(PicoColorSensor picoColorSensor, int colorSensorID, BreakBeamDIO DIOPort, int motorControllerID) {
 
     dioPort = DIOPort.dioPort;
 
@@ -61,7 +62,7 @@ public class Feeder extends SubsystemBase {
     feedWheel.setInverted(false);
     feedWheel.setNeutralMode(NeutralMode.Brake);
     setName("Feeder " + DIOPort.toString());
-    this.colorSensor = colorSensor;
+    this.colorSensor = new PicoREVColor(picoColorSensor);
     colorSensor.configID(colorSensorID);
     
     isShooting = false;
@@ -163,18 +164,9 @@ public class Feeder extends SubsystemBase {
     builder.addDoubleProperty("Color/RGB/Green", () -> colorSensor.getDetectedColor().green * 255, null);
     builder.addDoubleProperty("Color/RGB/Blue", () -> colorSensor.getDetectedColor().blue * 255, null);
 
-    builder.addDoubleProperty("Color/RGB/RawRed", () -> colorSensor.getRawColor().red, null);
-    builder.addDoubleProperty("Color/RGB/RawGreen", () -> colorSensor.getRawColor().green, null);
-    builder.addDoubleProperty("Color/RGB/RawBlue", () -> colorSensor.getRawColor().blue, null);
-
-    builder.addDoubleProperty("SENSOR0/red", () -> colorSensor.getRaw0().red, null);
-    builder.addDoubleProperty("SENSOR0/green", () -> colorSensor.getRaw0().green, null);
-    builder.addDoubleProperty("SENSOR0/blue", () -> colorSensor.getRaw0().blue, null);
-    builder.addDoubleProperty("SENSOR1/red", () -> colorSensor.getRaw1().red, null);
-    builder.addDoubleProperty("SENSOR1/green", () -> colorSensor.getRaw1().green, null);
-    builder.addDoubleProperty("SENSOR1/blue", () -> colorSensor.getRaw1().blue, null);
-    
-
+    builder.addDoubleProperty("Color/RGB/RawRed", () -> colorSensor.getDetectedColor().red, null);
+    builder.addDoubleProperty("Color/RGB/RawGreen", () -> colorSensor.getDetectedColor().green, null);
+    builder.addDoubleProperty("Color/RGB/RawBlue", () -> colorSensor.getDetectedColor().blue, null);
 
     builder.addBooleanProperty("Color/isConnected", () -> colorSensor.isSensorConnected(), null);
   

@@ -28,10 +28,10 @@ public class PicoREVColor {
     private double confidence;
     private int index;
 
-    public PicoREVColor() {
+    public PicoREVColor(PicoColorSensor picoColorSensor) {
 
 
-        picoColorSensor = new PicoColorSensor();
+        this.picoColorSensor = picoColorSensor;
         colorMatch = new ColorMatch();
         setConfidence(CONFIDENCE_THRESHOLD);
 
@@ -57,7 +57,7 @@ public class PicoREVColor {
         return new Color(r / mag, g / mag, b / mag);
     }
 
-    public synchronized DriverStation.Alliance getColor() {
+    public DriverStation.Alliance getColor() {
         /*
         No notifier bc PicoColorSensor handles its own thread when talking to ColorSensorV3
         */
@@ -86,16 +86,6 @@ public class PicoREVColor {
 
     public synchronized RawColor getRawColor() {
         picoColorSensor.getRawColor(detectedRawColor, index);
-        return detectedRawColor;
-    }
-
-    public RawColor getRaw0() {
-        picoColorSensor.getRawColor0(detectedRawColor);
-        return detectedRawColor;
-    }
-
-    public RawColor getRaw1() {
-        picoColorSensor.getRawColor1(detectedRawColor);
         return detectedRawColor;
     }
 
