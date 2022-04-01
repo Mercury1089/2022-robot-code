@@ -23,11 +23,14 @@ public class PicoREVColor {
     private final Color targetRed, targetBlue;
     private final PicoColorSensor picoColorSensor;
 
-    private Color detectedColor = new Color(0.0, 0.0, 0.0);
+    private Color detectedColor = null;
     private RawColor detectedRawColor = new RawColor();
     private double confidence;
+    private int index;
 
     public PicoREVColor() {
+
+
         picoColorSensor = new PicoColorSensor();
         colorMatch = new ColorMatch();
         setConfidence(CONFIDENCE_THRESHOLD);
@@ -40,13 +43,28 @@ public class PicoREVColor {
         colorMatch.addColorMatch(targetBlue); 
     }
 
-    public DriverStation.Alliance getColor() {
+    public void configID(int index) {
+        this.index = index;
+    }
+
+        
+    private Color convertRawColor() {
+        // adjust raw color vals to 255 scale
+        double r = (double) detectedRawColor.red;
+        double g = (double) detectedRawColor.green;
+        double b = (double) detectedRawColor.blue;
+        double mag = r + g + b;
+        return new Color(r / mag, g / mag, b / mag);
+    }
+
+    public synchronized DriverStation.Alliance getColor() {
         /*
         No notifier bc PicoColorSensor handles its own thread when talking to ColorSensorV3
         */
+        picoColorSensor.getRawColor(detectedRawColor, index); // fill up RawColor obj
+        
+        detectedColor = convertRawColor();
 
-        picoColorSensor.getRawColor0(detectedRawColor); // fill up RawColor obj
-        detectedColor = new Color(detectedRawColor.red, detectedRawColor.green, detectedRawColor.blue);
         try {
             ColorMatchResult match = colorMatch.matchColor(detectedColor);
             confidence = match.confidence;
@@ -62,9 +80,30 @@ public class PicoREVColor {
         }
     }
 
-    public Color getDetectedColor() {
+    public boolean isSensorConnected() {
+        return picoColorSensor.isSensorConnected(index);
+    }
+
+    public synchronized RawColor getRawColor() {
+        picoColorSensor.getRawColor(detectedRawColor, index);
+        return detectedRawColor;
+    }
+
+    public RawColor getRaw0() {
         picoColorSensor.getRawColor0(detectedRawColor);
-        detectedColor = new Color(detectedRawColor.red, detectedRawColor.green, detectedRawColor.blue);
+        return detectedRawColor;
+    }
+
+    public RawColor getRaw1() {
+        picoColorSensor.getRawColor1(detectedRawColor);
+        return detectedRawColor;
+    }
+
+    public Color getDetectedColor() {
+        if (detectedColor == null) {
+            picoColorSensor.getRawColor(detectedRawColor, index);
+            detectedColor = convertRawColor();
+        }
         return detectedColor;
     }
 

@@ -16,8 +16,7 @@ public class ShootBall extends CommandBase {
   Feeder backFeeder;
   Shooter shooter;
   /** Creates a new ShootBall. */
-  public 
-  ShootBall(Feeder backFeeder,  Shooter shooter) {
+  public ShootBall(Feeder backFeeder,  Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(backFeeder);
     setName("ShootBall");
@@ -31,6 +30,7 @@ public class ShootBall extends CommandBase {
   public void initialize() {
     this.backFeeder.setIsShooting(true);
     this.backFeeder.setSpeed(FeedSpeed.SHOOT);
+    this.shooter.incrementShootCount();
 
   }
 

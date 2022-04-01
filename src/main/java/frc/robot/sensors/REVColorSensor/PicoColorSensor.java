@@ -271,6 +271,25 @@ public class PicoColorSensor implements AutoCloseable {
     }
   }
 
+  public boolean isSensorConnected(int index) {
+    boolean result;
+    if (index == 0) {
+      result = isSensor0Connected();
+    } else {
+      result = isSensor1Connected();
+    }
+    return result;
+  }
+
+  public void getRawColor(RawColor rawColor, int index) {
+    if (index == 0) {
+      getRawColor0(rawColor);
+    } else {
+      getRawColor1(rawColor);
+    }
+  }
+
+ 
   public double getLastReadTimestampSeconds() {
     try {
       threadLock.lock();

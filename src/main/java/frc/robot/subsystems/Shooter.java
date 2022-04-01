@@ -40,6 +40,7 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
   private double smartDashboardTargetVelocity = 0.0;
   private boolean useSpeed, setPID;
   private double smartdashkP = 1e-6, smartdashkF = 1.7e-5;
+  private int shootCount = 0;
 
   
 
@@ -171,6 +172,14 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
     return this.autoShootEnable;
   }
 
+  public void incrementShootCount() {
+    this.shootCount += 1;
+  }
+
+  public int getShootCount() {
+    return this.shootCount;
+  }
+
   public double getTargetVelocity() {
     return smartDashboardTargetVelocity;
   }
@@ -238,8 +247,9 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
     builder.addDoubleProperty("SetFVal", () -> getFVal(), (x) -> setFVal(x));
     builder.addBooleanProperty("SetPID", () -> getSetPID(), (x) -> setSmartDashPID(x));
     
-    
     builder.addStringProperty("Within Target", () -> insideShooterBounds().toString(), null);
+    builder.addDoubleProperty("Balls Shot", () -> getShootCount(), null);
+
     
   }
 

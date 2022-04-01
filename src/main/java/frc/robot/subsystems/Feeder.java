@@ -17,6 +17,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.sensors.REVColorSensor.PicoREVColor;
 import frc.robot.sensors.REVColorSensor.REVColor;
 
 public class Feeder extends SubsystemBase {
@@ -40,20 +41,18 @@ public class Feeder extends SubsystemBase {
   }
 
   private VictorSPX feedWheel;
-  private REVColor colorSensor;
+  private PicoREVColor colorSensor;
   private DigitalInput breakBeamSensor;
   private int dioPort;
   private boolean isShooting;
-  private boolean hasColorSensor;
   private boolean manualSmartDashShoot;
 
   /**
    * Creates a new Feeder.
    */
-  public Feeder(boolean hasColorSensor, BreakBeamDIO DIOPort, int motorControllerID) {
+  public Feeder(PicoREVColor colorSensor, int colorSensorID, BreakBeamDIO DIOPort, int motorControllerID) {
 
     dioPort = DIOPort.dioPort;
-    this.hasColorSensor = hasColorSensor;
 
     
     breakBeamSensor = new DigitalInput(dioPort); 
@@ -62,12 +61,8 @@ public class Feeder extends SubsystemBase {
     feedWheel.setInverted(false);
     feedWheel.setNeutralMode(NeutralMode.Brake);
     setName("Feeder " + DIOPort.toString());
-    
-    if (hasColorSensor) {
-      colorSensor = new REVColor();
-    } else {
-      colorSensor = null;
-    }
+    this.colorSensor = colorSensor;
+    colorSensor.configID(colorSensorID);
     
     isShooting = false;
   }
@@ -90,9 +85,6 @@ public class Feeder extends SubsystemBase {
     NONE: there is no ball
     */
 
-    if (!hasColorSensor) {
-      return BallMatchesAlliance.NONE;
-    }
 
     // get opposite alliance color
     DriverStation.Alliance oppositeAlliance;
@@ -162,20 +154,30 @@ public class Feeder extends SubsystemBase {
     builder.setActuator(true); // Only allow setting values when in Test mode
     builder.setSafeState(() -> setSpeed(FeedSpeed.STOP)); // Provide method to make the subsystem safe
 
-    if (this.hasColorSensor) {
-      builder.addDoubleProperty("Color/Confidence", () -> colorSensor.getConfidence(), null);
-      builder.addStringProperty("Color/ENUM", () -> colorSensor.getColor().toString(), null);
-      builder.addStringProperty("Color/SameAllianceColor", () -> "" + isCorrectColor(), null);
-      builder.addStringProperty("Color/whoseBall", () -> whoseBall().toString(), null);
-      
-      builder.addDoubleProperty("Color/RGB/Red", () -> colorSensor.getDetectedColor().red * 255, null);
-      builder.addDoubleProperty("Color/RGB/Green", () -> colorSensor.getDetectedColor().green * 255, null);
-      builder.addDoubleProperty("Color/RGB/Blue", () -> colorSensor.getDetectedColor().blue * 255, null);
+    builder.addDoubleProperty("Color/Confidence", () -> colorSensor.getConfidence(), null);
+    builder.addStringProperty("Color/ENUM", () -> colorSensor.getColor().toString(), null);
+    builder.addStringProperty("Color/SameAllianceColor", () -> "" + isCorrectColor(), null);
+    builder.addStringProperty("Color/whoseBall", () -> whoseBall().toString(), null);
+    
+    builder.addDoubleProperty("Color/RGB/Red", () -> colorSensor.getDetectedColor().red * 255, null);
+    builder.addDoubleProperty("Color/RGB/Green", () -> colorSensor.getDetectedColor().green * 255, null);
+    builder.addDoubleProperty("Color/RGB/Blue", () -> colorSensor.getDetectedColor().blue * 255, null);
 
-      builder.addDoubleProperty("Color/RGB/RawRed", () -> colorSensor.getDetectedColor().red, null);
-      builder.addDoubleProperty("Color/RGB/RawGreen", () -> colorSensor.getDetectedColor().green, null);
-      builder.addDoubleProperty("Color/RGB/RawBlue", () -> colorSensor.getDetectedColor().blue, null);
-    }
+    builder.addDoubleProperty("Color/RGB/RawRed", () -> colorSensor.getRawColor().red, null);
+    builder.addDoubleProperty("Color/RGB/RawGreen", () -> colorSensor.getRawColor().green, null);
+    builder.addDoubleProperty("Color/RGB/RawBlue", () -> colorSensor.getRawColor().blue, null);
+
+    builder.addDoubleProperty("SENSOR0/red", () -> colorSensor.getRaw0().red, null);
+    builder.addDoubleProperty("SENSOR0/green", () -> colorSensor.getRaw0().green, null);
+    builder.addDoubleProperty("SENSOR0/blue", () -> colorSensor.getRaw0().blue, null);
+    builder.addDoubleProperty("SENSOR1/red", () -> colorSensor.getRaw1().red, null);
+    builder.addDoubleProperty("SENSOR1/green", () -> colorSensor.getRaw1().green, null);
+    builder.addDoubleProperty("SENSOR1/blue", () -> colorSensor.getRaw1().blue, null);
+    
+
+
+    builder.addBooleanProperty("Color/isConnected", () -> colorSensor.isSensorConnected(), null);
+  
 
     builder.addBooleanProperty("ShootBall", () -> smartDashShoot(), (x) -> setSmartDashShoot(x));
     builder.addBooleanProperty("hasBall", () -> hasBall(), null);
