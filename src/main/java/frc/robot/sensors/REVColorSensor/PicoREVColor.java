@@ -36,7 +36,7 @@ public class PicoREVColor {
         setConfidence(CONFIDENCE_THRESHOLD);
 
         // calibrated RGB's
-        targetRed = new Color(0.509, 0.373, 0.140);
+        targetRed = new Color(0.550, 0.109, 0.341);
         targetBlue = new Color(0.138, 0.407,0.458);
 
         colorMatch.addColorMatch(targetRed);
