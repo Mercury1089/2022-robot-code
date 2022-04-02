@@ -286,7 +286,7 @@ public class RobotContainer {
         */
 
         Trigger shootBall = new Trigger(() -> turret.isReadyToShoot() && shooter.isAtTargetVelocity() && backFeeder.hasBall() && driveTrain.isSafeShootingSpeed());
-        shootBall.whileActiveContinuous(new ShootBall(backFeeder, shooter));
+        shootBall.whenActive(new ShootBall(backFeeder, shooter));
 
         autonChooser = new SendableChooser<Autons>();
         autonChooser.setDefaultOption("Four Cargo", Autons.FOUR_CARGO);

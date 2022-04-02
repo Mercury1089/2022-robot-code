@@ -150,15 +150,37 @@
               "_title": "SmartDashboard/Auton Chooser"
             }
           },
-          "10,3": {
+          "4,4": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
               "_type": "Text View",
-              "_source0": "network_table:///LiveWindow/Feeder/Feeder FRONT/Color/ENUM",
-              "_title": "LiveWindow/Feeder/Feeder FRONT/Color/ENUM"
+              "_source0": "network_table:///LiveWindow/Feeder/Feeder FRONT/Color/whoseBall",
+              "_title": "LiveWindow/Feeder/Feeder FRONT/Color/whoseBall"
+            }
+          },
+          "2,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///LiveWindow/Shooter/CurrentRPM",
+              "_title": "/LiveWindow/Shooter/CurrentRPM"
+            }
+          },
+          "1,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///LiveWindow/Shooter/TargetRPM",
+              "_title": "/LiveWindow/Shooter/TargetRPM"
             }
           }
         }
