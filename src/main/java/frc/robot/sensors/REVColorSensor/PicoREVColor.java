@@ -61,23 +61,27 @@ public class PicoREVColor {
         /*
         No notifier bc PicoColorSensor handles its own thread when talking to ColorSensorV3
         */
-        picoColorSensor.getRawColor(detectedRawColor, index); // fill up RawColor obj
-        
-        detectedColor = convertRawColor();
-
-        try {
-            ColorMatchResult match = colorMatch.matchColor(detectedColor);
-            confidence = match.confidence;
-
-            if (match.color == targetRed) {
-                return DriverStation.Alliance.Red;
-            } else if (match.color == targetBlue) {
-                return DriverStation.Alliance.Blue;
+        DriverStation.Alliance cargoColor = DriverStation.Alliance.Invalid;
+        if (picoColorSensor.isSensorConnected(index)) {
+            picoColorSensor.getRawColor(detectedRawColor, index); // fill up RawColor obj
+            detectedColor = convertRawColor();
+    
+            try {
+                ColorMatchResult match = colorMatch.matchColor(detectedColor);
+                confidence = match.confidence;
+    
+                if (match.color == targetRed) {
+                    cargoColor =  DriverStation.Alliance.Red;
+                } else if (match.color == targetBlue) {
+                    cargoColor =  DriverStation.Alliance.Blue;
+                } else {
+                    cargoColor = DriverStation.Alliance.Invalid;
+                }
+            } catch (Exception nullPointerException) {
+                cargoColor = DriverStation.Alliance.Invalid;
             }
-            return DriverStation.Alliance.Invalid;
-        } catch (Exception nullPointerException) {
-            return DriverStation.Alliance.Invalid;
         }
+        return cargoColor;
     }
 
     public boolean isSensorConnected() {
