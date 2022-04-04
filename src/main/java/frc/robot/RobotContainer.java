@@ -411,6 +411,31 @@ public class RobotContainer {
                 new WaitCommand(0.75),
                 new DriveDistance(-125.0, driveTrain)
                 );
+        
+        } else if (autonSelected == Autons.FIVE_CARGO) {
+
+            autonCommand = new SequentialCommandGroup( 
+                new ParallelCommandGroup(
+                    new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
+                    new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
+                    new CheckRobotEmpty(frontFeeder, backFeeder, shooter),
+                    new SequentialCommandGroup(
+                        new DriveDistance(60.0, driveTrain),
+                        new MoveHeading(0, -12.7, driveTrain)
+                    )
+                ),
+                new DriveDistance(147.5, driveTrain),
+                new WaitCommand(0.75),
+                new DriveDistance(-125.0, driveTrain),
+                
+                new DriveDistance(37.740179, driveTrain),
+                new MoveHeading(0, 120, driveTrain),
+                new WaitCommand(0.75), 
+                new DriveDistance(84.7, driveTrain),
+                new MoveHeading(0, -35, driveTrain),
+                new WaitCommand(0.75),
+                new DriveDistance(158.1, driveTrain)); 
+
         }
     }
 
@@ -435,7 +460,8 @@ public class RobotContainer {
         NOTHING,
         TAXI,
         TWO_CARGO,
-        FOUR_CARGO
+        FOUR_CARGO,
+        FIVE_CARGO
     }
 
     public Limelight getLimelight() {
