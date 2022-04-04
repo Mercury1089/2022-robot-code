@@ -430,10 +430,10 @@ public class RobotContainer {
                 
                 new DriveDistance(37.740179, driveTrain),
                 new MoveHeading(0, 120, driveTrain),
-                new WaitCommand(0.75), 
+                new CheckRobotEmpty(frontFeeder, backFeeder, shooter),
                 new DriveDistance(84.7, driveTrain),
                 new MoveHeading(0, -35, driveTrain),
-                new WaitCommand(0.75),
+                new CheckRobotEmpty(frontFeeder, backFeeder, shooter),
                 new DriveDistance(158.1, driveTrain)); 
 
         }
