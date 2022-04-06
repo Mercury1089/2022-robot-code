@@ -290,17 +290,14 @@ public class RobotContainer {
 
         autonChooser = new SendableChooser<Autons>();
         autonChooser.setDefaultOption("Four Cargo", Autons.FOUR_CARGO);
-        autonChooser.addOption("Taxi", Autons.TAXI);
         autonChooser.addOption("Two Cargo", Autons.TWO_CARGO);
+        autonChooser.addOption("Five Cargo", Autons.FIVE_CARGO);
+        autonChooser.addOption("Taxi", Autons.TAXI);
         autonChooser.addOption("Nothing", Autons.NOTHING);
-        autonChooser.addOption("Neel Five Cargo", Autons.FIVE_CARGO);
-        autonChooser.addOption("Rohan Five Cargo", Autons.ROHAN_FIVE_CARGO);
+
         SmartDashboard.putData("Auton Chooser", autonChooser);
-        
 
         updateAuton();
-        
-
     }
 
     public double getJoystickX(int port) {
@@ -384,106 +381,68 @@ public class RobotContainer {
         gamepadPOVDown = new PovButton(gamepad, GAMEPAD_POV.DOWN);
         gamepadPOVUp = new PovButton(gamepad, GAMEPAD_POV.UP);
     }
-    
+ 
     public void initializeAutonCommand(Autons autonSelected) {
-
-        if (autonSelected == Autons.NOTHING) {
-            autonCommand = new DriveDistance(0.0, driveTrain);
-        } else if (autonSelected == Autons.TAXI) {
-            autonCommand = new DriveDistance(60.0, driveTrain);
-        } else if (autonSelected == Autons.TWO_CARGO) {
-            autonCommand = new ParallelCommandGroup(
-                new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
-                new RunCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
-                new SequentialCommandGroup(
-                    new DriveDistance(60.0, driveTrain),
-                    new MoveHeading(0, -12.7, driveTrain)
-                ));
-        } else if (autonSelected == Autons.FOUR_CARGO) {
-
-            autonCommand = new SequentialCommandGroup( 
-                new ParallelCommandGroup(
-                    new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
-                    new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
-                    new CheckRobotEmpty(frontFeeder, backFeeder, shooter),
-                    new SequentialCommandGroup(
-                        new DriveDistance(60.0, driveTrain),
-                        new MoveHeading(0, -12.7, driveTrain)
-                    )
-                ),
-                new DriveDistance(147.5, driveTrain),
-                new DriveDistance(-10.0, driveTrain),
-                new WaitCommand(0.75),
-                new DriveDistance(-115.0, driveTrain)
+        switch (autonSelected) {
+            case NOTHING:
+                autonCommand = new DriveDistance(0.0, driveTrain);
+                break;
+            case TAXI:
+                autonCommand = new DriveDistance(60.0, driveTrain);
+                break;
+            case TWO_CARGO:
+                autonCommand = new ParallelCommandGroup(
+                        new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
+                        new RunCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
+                        new SequentialCommandGroup(
+                                new DriveDistance(60.0, driveTrain),
+                                new MoveHeading(0, -12.7, driveTrain)
+                        )
                 );
-        
-        } else if (autonSelected == Autons.FIVE_CARGO) {
-
-            autonCommand = new SequentialCommandGroup( 
-                new ParallelCommandGroup(
-                    new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
-                    new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
-                    new CheckRobotEmpty(frontFeeder, backFeeder, shooter),
-                    new SequentialCommandGroup(
-                        new DriveDistance(60.0, driveTrain),
-                        new MoveHeading(0, -12.7, driveTrain)
-                        
-                    )
-                ),
-                new ParallelCommandGroup( 
-                    new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
-                    new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
-                    new SequentialCommandGroup(
+                break;
+            case FOUR_CARGO:
+                autonCommand = new SequentialCommandGroup(
+                        new ParallelCommandGroup(
+                                new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
+                                new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
+                                new SequentialCommandGroup(
+                                        new DriveDistance(60.0, driveTrain),
+                                        new MoveHeading(0, -12.7, driveTrain)
+                                ),
+                                new CheckRobotEmpty(frontFeeder, backFeeder, shooter)
+                        ),
                         new DriveDistance(147.5, driveTrain),
+                        new DriveDistance(-10.0, driveTrain),
                         new WaitCommand(0.75),
-                        new DriveDistance(-125.0, driveTrain))),  
-
-
-                new ParallelCommandGroup( 
-                    new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
-                    new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
-                    new SequentialCommandGroup(
-                        new DriveDistance(37.740179, driveTrain),
-                        new MoveHeading(0, 120, driveTrain),
-                        new CheckRobotEmpty(frontFeeder, backFeeder, shooter),
-                        new DriveDistance(84.7, driveTrain),
-                        new MoveHeading(0, -35, driveTrain),
-                        new CheckRobotEmpty(frontFeeder, backFeeder, shooter),
-                        new DriveDistance(158.1, driveTrain))));  
-
-        } else if (autonSelected == Autons.ROHAN_FIVE_CARGO) {
-            /*
-            1. Move forward 37.740179 inches
-            2. Turn Approx 120 degrees
-            3. Move forward 84.7 inches
-            4. Turn Approx -35 degrees
-            5. Forward 158.1 inches
-            */
-            autonCommand = new SequentialCommandGroup(
-                new ParallelCommandGroup(
-                    new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
-                    new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
-                    new CheckRobotEmpty(frontFeeder, backFeeder, shooter),
-                    new SequentialCommandGroup(
-                        new DriveDistance(37.7, driveTrain),
-                        new MoveHeading(0.0, 120, driveTrain)
-                    )
-                ),
-                new DriveDistance(84.7, driveTrain),
-                new MoveHeading(0.0, -35, driveTrain),
-                new CheckRobotEmpty(frontFeeder, backFeeder, shooter),
-
-                // probably don't need to set intake out again because
-                // previous ParallelCommandGroup will hold the union of subsytems including intake/articulator
-                // and previous DriveDistance will only pick up 1 ball
-                new ParallelCommandGroup(
-                    new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
-                    new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE), intake)
-                ),
-                new DriveDistance(158.1, driveTrain),
-                new WaitCommand(0.75),
-                new DriveDistance(-125.0, driveTrain)                
-            );
+                        new DriveDistance(-115.0, driveTrain)
+                );
+                break;
+            case FIVE_CARGO:
+                autonCommand = new SequentialCommandGroup(
+                        // Move forward 37.740179 inches, turn -120 degrees, wait until empty
+                        new ParallelCommandGroup(
+                                new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
+                                new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
+                                new SequentialCommandGroup(
+                                        new DriveDistance(37.7, driveTrain),
+                                        new MoveHeading(0.0, -120, driveTrain)
+                                ),
+                                new CheckRobotEmpty(frontFeeder, backFeeder, shooter)
+                        ),
+                        // Move forward 84.7 inches, turn 35 degrees, wait until empty
+                        new ParallelCommandGroup(
+                                new SequentialCommandGroup(
+                                        new DriveDistance(84.7, driveTrain),
+                                        new MoveHeading(0.0, 35, driveTrain)),
+                                new CheckRobotEmpty(frontFeeder, backFeeder, shooter)
+                        ),
+                        // Forward 158.1 inches, back 10 inches, wait for human player, back 115 to shoot
+                        new DriveDistance(158.1, driveTrain),
+                        new DriveDistance(-10.0, driveTrain),
+                        new WaitCommand(0.75),
+                        new DriveDistance(-115.0, driveTrain)
+                );
+                break;
         }
     }
 
@@ -509,8 +468,7 @@ public class RobotContainer {
         TAXI,
         TWO_CARGO,
         FOUR_CARGO,
-        FIVE_CARGO,
-        ROHAN_FIVE_CARGO
+        FIVE_CARGO
     }
 
     public Limelight getLimelight() {
