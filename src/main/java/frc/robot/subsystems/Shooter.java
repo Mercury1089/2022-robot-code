@@ -26,10 +26,11 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
 
   public static final double NOMINAL_OUT = 0.0, PEAK_OUT = 1.0;
   public static final double MAX_RPM = 5000.0, STEADY_RPM = 3750.0, LOW_RPM = 1000.0, NULL_RPM = -1.0;
-  public static final double MIN_DISTANCE = 6.7, MAX_DISTANCE = 16.0;
+  public static final double MIN_DISTANCE = 6.7, MAX_DISTANCE = 17.0;
   //public static final double MIN_DISTANCE = 2.0, MAX_DISTANCE = 20.0;
   public final int BREAKBEAM_DIO = 2;
-  private final double TARGET_VELOCITY_THRESHOLD = 50.0; // within a +- 88 rpm range to shoot
+  private final double TARGET_VELOCITY_THRESHOLD = 50.0; // within a +- 50 rpm range to shoot
+  private final double MAX_VOLTAGE = 10.5;
 
   private CANSparkMax shooterLeft, shooterRight;
   private double targetVelocity;
@@ -39,7 +40,7 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
   private boolean autoShootEnable;
   private double smartDashboardTargetVelocity = 0.0;
   private boolean useSpeed, setPID;
-  private double smartdashkP = 1e-6, smartdashkF = 1.7e-5;
+  private double smartdashkP = 0.00024, smartdashkF = 0.0002016, smartdashkI = 0.00000001, smartDashkD = 0.01;
   private int shootCount = 0;
 
   
@@ -56,6 +57,9 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
     if (mode == ShooterMode.ONE_WHEEL) {
       shooterLeft = new CANSparkMax(CAN.SHOOTER_LEFT, CANSparkMaxLowLevel.MotorType.kBrushless);
       shooterRight = new CANSparkMax(CAN.SHOOTER_RIGHT, CANSparkMaxLowLevel.MotorType.kBrushless);
+
+      shooterLeft.enableVoltageCompensation(MAX_VOLTAGE);
+      shooterRight.enableVoltageCompensation(MAX_VOLTAGE);
 
       shooterLeft.getPIDController().setOutputRange(NOMINAL_OUT, PEAK_OUT);
       shooterRight.getPIDController().setOutputRange(NOMINAL_OUT, PEAK_OUT);
@@ -75,7 +79,7 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
     stopShooter();
     targetVelocity = 0.0;
     // velocityGains = new PIDGain(1e-5, 2e-7, 1e-5, 2.6e-4);
-    velocityGains = new PIDGain(0.00026, 0, 0, 0.000164);
+    velocityGains = new PIDGain(0.00024, 0.00000001, 0.01, 0.0002016);
     
     this.limelight = limelight;
   
@@ -107,7 +111,8 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
    * @return calculated velocity based on distance
    */
   private double getVelocityFromDistance(double distance) {
-    return 75.0 + (2932.0 * Math.exp(0.0246 * distance));
+    // return 75.0 + (2932.0 * Math.exp(0.0246 * distance));
+    return 3410 - 70.2 * distance + 7.71 * Math.pow(distance, 2) + 0.0349 * Math.pow(distance, 3);
   }
 
   /**
@@ -208,6 +213,14 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
     this.smartdashkF = kFVal;
   }
 
+  public void setDVal(double kDVal) {
+    this.smartDashkD = kDVal;
+  }
+
+  public void setIVal(double kIVal) {
+    this.smartdashkI = kIVal;
+  }
+
   public double getPVal() {
     return this.smartdashkP;
   }
@@ -216,10 +229,20 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
     return this.smartdashkF;
   }
 
+  public double getDVal() {
+    return this.smartDashkD;
+  }
+
+  public double getIVal() {
+    return this.smartdashkI;
+  }
+
+  
+
   public void setSmartDashPID(boolean setPID) {
     this.setPID = setPID;
     if (this.setPID) {
-      velocityGains = new PIDGain(smartdashkP, 0, 0, smartdashkF);
+      velocityGains = new PIDGain(smartdashkP, smartdashkI, smartDashkD, smartdashkF);
       setPIDGain(SHOOTER_PID_SLOTS.VELOCITY_GAINS.getValue(), velocityGains);
     } 
   }
@@ -227,8 +250,6 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
   public boolean getSetPID() {
     return this.setPID;
   }
-
-
 
 
 
@@ -245,6 +266,8 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
 
     builder.addDoubleProperty("SetPVal", () -> getPVal(), (x) -> setPVal(x));
     builder.addDoubleProperty("SetFVal", () -> getFVal(), (x) -> setFVal(x));
+    builder.addDoubleProperty("SetIVal", () -> getIVal(), (x) -> setIVal(x));
+    builder.addDoubleProperty("SetDVal", () -> getDVal(), (x) -> setDVal(x));
     builder.addBooleanProperty("SetPID", () -> getSetPID(), (x) -> setSmartDashPID(x));
     
     builder.addStringProperty("Within Target", () -> insideShooterBounds().toString(), null);

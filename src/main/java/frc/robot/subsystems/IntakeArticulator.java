@@ -23,6 +23,7 @@ public class IntakeArticulator extends SubsystemBase implements IMercShuffleBoar
   private final TalonSRX intakeArticulator;
   private IntakePosition intakePosition;
   private final double OUT_SPEED = 0.5, IN_SPEED = -0.6;
+  private boolean smartdashSetIntakeOut = false;
 
   /**
    * Creates a new IntakeArticulator.
@@ -62,12 +63,17 @@ public class IntakeArticulator extends SubsystemBase implements IMercShuffleBoar
     return this.intakePosition;
   }
 
+  public boolean getIntakeOut() {
+    return this.smartdashSetIntakeOut;
+  }
 
-
-
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
+  public void setSmartdashIntakeOut(boolean set) {
+    this.smartdashSetIntakeOut = set;
+    if (smartdashSetIntakeOut) {
+      setIntakeOut();
+    } else {
+      setIntakeIn();
+    }
   }
 
   @Override
@@ -80,8 +86,8 @@ public class IntakeArticulator extends SubsystemBase implements IMercShuffleBoar
   public void initSendable(SendableBuilder builder) {
     
     builder.setActuator(true); // Only allow setting values when in Test mode
-    
-
     builder.addStringProperty("intakePosition", () -> getIntakePosition().toString(), null);
+
+    builder.addBooleanProperty("setIntakeOut", () -> getIntakeOut(), (x) -> setSmartdashIntakeOut(x));
   }
 }

@@ -70,7 +70,7 @@ public class DriveTrain extends SubsystemBase implements IMercPIDTunable {
  
     public static final int MOTOR_CONTROLLER_STATUS_FRAME_PERIOD_MS = 20;
     public static final int PIGEON_STATUS_FRAME_PERIOD_MS = 5;
-    public final double SAFE_SHOOT_RPM = 50.0;
+    public final double SAFE_SHOOT_RPM = 10.0;
 
     private PIDGain driveGains, smoothGains, motionProfileGains, turnGains;
 

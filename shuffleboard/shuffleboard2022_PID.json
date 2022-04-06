@@ -194,7 +194,7 @@
               "_title": "LiveWindow/Shooter/CurrentRPM"
             }
           },
-          "3,5": {
+          "6,5": {
             "size": [
               1,
               1
@@ -205,7 +205,7 @@
               "_title": "LiveWindow/Shooter/SetFVal"
             }
           },
-          "5,5": {
+          "7,5": {
             "size": [
               1,
               1
@@ -216,7 +216,7 @@
               "_title": "LiveWindow/Shooter/SetPID"
             }
           },
-          "4,5": {
+          "3,5": {
             "size": [
               1,
               1
@@ -260,6 +260,61 @@
               "_title": "LiveWindow/Shooter/ShooterHasBall",
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "4,5": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///LiveWindow/Shooter/SetIVal",
+              "_title": "LiveWindow/Shooter/SetIVal"
+            }
+          },
+          "5,5": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///LiveWindow/Shooter/SetDVal",
+              "_title": "LiveWindow/Shooter/SetDVal"
+            }
+          },
+          "9,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Button",
+              "_source0": "network_table:///LiveWindow/Intake/Run Intake",
+              "_title": "LiveWindow/Intake/Run Intake"
+            }
+          },
+          "9,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Button",
+              "_source0": "network_table:///LiveWindow/IntakeArticulator/setIntakeOut",
+              "_title": "LiveWindow/IntakeArticulator/setIntakeOut"
+            }
+          },
+          "9,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///LiveWindow/Turret/DistanceToTarget",
+              "_title": "LiveWindow/Turret/DistanceToTarget"
             }
           }
         }

@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotMap.CAN;
@@ -37,6 +38,7 @@ public class Intake extends SubsystemBase {
   private final VictorSPX intakeRoller;
   public final double INTAKE_SPEED, AGITATOR_SPEED;
   public final boolean IS_CLOCKWISE;
+  private boolean smartdashIntakeFullSpeed = false;
   /**
    * Creates a new Intake.
    */
@@ -62,4 +64,24 @@ public class Intake extends SubsystemBase {
   public boolean getIsClockwise() {
     return IS_CLOCKWISE;
   }
+
+  public boolean getIntakeFullSpeed() {
+    return this.smartdashIntakeFullSpeed;
+  }
+
+  public void setIntakeFullSpeed(boolean intakeFullSpeed) {
+    this.smartdashIntakeFullSpeed = intakeFullSpeed;
+    if (smartdashIntakeFullSpeed) {
+      setSpeed(IntakeSpeed.INTAKE);
+    } else {
+      setSpeed(IntakeSpeed.STOP);
+    }
+  }
+  
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    builder.addBooleanProperty("Run Intake", () -> getIntakeFullSpeed(), (x) -> setIntakeFullSpeed(x));
+  }
+
+
 }

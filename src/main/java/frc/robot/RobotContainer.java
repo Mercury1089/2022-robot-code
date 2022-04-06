@@ -293,7 +293,11 @@ public class RobotContainer {
         autonChooser.addOption("Taxi", Autons.TAXI);
         autonChooser.addOption("Two Cargo", Autons.TWO_CARGO);
         autonChooser.addOption("Nothing", Autons.NOTHING);
+        autonChooser.addOption("Neel Five Cargo", Autons.FIVE_CARGO);
+        autonChooser.addOption("Rohan Five Cargo", Autons.ROHAN_FIVE_CARGO);
         SmartDashboard.putData("Auton Chooser", autonChooser);
+        
+
         updateAuton();
         
 
@@ -446,6 +450,30 @@ public class RobotContainer {
                         new CheckRobotEmpty(frontFeeder, backFeeder, shooter),
                         new DriveDistance(158.1, driveTrain))));  
 
+        } else if (autonSelected == Autons.ROHAN_FIVE_CARGO) {
+            /*1. Move forward 37.740179 inches
+2. Turn Approx 120 degrees
+3. Move forward 84.7 inches
+4. Turn Approx -35 degrees
+5. Forward 158.1 inches
+*/
+            autonCommand = new SequentialCommandGroup(
+                new ParallelCommandGroup(
+                    new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
+                    new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
+                    new CheckRobotEmpty(frontFeeder, backFeeder, shooter),
+                    new SequentialCommandGroup(
+                        new DriveDistance(37.7, driveTrain),
+                        new MoveHeading(0.0, 120, driveTrain)
+                    )
+                ),
+                new DriveDistance(84.7, driveTrain),
+                new MoveHeading(0.0, -35, driveTrain),
+                new CheckRobotEmpty(frontFeeder, backFeeder, shooter),
+                new DriveDistance(158.1, driveTrain),
+                new WaitCommand(0.75),
+                new DriveDistance(-125.0, driveTrain)                
+            );
         }
     }
 
@@ -471,7 +499,8 @@ public class RobotContainer {
         TAXI,
         TWO_CARGO,
         FOUR_CARGO,
-        FIVE_CARGO
+        FIVE_CARGO,
+        ROHAN_FIVE_CARGO
     }
 
     public Limelight getLimelight() {
