@@ -412,8 +412,9 @@ public class RobotContainer {
                     )
                 ),
                 new DriveDistance(147.5, driveTrain),
+                new DriveDistance(-10.0, driveTrain),
                 new WaitCommand(0.75),
-                new DriveDistance(-125.0, driveTrain)
+                new DriveDistance(-115.0, driveTrain)
                 );
         
         } else if (autonSelected == Autons.FIVE_CARGO) {
@@ -451,12 +452,13 @@ public class RobotContainer {
                         new DriveDistance(158.1, driveTrain))));  
 
         } else if (autonSelected == Autons.ROHAN_FIVE_CARGO) {
-            /*1. Move forward 37.740179 inches
-2. Turn Approx 120 degrees
-3. Move forward 84.7 inches
-4. Turn Approx -35 degrees
-5. Forward 158.1 inches
-*/
+            /*
+            1. Move forward 37.740179 inches
+            2. Turn Approx 120 degrees
+            3. Move forward 84.7 inches
+            4. Turn Approx -35 degrees
+            5. Forward 158.1 inches
+            */
             autonCommand = new SequentialCommandGroup(
                 new ParallelCommandGroup(
                     new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
@@ -470,6 +472,14 @@ public class RobotContainer {
                 new DriveDistance(84.7, driveTrain),
                 new MoveHeading(0.0, -35, driveTrain),
                 new CheckRobotEmpty(frontFeeder, backFeeder, shooter),
+
+                // probably don't need to set intake out again because
+                // previous ParallelCommandGroup will hold the union of subsytems including intake/articulator
+                // and previous DriveDistance will only pick up 1 ball
+                new ParallelCommandGroup(
+                    new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
+                    new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE), intake)
+                ),
                 new DriveDistance(158.1, driveTrain),
                 new WaitCommand(0.75),
                 new DriveDistance(-125.0, driveTrain)                
