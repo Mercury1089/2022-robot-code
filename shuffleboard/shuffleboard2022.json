@@ -182,6 +182,28 @@
               "_source0": "network_table:///LiveWindow/Shooter/TargetRPM",
               "_title": "/LiveWindow/Shooter/TargetRPM"
             }
+          },
+          "10,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///LiveWindow/Turret/DistanceToTarget",
+              "_title": "LiveWindow/Turret/DistanceToTarget"
+            }
+          },
+          "3,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///LiveWindow/DriveTrain/Yaw",
+              "_title": "LiveWindow/DriveTrain/Yaw"
+            }
           }
         }
       }

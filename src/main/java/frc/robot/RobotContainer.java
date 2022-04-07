@@ -172,6 +172,43 @@ public class RobotContainer {
                                 
         left6.whenPressed(new RunsDisabledInstantCommand(() -> limelight.switchLEDState()));
 
+        /// left9.whenPressed(new MoveHeading(0.0, -120.0, driveTrain));
+
+        // left8.whenPressed(
+        //     new SequentialCommandGroup(
+        //         new DriveDistance(37.7, driveTrain),
+        //         new MoveHeading(0.0, -120.0, driveTrain)
+        //     )
+        // );
+
+        // left9.whenPressed(
+        //     new ParallelCommandGroup(
+        //                         new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
+        //                         new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE), intake),
+        //                         new SequentialCommandGroup(
+        //                                 new DriveDistance(37.7, driveTrain),
+        //                                 new MoveHeading(0.0, -120.0, driveTrain)
+        //                         ),
+        //                         new CheckRobotEmpty(frontFeeder, backFeeder, shooter)
+        //     )   
+        // );
+
+        // left10.whenPressed(
+        //     new SequentialCommandGroup(
+        //         new DriveDistance(84.7, driveTrain),
+        //         new MoveHeading(0.0, 35.0, driveTrain),
+        //         new CheckRobotEmpty(frontFeeder, backFeeder, shooter)
+        //     )
+        // );
+        // left11.whenPressed(
+        //     new SequentialCommandGroup(
+        //         new DriveDistance(158.1, driveTrain),
+        //         new DriveDistance(-10.0, driveTrain),
+        //         new WaitCommand(0.75),
+        //         new DriveDistance(-115.0, driveTrain)
+        //     )
+        // );
+
 
         right2.whenPressed(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
         right10.whenPressed(new RunsDisabledInstantCommand(() -> turret.resetTurretPos(), turret));
@@ -181,16 +218,33 @@ public class RobotContainer {
         // gamepadA.whenPressed(new RunCommand(() -> shooter.setVelocity(shooter.getSmartDashboardRPM()), shooter));
 
         // Use the following to set velocity based on target distance (reverts to default shooter command)
-        gamepadA.whenPressed(new ParallelCommandGroup(
-                                new InstantCommand(() -> shooter.stopShooter(), shooter),
-                                new InstantCommand(() -> limelight.setLEDState(LimelightLEDState.ON))));
-        // Turn off the LEDs to disable targeting, then stop the shooter and lock it into position.
-        gamepadB.whenPressed(new SequentialCommandGroup(
-            new InstantCommand(() -> limelight.setLEDState(LimelightLEDState.OFF)),
-            new ParallelCommandGroup(
-                new RunCommand( () -> shooter.stopShooter(), shooter),
-                new RunCommand( () -> turret.setPosition(180.0), turret))
-        ));
+        // gamepadA.whenPressed(new ParallelCommandGroup(
+        //                         new InstantCommand(() -> shooter.stopShooter(), shooter),
+        //                         new InstantCommand(() -> limelight.setLEDState(LimelightLEDState.ON))));
+        // // Turn off the LEDs to disable targeting, then stop the shooter and lock it into position.
+        // gamepadB.whenPressed(new SequentialCommandGroup(
+        //     new InstantCommand(() -> limelight.setLEDState(LimelightLEDState.OFF)),
+        //     new ParallelCommandGroup(
+        //         new RunCommand( () -> shooter.stopShooter(), shooter),
+        //         new RunCommand( () -> turret.setPosition(180.0), turret))
+        // ));
+        
+        // gamepadA.whenPressed(new ParallelCommandGroup(
+        //     new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
+        //     new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE), intake),
+        //     new SequentialCommandGroup(
+        //             new DriveDistance(37.7, driveTrain),
+        //             new MoveHeading(0.0, -120.0, driveTrain)
+        //     ),
+        //     new CheckRobotEmpty(frontFeeder, backFeeder, shooter)
+        // ));
+
+        // gamepadB.whenPressed(new ParallelCommandGroup(
+        //     new SequentialCommandGroup(
+        //             new DriveDistance(84.7, driveTrain),
+        //             new MoveHeading(0.0, 35.0, driveTrain)),
+        //     new CheckRobotEmpty(frontFeeder, backFeeder, shooter)
+        // ));
 
         gamepadY.whenPressed(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator));
         gamepadX.whileHeld(new RunCommand(() -> climberWinch.setSpeed(() -> 1.0), climberWinch));
@@ -204,8 +258,13 @@ public class RobotContainer {
                                                    new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.EJECT), frontFeeder),
                                                    new RunCommand(() -> backFeeder.setSpeed(FeedSpeed.EJECT), backFeeder)));
 
-        gamepadRB.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intake.setSpeed(IntakeSpeed.STOP), intake), 
-        new RunCommand(() -> intakeArticulator.setIntakeIn(), intakeArticulator)));
+        // gamepadRB.whenPressed(new DriveDistance(158.1, driveTrain));
+        // gamepadRT.whenPressed(new SequentialCommandGroup(
+        //     new DriveDistance(-10.0, driveTrain),
+        //     new WaitCommand(0.75),
+        //     new DriveDistance(-115.0, driveTrain)
+        // ));
+
 
 
         gamepadBack.and(gamepadStart).whenActive(new ParallelCommandGroup(
@@ -393,7 +452,7 @@ public class RobotContainer {
             case TWO_CARGO:
                 autonCommand = new ParallelCommandGroup(
                         new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
-                        new RunCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
+                        new RunCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE), intake),
                         new SequentialCommandGroup(
                                 new DriveDistance(60.0, driveTrain),
                                 new MoveHeading(0, -12.7, driveTrain)
@@ -404,7 +463,7 @@ public class RobotContainer {
                 autonCommand = new SequentialCommandGroup(
                         new ParallelCommandGroup(
                                 new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
-                                new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
+                                new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE), intake),
                                 new SequentialCommandGroup(
                                         new DriveDistance(60.0, driveTrain),
                                         new MoveHeading(0, -12.7, driveTrain)
@@ -422,20 +481,18 @@ public class RobotContainer {
                         // Move forward 37.740179 inches, turn -120 degrees, wait until empty
                         new ParallelCommandGroup(
                                 new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
-                                new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE)),
+                                new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE), intake),
                                 new SequentialCommandGroup(
                                         new DriveDistance(37.7, driveTrain),
-                                        new MoveHeading(0.0, -120, driveTrain)
+                                        new MoveHeading(0.0, -120.0, driveTrain)
                                 ),
                                 new CheckRobotEmpty(frontFeeder, backFeeder, shooter)
                         ),
+                        
                         // Move forward 84.7 inches, turn 35 degrees, wait until empty
-                        new ParallelCommandGroup(
-                                new SequentialCommandGroup(
-                                        new DriveDistance(84.7, driveTrain),
-                                        new MoveHeading(0.0, 35, driveTrain)),
-                                new CheckRobotEmpty(frontFeeder, backFeeder, shooter)
-                        ),
+                        new DriveDistance(84.7, driveTrain),
+                        new MoveHeading(0.0, 35.0, driveTrain),
+                        new CheckRobotEmpty(frontFeeder, backFeeder, shooter),
                         // Forward 158.1 inches, back 10 inches, wait for human player, back 115 to shoot
                         new DriveDistance(158.1, driveTrain),
                         new DriveDistance(-10.0, driveTrain),

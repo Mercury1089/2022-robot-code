@@ -25,7 +25,7 @@ import frc.robot.util.interfaces.IMercPIDTunable;
 public class Shooter extends SubsystemBase implements IMercPIDTunable {
 
   public static final double NOMINAL_OUT = 0.0, PEAK_OUT = 1.0;
-  public static final double MAX_RPM = 5000.0, STEADY_RPM = 3750.0, LOW_RPM = 1000.0, NULL_RPM = -1.0;
+  public static final double MAX_RPM = 5000.0, STEADY_RPM = 3600.0, LOW_RPM = 1000.0, NULL_RPM = -1.0;
   public static final double MIN_DISTANCE = 6.7, MAX_DISTANCE = 17.0;
   //public static final double MIN_DISTANCE = 2.0, MAX_DISTANCE = 20.0;
   public final int BREAKBEAM_DIO = 2;
@@ -112,7 +112,8 @@ public class Shooter extends SubsystemBase implements IMercPIDTunable {
    */
   private double getVelocityFromDistance(double distance) {
     // return 75.0 + (2932.0 * Math.exp(0.0246 * distance));
-    return 3410 - 70.2 * distance + 7.71 * Math.pow(distance, 2) + 0.0349 * Math.pow(distance, 3);
+   // return 3410 - 70.2 * distance + 7.71 * Math.pow(distance, 2) + 0.0349 * Math.pow(distance, 3);
+    return 50 + 3772 - 165 * distance + 15.8 * Math.pow(distance, 2)  - 0.187 * Math.pow(distance, 3);
   }
 
   /**

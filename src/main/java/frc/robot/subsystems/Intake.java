@@ -21,7 +21,7 @@ public class Intake extends SubsystemBase {
   public enum IntakeSpeed{
     STOP(0.0), // stop running intake roller
     INTAKE(1.0), // run intake roller inward
-    EJECT(-0.70); // run intake roller outward
+    EJECT(-1.0); // run intake roller outward
 
     public final double speed; 
 
