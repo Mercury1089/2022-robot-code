@@ -24,6 +24,7 @@ import frc.robot.commands.drivetrain.DriveWithJoysticks.DriveType;
 import frc.robot.commands.drivetrain.MoveOnTrajectory;
 import frc.robot.commands.drivetrain.MoveHeadingDerivatives.DriveDistance;
 import frc.robot.commands.drivetrain.MoveHeadingDerivatives.MoveHeading;
+import frc.robot.commands.drivetrain.MoveHeadingDerivatives.MoveHeadingWithAverage;
 import frc.robot.commands.feeder.LoadFeederTrigger;
 import frc.robot.commands.feeder.ShootBall;
 import frc.robot.commands.shooter.CheckRobotEmpty;
@@ -172,44 +173,6 @@ public class RobotContainer {
                                 
         left6.whenPressed(new RunsDisabledInstantCommand(() -> limelight.switchLEDState()));
 
-        /// left9.whenPressed(new MoveHeading(0.0, -120.0, driveTrain));
-
-        // left8.whenPressed(
-        //     new SequentialCommandGroup(
-        //         new DriveDistance(37.7, driveTrain),
-        //         new MoveHeading(0.0, -120.0, driveTrain)
-        //     )
-        // );
-
-        // left9.whenPressed(
-        //     new ParallelCommandGroup(
-        //                         new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
-        //                         new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE), intake),
-        //                         new SequentialCommandGroup(
-        //                                 new DriveDistance(37.7, driveTrain),
-        //                                 new MoveHeading(0.0, -120.0, driveTrain)
-        //                         ),
-        //                         new CheckRobotEmpty(frontFeeder, backFeeder, shooter)
-        //     )   
-        // );
-
-        // left10.whenPressed(
-        //     new SequentialCommandGroup(
-        //         new DriveDistance(84.7, driveTrain),
-        //         new MoveHeading(0.0, 35.0, driveTrain),
-        //         new CheckRobotEmpty(frontFeeder, backFeeder, shooter)
-        //     )
-        // );
-        // left11.whenPressed(
-        //     new SequentialCommandGroup(
-        //         new DriveDistance(158.1, driveTrain),
-        //         new DriveDistance(-10.0, driveTrain),
-        //         new WaitCommand(0.75),
-        //         new DriveDistance(-115.0, driveTrain)
-        //     )
-        // );
-
-
         right2.whenPressed(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
         right10.whenPressed(new RunsDisabledInstantCommand(() -> turret.resetTurretPos(), turret));
 
@@ -221,30 +184,6 @@ public class RobotContainer {
         // gamepadA.whenPressed(new ParallelCommandGroup(
         //                         new InstantCommand(() -> shooter.stopShooter(), shooter),
         //                         new InstantCommand(() -> limelight.setLEDState(LimelightLEDState.ON))));
-        // // Turn off the LEDs to disable targeting, then stop the shooter and lock it into position.
-        // gamepadB.whenPressed(new SequentialCommandGroup(
-        //     new InstantCommand(() -> limelight.setLEDState(LimelightLEDState.OFF)),
-        //     new ParallelCommandGroup(
-        //         new RunCommand( () -> shooter.stopShooter(), shooter),
-        //         new RunCommand( () -> turret.setPosition(180.0), turret))
-        // ));
-        
-        // gamepadA.whenPressed(new ParallelCommandGroup(
-        //     new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
-        //     new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE), intake),
-        //     new SequentialCommandGroup(
-        //             new DriveDistance(37.7, driveTrain),
-        //             new MoveHeading(0.0, -120.0, driveTrain)
-        //     ),
-        //     new CheckRobotEmpty(frontFeeder, backFeeder, shooter)
-        // ));
-
-        // gamepadB.whenPressed(new ParallelCommandGroup(
-        //     new SequentialCommandGroup(
-        //             new DriveDistance(84.7, driveTrain),
-        //             new MoveHeading(0.0, 35.0, driveTrain)),
-        //     new CheckRobotEmpty(frontFeeder, backFeeder, shooter)
-        // ));
 
         gamepadY.whenPressed(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator));
         gamepadX.whileHeld(new RunCommand(() -> climberWinch.setSpeed(() -> 1.0), climberWinch));
@@ -257,14 +196,6 @@ public class RobotContainer {
                                                    new RunCommand(() -> intake.setSpeed(IntakeSpeed.EJECT), intake), 
                                                    new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.EJECT), frontFeeder),
                                                    new RunCommand(() -> backFeeder.setSpeed(FeedSpeed.EJECT), backFeeder)));
-
-        // gamepadRB.whenPressed(new DriveDistance(158.1, driveTrain));
-        // gamepadRT.whenPressed(new SequentialCommandGroup(
-        //     new DriveDistance(-10.0, driveTrain),
-        //     new WaitCommand(0.75),
-        //     new DriveDistance(-115.0, driveTrain)
-        // ));
-
 
 
         gamepadBack.and(gamepadStart).whenActive(new ParallelCommandGroup(

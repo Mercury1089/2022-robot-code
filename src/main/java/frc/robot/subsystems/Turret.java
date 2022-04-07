@@ -27,7 +27,7 @@ public class Turret extends SubsystemBase {
   private Limelight limelight;
   private boolean isTargeting;
   private static final int MAX_TURRET_RPM = 250;
-  public static final double THRESHOLD_DEGREES = 3.0;
+  public static final double THRESHOLD_DEGREES = 2.0;
   private static double NORMAL_P_VAL = 0.2;
   private double positionInput;
   public final double GEAR_RATIO = 7.5;

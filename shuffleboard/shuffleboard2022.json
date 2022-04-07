@@ -204,6 +204,17 @@
               "_source0": "network_table:///LiveWindow/DriveTrain/Yaw",
               "_title": "LiveWindow/DriveTrain/Yaw"
             }
+          },
+          "3,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///LiveWindow/Shooter/Balls Shot",
+              "_title": "/LiveWindow/Shooter/Balls Shot"
+            }
           }
         }
       }
