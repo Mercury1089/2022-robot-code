@@ -22,7 +22,7 @@ public class IntakeArticulator extends SubsystemBase implements IMercShuffleBoar
 
   private final TalonSRX intakeArticulator;
   private IntakePosition intakePosition;
-  private final double OUT_SPEED = 0.5, IN_SPEED = -0.6;
+  private final double OUT_SPEED = 0.75, IN_SPEED = -1.0;
   private boolean smartdashSetIntakeOut = false;
 
   /**
