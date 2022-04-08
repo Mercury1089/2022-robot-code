@@ -403,7 +403,7 @@ public class RobotContainer {
                         ),
                         new DriveDistance(147.5, driveTrain),
                         new DriveDistance(-10.0, driveTrain),
-                        new WaitCommand(0.75),
+                        new WaitCommand(2.0),
                         new DriveDistance(-115.0, driveTrain)
                 );
                 break;
