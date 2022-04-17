@@ -25,8 +25,24 @@ public class RobotMap {
         }
     }
 
+    /**
+     * CAN Status frame frequencies. For details, see:
+     *   https://docs.ctre-phoenix.com/en/stable/ch18_CommonAPI.html#setting-status-frame-periods
+     *   https://docs.revrobotics.com/sparkmax/operating-modes/control-interfaces#periodic-status-frames
+     */
+    public static class CAN_STATUS_FREQ {
+        public static final int
+            XTRA_HIGH = 5, // 5ms Very high - use sparingly
+            HIGH = 10, // 10ms - High for important sensors
+            NORMAL = 20, // 20ms - Match robot loop freq
+            LOW = 100, // 100ms - Less frequent
+            XTRA_LOW = 255; // 255ms - Maximum status frame period
+        private CAN_STATUS_FREQ() {
+        }
+    }
+
     public static final int CTRE_TIMEOUT = 10;
-    
+
     public static class UNITS {
         public static final int
                 MAG_ENCODER_TICKS_PER_REVOLUTION = 4096,

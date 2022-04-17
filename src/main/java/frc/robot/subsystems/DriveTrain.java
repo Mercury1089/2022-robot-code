@@ -67,9 +67,7 @@ public class DriveTrain extends SubsystemBase implements IMercPIDTunable {
         PEAK_OUT = 1.0,
         ROTATION_NEUTRAL_DEADBAND = 0.01,
         NEUTRAL_DEADBAND = 0.04;
- 
-    public static final int MOTOR_CONTROLLER_STATUS_FRAME_PERIOD_MS = 20;
-    public static final int PIGEON_STATUS_FRAME_PERIOD_MS = 5;
+
     public final double SAFE_SHOOT_RPM = 10.0;
 
     private PIDGain driveGains, smoothGains, motionProfileGains, turnGains;
@@ -154,7 +152,7 @@ public class DriveTrain extends SubsystemBase implements IMercPIDTunable {
         leaderRight.setSensorPhase(true);
 
         //Config feedback sensors for each PID slot, ready for MOTION PROFILING
-        configureFeedbackSensors(MOTOR_CONTROLLER_STATUS_FRAME_PERIOD_MS, PIGEON_STATUS_FRAME_PERIOD_MS);
+        configureFeedbackSensors(RobotMap.CAN_STATUS_FREQ.NORMAL, RobotMap.CAN_STATUS_FREQ.XTRA_HIGH);
 
         // Configure PID gains
         setPIDGain(DRIVE_PID_SLOT, new PIDGain(0.125, 0.0, 0.05, 0.0, .75));
@@ -170,6 +168,12 @@ public class DriveTrain extends SubsystemBase implements IMercPIDTunable {
         // Set follower control on back talons. Use follow() instead of ControlMode.Follower so that Talons can follow Victors and vice versa.
         followerLeft.follow(leaderLeft);
         followerRight.follow(leaderRight);
+
+        // Per CTRE: Motor controllers that are followers can set Status 1 and Status 2 to 255ms(max) without impacting performance
+        followerLeft.setStatusFramePeriod(StatusFrame.Status_1_General, RobotMap.CAN_STATUS_FREQ.XTRA_LOW);
+        followerLeft.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, RobotMap.CAN_STATUS_FREQ.XTRA_LOW);
+        followerRight.setStatusFramePeriod(StatusFrame.Status_1_General, RobotMap.CAN_STATUS_FREQ.XTRA_LOW);
+        followerRight.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, RobotMap.CAN_STATUS_FREQ.XTRA_LOW);
 
         configVoltage(NOMINAL_OUT, PEAK_OUT);
         setMaxOutput(PEAK_OUT);

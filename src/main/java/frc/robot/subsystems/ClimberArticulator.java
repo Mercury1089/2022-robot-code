@@ -8,6 +8,9 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
+
+import frc.robot.RobotMap;
 import frc.robot.RobotMap.CAN;
 
 public class ClimberArticulator extends SubsystemBase {
@@ -22,6 +25,8 @@ public class ClimberArticulator extends SubsystemBase {
         climberArticulator.configFactoryDefault();                 
         climberArticulator.setNeutralMode(NeutralMode.Brake);
         climberArticulator.setInverted(true);
+        // No sensor feedback is required, so Status 2 frequency can be extra low.
+        climberArticulator.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, RobotMap.CAN_STATUS_FREQ.XTRA_LOW);
         climberArmPosition = ClimberPosition.BACKWARD;  
         
         isLocked = true;

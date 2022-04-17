@@ -9,11 +9,12 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.RobotMap;
 import frc.robot.RobotMap.CAN;
 
 public class Intake extends SubsystemBase {
@@ -55,6 +56,8 @@ public class Intake extends SubsystemBase {
     intakeRoller.configFactoryDefault();
     intakeRoller.setNeutralMode(NeutralMode.Brake);
     intakeRoller.setInverted(true);
+    // No sensor feedback is required, so Status 2 frequency can be extra low.
+    intakeRoller.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, RobotMap.CAN_STATUS_FREQ.XTRA_LOW);
   }
 
   public void setSpeed(IntakeSpeed intakeSpeed) {

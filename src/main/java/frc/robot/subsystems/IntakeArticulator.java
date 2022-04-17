@@ -9,12 +9,12 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.RobotMap;
 import frc.robot.RobotMap.CAN;
 import frc.robot.util.interfaces.IMercShuffleBoardPublisher;
 
@@ -34,6 +34,8 @@ public class IntakeArticulator extends SubsystemBase implements IMercShuffleBoar
     intakeArticulator.configFactoryDefault();
     intakeArticulator.setNeutralMode(NeutralMode.Brake);
     intakeArticulator.setInverted(true);
+    // No sensor feedback is required, so Status 2 frequency can be extra low.
+    intakeArticulator.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, RobotMap.CAN_STATUS_FREQ.XTRA_LOW);
     intakePosition = IntakePosition.IN;
   }
 

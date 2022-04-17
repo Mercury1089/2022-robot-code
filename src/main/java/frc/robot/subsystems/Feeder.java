@@ -7,19 +7,18 @@
 
 package frc.robot.subsystems;
 
-import java.sql.Driver;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotMap;
 import frc.robot.sensors.REVColorSensor.PicoColorSensor;
 import frc.robot.sensors.REVColorSensor.PicoREVColor;
-import frc.robot.sensors.REVColorSensor.REVColor;
 
 public class Feeder extends SubsystemBase {
   
@@ -61,6 +60,8 @@ public class Feeder extends SubsystemBase {
     feedWheel.configFactoryDefault();
     feedWheel.setInverted(false);
     feedWheel.setNeutralMode(NeutralMode.Brake);
+    // No sensor feedback is required, so Status 2 frequency can be extra low.
+    feedWheel.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, RobotMap.CAN_STATUS_FREQ.XTRA_LOW);
     setName("Feeder " + DIOPort.toString());
     this.colorSensor = new PicoREVColor(picoColorSensor);
     colorSensor.configID(colorSensorID);

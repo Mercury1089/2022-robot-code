@@ -6,16 +6,13 @@ package frc.robot.subsystems;
 
 import java.util.function.Supplier;
 
-import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.CAN;
 import frc.robot.sensors.Limelight;
@@ -26,10 +23,8 @@ public class Turret extends SubsystemBase {
   private TalonSRX turret;
   private Limelight limelight;
   private boolean isTargeting;
-  private static final int MAX_TURRET_RPM = 250;
   public static final double THRESHOLD_DEGREES = 2.0;
   private static double NORMAL_P_VAL = 0.2;
-  private double positionInput;
   public final double GEAR_RATIO = 7.5;
   public final double UPPER_LIMIT = 370.0, LOWER_LIMIT = 0.0;
 
@@ -58,7 +53,8 @@ public class Turret extends SubsystemBase {
     turret.configForwardSoftLimitEnable(true, RobotMap.CTRE_TIMEOUT);
     turret.configReverseSoftLimitEnable(true, RobotMap.CTRE_TIMEOUT);
    
-
+    // PID0 includes the closed loop error, so update it frequently
+    turret.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, RobotMap.CAN_STATUS_FREQ.HIGH);
     turret.configNominalOutputForward(0.02, RobotMap.CTRE_TIMEOUT);
     turret.configNominalOutputReverse(-0.02, RobotMap.CTRE_TIMEOUT);
     turret.configPeakOutputForward(1.0, RobotMap.CTRE_TIMEOUT);
