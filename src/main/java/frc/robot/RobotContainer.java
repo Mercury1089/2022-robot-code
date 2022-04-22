@@ -70,7 +70,7 @@ public class RobotContainer {
     private JoystickButton right1, right2, right3, right4, right5, right6, right7, right8, right9, right10, right11;
     private JoystickButton gamepadA, gamepadB, gamepadX, gamepadY, gamepadRB, gamepadLB, gamepadL3, gamepadBack, gamepadStart, gamepadLeftStickButton, gamepadRightStickButton;
     private TriggerButton gamepadLT, gamepadRT;
-    private PovButton gamepadPOVDown, gamepadPOVUp;
+    private PovButton gamepadPOVDown, gamepadPOVUpLeft, gamepadPOVUp, gamepadPOVUpRight;
 
     private DriveTrain driveTrain;
     private Shooter shooter;
@@ -211,7 +211,9 @@ public class RobotContainer {
         );
 
 
+        gamepadPOVUpLeft.whileHeld(new RunCommand(() -> climberArticulator.setSpeed(() -> 1.0), climberArticulator));
         gamepadPOVUp.whileHeld(new RunCommand(() -> climberArticulator.setSpeed(() -> 1.0), climberArticulator));
+        gamepadPOVUpRight.whileHeld(new RunCommand(() -> climberArticulator.setSpeed(() -> 1.0), climberArticulator));
         gamepadPOVDown.whileHeld(new RunCommand(() -> climberArticulator.setSpeed(() -> -0.25), climberArticulator));
 
 
@@ -369,7 +371,9 @@ public class RobotContainer {
         
 
         gamepadPOVDown = new PovButton(gamepad, GAMEPAD_POV.DOWN);
+        gamepadPOVUpLeft = new PovButton(gamepad, GAMEPAD_POV.UP_LEFT);
         gamepadPOVUp = new PovButton(gamepad, GAMEPAD_POV.UP);
+        gamepadPOVUpRight = new PovButton(gamepad, GAMEPAD_POV.UP_RIGHT);
     }
  
     public void initializeAutonCommand(Autons autonSelected) {
