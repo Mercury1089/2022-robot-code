@@ -8,8 +8,7 @@ import frc.robot.util.MercMath;
  * A wrapper class for limelight information from the network table.
  * Example for commit
  */
-public class Limelight implements TableEntryListener {
-    private final double safeTurnThreshold = 10.0, limelightResX = 320;
+public class Limelight {
     /*
      * Coefficients and exponents to help find the distance of a target Each
      * equation is in the form ax^b where a is the coefficient (Coeff) of the
@@ -22,11 +21,12 @@ public class Limelight implements TableEntryListener {
     private final double horizCoeff = 264.0;
     private final double horizExp = -0.953;
 
-    private NetworkTable nt; // finds the limelight network table
-    private double numTargets, targetCenterXAngle, targetCenterYAngle, targetArea, horizontalLength, verticalLength, shortLength, longLength;
-    private LimelightLEDState ledState;
-    private double[] cornerx;
-    private boolean targetAcquired;
+    private IntegerSubscriber targetAcquiredSubscriber;
+    private DoubleSubscriber targetCenterXAngleSubscriber, targetCenterYAngleSubscriber, targetAreaSubscriber;
+    private IntegerSubscriber horizontalLengthSubscriber, verticalLengthSubscriber, shortLengthSubscriber, longLengthSubscriber;
+    private IntegerEntry ledStateEntry;
+    private IntegerPublisher pipelinePublisher;
+
     private final double areaCoeff = 16.2;
     private final double areaExp = -0.479;
 
@@ -36,81 +36,18 @@ public class Limelight implements TableEntryListener {
      * Constucts the sensor and adds a listener to the table
      */
     public Limelight() {
-        nt = NetworkTableInstance.getDefault().getTable("limelight-merc");
-        numTargets = 0.0;
-        targetCenterXAngle = 0.0;
-        targetCenterYAngle = 0.0;
-        targetArea = 0.0;
-        horizontalLength = 0.0;
-        verticalLength = 0.0;
-        targetAcquired = false;
-        cornerx = new double[] {};
-        nt.addEntryListener(this, EntryListenerFlags.kImmediate | EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
-        shortLength = 0.0;
-        longLength = 0.0;
-        ledState = LimelightLEDState.OFF;
-    }
+        NetworkTable nt = NetworkTableInstance.getDefault().getTable("limelight-merc");
 
-    /**
-     * @param nt    is always the limelight network table in this case
-     * @param key   is the key of the entry that changed
-     * @param ne    is the entry that changed
-     * @param nv    is the value of the entry that changed
-     * @param flags is the flag that occured which is always kUpdate in this case
-     */
-    @Override
-    public void valueChanged(NetworkTable nt, String key, NetworkTableEntry ne, NetworkTableValue nv, int flags) {
-        synchronized (this) {
-            switch (key) {
-            case "tx": {
-                targetCenterXAngle = nv.getDouble();
-                break;
-            }
-            case "ty": {
-                targetCenterYAngle = nv.getDouble();
-                break;
-            }
-            case "ta": {
-                targetArea = nv.getDouble();
-                break;
-            }
-            case "tv": {
-                targetAcquired = nv.getDouble() != 0.0;
-                break;
-            }
-            case "tl": {
-                numTargets = nv.getDouble();
-                break;
-            }
-            case "thor": {
-                horizontalLength = nv.getDouble();
-                break;
-            }
-            case "tvert": {
-                verticalLength = nv.getDouble();
-                break;
-            }
-            case "tcornx": {
-                cornerx = nv.getDoubleArray();
-                break;
-            }
-            case "tshort": {
-                shortLength = nv.getDouble();
-                break;
-            }
-            case "tlong": {
-                longLength = nv.getDouble();
-                break;
-            }
-            case "ledMode": {
-                ledState = LimelightLEDState.valueOf(nv.getDouble());
-                break;
-            }
-            default: {
-                break;
-            }
-            }
-        }
+        targetAcquiredSubscriber = nt.getIntegerTopic("tv").subscribe(0);
+        targetCenterXAngleSubscriber = nt.getDoubleTopic("tx").subscribe(0.0);
+        targetCenterYAngleSubscriber = nt.getDoubleTopic("ty").subscribe(0.0);
+        targetAreaSubscriber = nt.getDoubleTopic("ta").subscribe(0.0);
+        horizontalLengthSubscriber = nt.getIntegerTopic("thor").subscribe(0);
+        verticalLengthSubscriber = nt.getIntegerTopic("tvert").subscribe(0);
+        shortLengthSubscriber = nt.getIntegerTopic("tshort").subscribe(0);
+        longLengthSubscriber = nt.getIntegerTopic("tlong").subscribe(0);
+        ledStateEntry = nt.getIntegerTopic("ledMode").getEntry(0);
+        pipelinePublisher = nt.getIntegerTopic("pipeline").publish();
     }
 
     /**
@@ -118,8 +55,8 @@ public class Limelight implements TableEntryListener {
      *
      * @return angle to target in x direction
      */
-    public synchronized double getTargetCenterXAngle() {
-        return this.targetCenterXAngle;
+    public double getTargetCenterXAngle() {
+        return this.targetCenterXAngleSubscriber.get();
     }
 
     /**
@@ -127,8 +64,8 @@ public class Limelight implements TableEntryListener {
      *
      * @return angle to target in y direction
      */
-    public synchronized double getTargetCenterYAngle() {
-        return this.targetCenterYAngle;
+    public double getTargetCenterYAngle() {
+        return this.targetCenterYAngleSubscriber.get();
     }
 
     /**
@@ -136,17 +73,8 @@ public class Limelight implements TableEntryListener {
      *
      * @return angle to target in x direction
      */
-    public synchronized double getTargetArea() {
-        return this.targetArea;
-    }
-
-    /**
-     * u want the number of targets?
-     *
-     * @return number of visible targets
-     */
-    public synchronized double getNumTargets() {
-        return this.numTargets;
+    public double getTargetArea() {
+        return this.targetAreaSubscriber.get();
     }
 
     /**
@@ -154,45 +82,36 @@ public class Limelight implements TableEntryListener {
      *
      * @return If there is a valid target
      */
-    public synchronized boolean getTargetAcquired() {
-        return this.targetAcquired;
+    public boolean getTargetAcquired() {
+        return this.targetAcquiredSubscriber.get() != 0;
+    }
+
+    public long getVerticalLength() {
+        return this.verticalLengthSubscriber.get();
+    }
+
+    public synchronized long getHorizontalLength() {
+        return this.horizontalLengthSubscriber.get();
+    }
+
+    public synchronized long getShortLength() {
+        return this.shortLengthSubscriber.get();
+    }
+
+    public synchronized long getLongLenght() {
+        return this.longLengthSubscriber.get();
     }
 
     /**
-     * u want the vertical length of the target?
+     * u want the distance based on the centerYAngle?
      *
-     * @return the vertical length of the target
+     * @return the distance based on the centerYAngle
      */
-    public synchronized double getVerticalLength() {
-        return this.verticalLength;
-    }
-
     public double getDistanceToTarget(){
         //10.7 + -0.513x + 0.0128x^2
 
         //return (0.0128 * Math.pow(this.targetCenterYAngle, 2.0)) + (-0.513 * this.targetCenterYAngle) + 10.7;
-        return (12.6 * Math.exp(0.0483 * this.targetCenterYAngle));
-    }
-
-    /**
-     * u want the number of targets?
-     *
-     * @return number of visible targets
-     */
-    public synchronized double getHorizontalLength() {
-        return this.horizontalLength;
-    }
-
-    public synchronized double[] getCornerXArray() {
-        return this.cornerx;
-    }
-
-    public synchronized double getShortLength() {
-        return this.shortLength;
-    }
-
-    public synchronized double getLongLenght() {
-        return this.longLength;
+        return (12.6 * Math.exp(0.0483 * this.targetCenterYAngleSubscriber.get()));
     }
 
     /**
@@ -200,8 +119,8 @@ public class Limelight implements TableEntryListener {
      *
      * @return the distance based on the area
      */
-    public synchronized double getRawAreaDistance() {
-        return calcDistFromArea();
+    public double getRawAreaDistance() {
+        return areaCoeff * Math.pow(targetAreaSubscriber.get(), areaExp);
     }
 
     /**
@@ -209,8 +128,8 @@ public class Limelight implements TableEntryListener {
      *
      * @return the distance based on the vertical distance
      */
-    public synchronized double getRawVertDistance() {
-        return calcDistFromVert();
+    public double getRawVertDistance() {
+        return movingAverage.calculate(vertCoeff * Math.pow(getShortLength(), vertExp));
     }
 
     /**
@@ -218,35 +137,8 @@ public class Limelight implements TableEntryListener {
      *
      * @return the distance based on the horizontal distance
      */
-    public synchronized double getRawHorizDistance() {
-        return calcDistFromHoriz();
-    }
-
-    /**
-     * Helper method for the area-dist calculation
-     *
-     * @return the distance based on area
-     */
-    public double calcDistFromArea() {
-        return areaCoeff * Math.pow(targetArea, areaExp);
-    }
-
-    /**
-     * Helper method for the vert-dist calculation
-     *
-     * @return the distance based on vertical distance
-     */
-    public double calcDistFromVert() {
-        return movingAverage.calculate(vertCoeff * Math.pow(getShortLength(), vertExp));
-    }
-
-    /**
-     * Helper method for the horiz-dist calculation
-     *
-     * @return the distance based on horizontal distance
-     */
-    public double calcDistFromHoriz() {
-        return horizCoeff * Math.pow(horizontalLength, horizExp) * 12;
+    public double getRawHorizDistance() {
+        return horizCoeff * Math.pow(horizontalLengthSubscriber.get(), horizExp) * 12;
         //This is from 2019. Needs to be recalibrated for 2020
     }
 
@@ -256,13 +148,16 @@ public class Limelight implements TableEntryListener {
      * @param limelightLEDState the state of the LED.
      */
     public synchronized void setLEDState(LimelightLEDState ledState) {
-        this.ledState = ledState;
-        nt.getEntry("ledMode").setNumber(ledState.value);
+        this.ledStateEntry.set(ledState.value);
     }
 
+    public LimelightLEDState getLimelightLEDState() {
+        return LimelightLEDState.valueOf(ledStateEntry.get());
+    }
     public boolean getLEDState() {
         // We are assuming PIPELINE_DEFULT is ON here
-        return ledState == LimelightLEDState.ON || ledState == LimelightLEDState.PIPELINE_DEFAULT;
+        LimelightLEDState state = getLimelightLEDState();
+        return state == LimelightLEDState.ON || state == LimelightLEDState.PIPELINE_DEFAULT;
     }
 
     public void switchLEDState() {
@@ -270,22 +165,19 @@ public class Limelight implements TableEntryListener {
     }
 
     public void setPipeline(int slot) {
-        nt.getEntry("pipeline").setNumber(slot);
+        pipelinePublisher.set(slot);
     }
 
     public enum LimelightLEDState {
-        ON(3.0), OFF(1.0), BLINKING(2.0), PIPELINE_DEFAULT(0.0);
+        ON(3), OFF(1), BLINKING(2), PIPELINE_DEFAULT(0);
 
-        private double value;
+        private long value;
 
-        LimelightLEDState(double value) {
+        LimelightLEDState(long value) {
             this.value = value;
         }
-
-        public double getValue() {
-            return value;
-        }
-        public static LimelightLEDState valueOf(double value) {
+    
+        public static LimelightLEDState valueOf(long value) {
             for (LimelightLEDState state : LimelightLEDState.values()) {
                 if (state.value == value) return state;
             }
