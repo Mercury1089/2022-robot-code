@@ -21,11 +21,11 @@ public class Limelight {
     private final double horizCoeff = 264.0;
     private final double horizExp = -0.953;
 
-    private IntegerSubscriber targetAcquiredSubscriber;
+    private DoubleSubscriber targetAcquiredSubscriber;
     private DoubleSubscriber targetCenterXAngleSubscriber, targetCenterYAngleSubscriber, targetAreaSubscriber;
-    private IntegerSubscriber horizontalLengthSubscriber, verticalLengthSubscriber, shortLengthSubscriber, longLengthSubscriber;
-    private IntegerEntry ledStateEntry;
-    private IntegerPublisher pipelinePublisher;
+    private DoubleSubscriber horizontalLengthSubscriber, verticalLengthSubscriber, shortLengthSubscriber, longLengthSubscriber;
+    private DoubleEntry ledStateEntry;
+    private DoublePublisher pipelinePublisher;
 
     private final double areaCoeff = 16.2;
     private final double areaExp = -0.479;
@@ -38,16 +38,16 @@ public class Limelight {
     public Limelight() {
         NetworkTable nt = NetworkTableInstance.getDefault().getTable("limelight-merc");
 
-        targetAcquiredSubscriber = nt.getIntegerTopic("tv").subscribe(0);
+        targetAcquiredSubscriber = nt.getDoubleTopic("tv").subscribe(0);
         targetCenterXAngleSubscriber = nt.getDoubleTopic("tx").subscribe(0.0);
         targetCenterYAngleSubscriber = nt.getDoubleTopic("ty").subscribe(0.0);
         targetAreaSubscriber = nt.getDoubleTopic("ta").subscribe(0.0);
-        horizontalLengthSubscriber = nt.getIntegerTopic("thor").subscribe(0);
-        verticalLengthSubscriber = nt.getIntegerTopic("tvert").subscribe(0);
-        shortLengthSubscriber = nt.getIntegerTopic("tshort").subscribe(0);
-        longLengthSubscriber = nt.getIntegerTopic("tlong").subscribe(0);
-        ledStateEntry = nt.getIntegerTopic("ledMode").getEntry(0);
-        pipelinePublisher = nt.getIntegerTopic("pipeline").publish();
+        horizontalLengthSubscriber = nt.getDoubleTopic("thor").subscribe(0);
+        verticalLengthSubscriber = nt.getDoubleTopic("tvert").subscribe(0);
+        shortLengthSubscriber = nt.getDoubleTopic("tshort").subscribe(0);
+        longLengthSubscriber = nt.getDoubleTopic("tlong").subscribe(0);
+        ledStateEntry = nt.getDoubleTopic("ledMode").getEntry(0.0);
+        pipelinePublisher = nt.getDoubleTopic("pipeline").publish();
     }
 
     /**
@@ -86,19 +86,19 @@ public class Limelight {
         return this.targetAcquiredSubscriber.get() != 0;
     }
 
-    public long getVerticalLength() {
+    public double getVerticalLength() {
         return this.verticalLengthSubscriber.get();
     }
 
-    public synchronized long getHorizontalLength() {
+    public double getHorizontalLength() {
         return this.horizontalLengthSubscriber.get();
     }
 
-    public synchronized long getShortLength() {
+    public double getShortLength() {
         return this.shortLengthSubscriber.get();
     }
 
-    public synchronized long getLongLenght() {
+    public double getLongLenght() {
         return this.longLengthSubscriber.get();
     }
 
@@ -169,15 +169,15 @@ public class Limelight {
     }
 
     public enum LimelightLEDState {
-        ON(3), OFF(1), BLINKING(2), PIPELINE_DEFAULT(0);
+        ON(3.0), OFF(1.0), BLINKING(2.0), PIPELINE_DEFAULT(0.0);
 
-        private long value;
+        private double value;
 
-        LimelightLEDState(long value) {
+        LimelightLEDState(double value) {
             this.value = value;
         }
     
-        public static LimelightLEDState valueOf(long value) {
+        public static LimelightLEDState valueOf(double value) {
             for (LimelightLEDState state : LimelightLEDState.values()) {
                 if (state.value == value) return state;
             }
