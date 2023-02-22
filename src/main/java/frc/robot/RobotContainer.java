@@ -165,16 +165,16 @@ public class RobotContainer {
         // left2.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intake.setSpeed(IntakeSpeed.STOP), intake), 
         //                                            new RunCommand(() -> intakeArticulator.setIntakeIn(), intakeArticulator)));
 
-        left1.whenPressed(new ParallelCommandGroup(new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
+        left1.onTrue(new ParallelCommandGroup(new InstantCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator),
                                                    new InstantCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE), intake)));
 
-        left2.whenPressed(new ParallelCommandGroup(new InstantCommand(() -> intake.setSpeed(IntakeSpeed.STOP), intake), 
+        left2.onTrue(new ParallelCommandGroup(new InstantCommand(() -> intake.setSpeed(IntakeSpeed.STOP), intake), 
                                                    new InstantCommand(() -> intakeArticulator.setIntakeIn(), intakeArticulator)));
                                 
-        left6.whenPressed(new RunsDisabledInstantCommand(() -> limelight.switchLEDState()));
+        left6.onTrue(new RunsDisabledInstantCommand(() -> limelight.switchLEDState()));
 
-        right2.whenPressed(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
-        right10.whenPressed(new RunsDisabledInstantCommand(() -> turret.resetTurretPos(), turret));
+        right2.onTrue(new DriveWithJoysticks(DriveType.ARCADE, driveTrain));
+        right10.onTrue(new RunsDisabledInstantCommand(() -> turret.resetTurretPos(), turret));
 
 
         // Use the following to set velocity from SmartDash
@@ -185,20 +185,20 @@ public class RobotContainer {
         //                         new InstantCommand(() -> shooter.stopShooter(), shooter),
         //                         new InstantCommand(() -> limelight.setLEDState(LimelightLEDState.ON))));
 
-        gamepadY.whenPressed(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator));
-        gamepadX.whileHeld(new RunCommand(() -> climberWinch.setSpeed(() -> 1.0), climberWinch));
+        gamepadY.onTrue(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator));
+        gamepadX.whileTrue(new RunCommand(() -> climberWinch.setSpeed(() -> 1.0), climberWinch));
 
         
 
-        gamepadLT.whenPressed(new ShootBall(backFeeder, shooter));
+        gamepadLT.onTrue(new ShootBall(backFeeder, shooter));
 
-        gamepadLB.whenPressed(new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator), 
+        gamepadLB.onTrue(new ParallelCommandGroup(new RunCommand(() -> intakeArticulator.setIntakeOut(), intakeArticulator), 
                                                    new RunCommand(() -> intake.setSpeed(IntakeSpeed.EJECT), intake), 
                                                    new RunCommand(() -> frontFeeder.setSpeed(FeedSpeed.EJECT), frontFeeder),
                                                    new RunCommand(() -> backFeeder.setSpeed(FeedSpeed.EJECT), backFeeder)));
 
 
-        gamepadBack.and(gamepadStart).whenActive(new ParallelCommandGroup(
+        gamepadBack.and(gamepadStart).onTrue(new ParallelCommandGroup(
             new SequentialCommandGroup(
             new InstantCommand(() -> limelight.setLEDState(LimelightLEDState.OFF)),
             new ParallelCommandGroup(
@@ -211,10 +211,10 @@ public class RobotContainer {
         );
 
 
-        gamepadPOVUpLeft.whileHeld(new RunCommand(() -> climberArticulator.setSpeed(() -> 1.0), climberArticulator));
-        gamepadPOVUp.whileHeld(new RunCommand(() -> climberArticulator.setSpeed(() -> 1.0), climberArticulator));
-        gamepadPOVUpRight.whileHeld(new RunCommand(() -> climberArticulator.setSpeed(() -> 1.0), climberArticulator));
-        gamepadPOVDown.whileHeld(new RunCommand(() -> climberArticulator.setSpeed(() -> -0.25), climberArticulator));
+        gamepadPOVUpLeft.whileTrue(new RunCommand(() -> climberArticulator.setSpeed(() -> 1.0), climberArticulator));
+        gamepadPOVUp.whileTrue(new RunCommand(() -> climberArticulator.setSpeed(() -> 1.0), climberArticulator));
+        gamepadPOVUpRight.whileTrue(new RunCommand(() -> climberArticulator.setSpeed(() -> 1.0), climberArticulator));
+        gamepadPOVDown.whileTrue(new RunCommand(() -> climberArticulator.setSpeed(() -> -0.25), climberArticulator));
 
 
 

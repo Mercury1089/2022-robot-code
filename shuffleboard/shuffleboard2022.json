@@ -20,6 +20,8 @@
               "_type": "Camera Stream",
               "_source0": "camera_server://limelight-merc",
               "_title": "limelight-merc",
+              "_glyph": 148,
+              "_showGlyph": false,
               "Crosshair/Show crosshair": true,
               "Crosshair/Crosshair color": "#FFFFFFFF",
               "Controls/Show controls": true,
@@ -38,7 +40,9 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Auton Chosen",
-              "_title": "SmartDashboard/Auton Chosen"
+              "_title": "SmartDashboard/Auton Chosen",
+              "_glyph": 148,
+              "_showGlyph": false
             }
           },
           "10,1": {
@@ -49,7 +53,9 @@
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/Auton Position",
-              "_title": "SmartDashboard/Auton Position"
+              "_title": "SmartDashboard/Auton Position",
+              "_glyph": 148,
+              "_showGlyph": false
             }
           },
           "10,2": {
@@ -60,7 +66,9 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///LiveWindow/Turret/EncoderDegrees",
-              "_title": "/LiveWindow/Turret/EncoderDegrees"
+              "_title": "/LiveWindow/Turret/EncoderDegrees",
+              "_glyph": 148,
+              "_showGlyph": false
             }
           },
           "3,1": {
@@ -71,7 +79,9 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///LiveWindow/Shooter/Within Target",
-              "_title": "LiveWindow/Shooter/Within Target"
+              "_title": "LiveWindow/Shooter/Within Target",
+              "_glyph": 148,
+              "_showGlyph": false
             }
           },
           "3,0": {
@@ -83,6 +93,8 @@
               "_type": "Boolean Box",
               "_source0": "network_table:///LiveWindow/Turret/isOnTarget",
               "_title": "LiveWindow/Turret/isOnTarget",
+              "_glyph": 148,
+              "_showGlyph": false,
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
@@ -96,6 +108,8 @@
               "_type": "Boolean Box",
               "_source0": "network_table:///LiveWindow/Shooter/AtTargetRPM",
               "_title": "LiveWindow/Shooter/AtTargetRPM",
+              "_glyph": 148,
+              "_showGlyph": false,
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
@@ -109,6 +123,8 @@
               "_type": "Boolean Box",
               "_source0": "network_table:///LiveWindow/Feeder/Feeder BACK/hasBall",
               "_title": "LiveWindow/Feeder/Feeder BACK/hasBall",
+              "_glyph": 148,
+              "_showGlyph": false,
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
@@ -122,6 +138,8 @@
               "_type": "Boolean Box",
               "_source0": "network_table:///LiveWindow/Feeder/Feeder FRONT/hasBall",
               "_title": "LiveWindow/Feeder/Feeder FRONT/hasBall",
+              "_glyph": 148,
+              "_showGlyph": false,
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
@@ -135,6 +153,8 @@
               "_type": "Boolean Box",
               "_source0": "network_table:///LiveWindow/Turret/TargetAcquired",
               "_title": "LiveWindow/Turret/TargetAcquired",
+              "_glyph": 148,
+              "_showGlyph": false,
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
@@ -147,7 +167,9 @@
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/Auton Chooser",
-              "_title": "SmartDashboard/Auton Chooser"
+              "_title": "SmartDashboard/Auton Chooser",
+              "_glyph": 148,
+              "_showGlyph": false
             }
           },
           "4,4": {
@@ -158,7 +180,9 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///LiveWindow/Feeder/Feeder FRONT/Color/whoseBall",
-              "_title": "LiveWindow/Feeder/Feeder FRONT/Color/whoseBall"
+              "_title": "LiveWindow/Feeder/Feeder FRONT/Color/whoseBall",
+              "_glyph": 148,
+              "_showGlyph": false
             }
           },
           "2,2": {
@@ -169,7 +193,9 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///LiveWindow/Shooter/CurrentRPM",
-              "_title": "/LiveWindow/Shooter/CurrentRPM"
+              "_title": "/LiveWindow/Shooter/CurrentRPM",
+              "_glyph": 148,
+              "_showGlyph": false
             }
           },
           "1,2": {
@@ -180,7 +206,9 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///LiveWindow/Shooter/TargetRPM",
-              "_title": "/LiveWindow/Shooter/TargetRPM"
+              "_title": "/LiveWindow/Shooter/TargetRPM",
+              "_glyph": 148,
+              "_showGlyph": false
             }
           },
           "10,3": {
@@ -191,7 +219,9 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///LiveWindow/Turret/DistanceToTarget",
-              "_title": "LiveWindow/Turret/DistanceToTarget"
+              "_title": "LiveWindow/Turret/DistanceToTarget",
+              "_glyph": 148,
+              "_showGlyph": false
             }
           },
           "3,3": {
@@ -202,7 +232,9 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///LiveWindow/DriveTrain/Yaw",
-              "_title": "LiveWindow/DriveTrain/Yaw"
+              "_title": "LiveWindow/DriveTrain/Yaw",
+              "_glyph": 148,
+              "_showGlyph": false
             }
           },
           "3,4": {
@@ -213,7 +245,9 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///LiveWindow/Shooter/Balls Shot",
-              "_title": "/LiveWindow/Shooter/Balls Shot"
+              "_title": "/LiveWindow/Shooter/Balls Shot",
+              "_glyph": 148,
+              "_showGlyph": false
             }
           }
         }
